@@ -16,7 +16,9 @@ export class HttpClientStrategy implements ClientStrategy {
     this.cfg = cfg;
     this.http = axios.create({
       proxy: false,
-      httpsAgent: new https.Agent({ rejectUnauthorized: false }), // TODO remove in production
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: this.cfg.getConfig().NODE_ENV === 'production',
+      }),
     });
   }
   async sendRequest(

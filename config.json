@@ -9,6 +9,17 @@
     "URL_TOKEN": "https://10.12.24.205:9443/oauth2/token",
     "REVOKE_URL": "https://10.12.24.205:9443/oauth2/revoke"
   },
+  "DATABASE": {
+    "TYPE": "sqlite",
+    "HOST": "10.12.24.33",
+    "PORT": "DB_PORT",
+    "USERNAME": "",
+    "PASSWORD": "",
+    "DATABASE_NAME": "",
+    "RETRY_DELAY": 3000,
+    "AUTO_LOAD_ENTITIES": true,
+    "SYNCHRONIZE": true
+  },
   "API_GATEWAY": {
     "HOST": "localhost",
     "PORT": 10412,
@@ -19,7 +30,9 @@
     "PROXY_STATIC_MAP_PATH": "./routes.json",
     "CORS_ORIGIN": "http://localhost:8080",
     "HTTP_METHODS_ALLOWED": "GET,PUT,POST,HEADER,DELETE",
-    "AUTH_TYPE": "wso2"
+    "AUTH_TYPE": "wso2", //puede ser 'sqlite' 'mysql'
+    "THROTTLE_TTL_MS": 900000,
+    "THROTTLE_LIMIT": 5
   },
   "SESSION": {
     "FOLDER": "sessions_dev",

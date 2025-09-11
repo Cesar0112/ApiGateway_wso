@@ -1,33 +1,20 @@
-import * as per from '../../permissions/const';
-
+import { Permission } from 'src/permissions/entities/permission.entity';
+import {
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+@Entity()
 export class Role {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @PrimaryColumn()
   name: string;
-  permissions: string[];
-}
 
-export class SuperAdminRole extends Role {
-  constructor() {
-    super();
-    this.id = 'super_admin';
-    this.name = 'Super Admin';
-    this.permissions = per.ALL_ACTIONS;
-  }
-}
-export class MonitoringRole extends Role {
-  constructor() {
-    super();
-    this.id = 'monitoring';
-    this.name = 'Monitoring';
-    this.permissions = per.MonitoringPermissions;
-  }
-}
-
-export class OperatorRole extends Role {
-  constructor() {
-    super();
-    this.id = 'operator';
-    this.name = 'Operator';
-    this.permissions = per.OperatorPermissions;
-  }
+  @ManyToMany(() => Permission, { eager: true })
+  @JoinTable()
+  permissions: Permission[];
 }

@@ -44,6 +44,42 @@ export class WSO2Config {
   CLIENT_SECRET: string = 'T9PjTVNCvvONGAof4Rec_70BZVvuYAts8PmDt5aikPga';
 }
 
+export class DatabaseConfig {
+  @IsIn(['sqlite', 'mysql'])
+  @IsString()
+  TYPE: string = 'sqlite';
+
+  @IsString()
+  HOST: string = 'locahost';
+
+  @IsNumber()
+  @IsOptional()
+  PORT?: number = 3130;
+
+  @IsString()
+  @IsOptional()
+  USERNAME?: string = '';
+
+  @IsString()
+  @IsOptional()
+  PASSWORD?: string = '';
+  @IsString()
+  @IsOptional()
+  DATABASE_NAME?: '';
+
+  @IsNumber()
+  @IsOptional()
+  RETRY_DELAY: 3000;
+
+  @IsBoolean()
+  @IsOptional()
+  AUTO_LOAD_ENTITIES: true;
+
+  @IsBoolean()
+  @IsOptional()
+  SYNCHRONIZE: true;
+}
+
 export class ApiGatewayConfig {
   @IsString()
   @IsOptional()
@@ -81,9 +117,17 @@ export class ApiGatewayConfig {
   @IsOptional()
   HTTP_METHODS_ALLOWED: string = 'GET,HEAD,PUT,PATCH,POST,DELETE';
 
-  @IsIn(['wso2', 'local'])
+  @IsIn(['wso2', 'sqlite'])
   @IsOptional()
   AUTH_TYPE: string = 'wso2';
+
+  @IsNumber()
+  @IsOptional()
+  THROTTLE_TTL_MS: number = 900000;
+
+  @IsNumber()
+  @IsOptional()
+  THROTTLE_LIMIT: number = 5;
 }
 
 export class SessionConfig {
@@ -129,6 +173,7 @@ export class SessionConfig {
 }
 
 export class Config {
+  @IsIn(['dev', 'production'])
   @IsString()
   NODE_ENV: string;
 
@@ -136,6 +181,10 @@ export class Config {
   @ValidateNested()
   @Type(() => WSO2Config)
   WSO2?: WSO2Config;
+
+  @IsOptional()
+  @ValidateNested()
+  DATABASE?: DatabaseConfig;
 
   @IsOptional()
   @ValidateNested()

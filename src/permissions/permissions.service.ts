@@ -82,8 +82,11 @@ export class PermissionsService {
                 'Content-Type': 'application/json',
                 Accept: 'application/scim+json',
               },
-              httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-              proxy: false,
+              httpsAgent: new https.Agent({
+                rejectUnauthorized:
+                  this.configService.getConfig().NODE_ENV === 'production',
+              }),
+              proxy: false, //TODO Cambiar por carga de configuración
             },
           );
 

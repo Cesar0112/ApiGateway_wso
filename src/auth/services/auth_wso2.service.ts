@@ -1,5 +1,6 @@
 // src/auth/auth.service.ts
 import {
+  Inject,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -12,13 +13,22 @@ import {
   WSO2TokenResponse,
   DecodedToken,
   IAuthenticationService,
-} from './auth.interface';
-import { EncryptionsService } from '../encryptions/encryptions.service';
-import { PermissionsService } from '../permissions/permissions.service';
-import { ConfigService } from '../config/config.service';
-import { SessionService } from 'src/session/session.service';
+} from '../auth.interface';
+import { EncryptionsService } from '../../encryptions/encryptions.service';
+import { PermissionsService } from '../../permissions/permissions.service';
+import { ConfigService } from '../../config/config.service';
+import { SessionService } from '../../session/session.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 @Injectable()
-export class AuthService implements IAuthenticationService {
+export class AuthWSO2Service implements IAuthenticationService {
+  constructor(
+    protected readonly configService: ConfigService,
+    protected readonly encryptionsService: EncryptionsService,
+    protected readonly permissionsService: PermissionsService,
+    protected readonly sessionService: SessionService,
+    @Inject(CACHE_MANAGER) protected cacheManager: Cache,
+  ) {}
   test_short(sessionId: string) {
     const store = this.sessionService.getExpressSessionStore();
     store.get(sessionId, (err, sess) => {
@@ -27,13 +37,6 @@ export class AuthService implements IAuthenticationService {
       store.set(sessionId, sess);
     });
   }
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly encryptionsService: EncryptionsService,
-    private readonly permissionsService: PermissionsService,
-    private readonly sessionService: SessionService,
-  ) {}
-
   async refresh(sessionId: string): Promise<boolean> {
     const session = await this.sessionService.getSession(sessionId);
     if (!session) {
@@ -72,7 +75,10 @@ export class AuthService implements IAuthenticationService {
       const response = await axios.post<WSO2TokenResponse>(url, data, {
         proxy: false, //TODO Arreglar para entornos que viaje la petición a traves del proxy
         headers,
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }), //TODO remove this in production
+        httpsAgent: new https.Agent({
+          rejectUnauthorized:
+            this.configService.getConfig().NODE_ENV === 'production',
+        }), //TODO remove this in production
       });
       const token = response.data.access_token;
       const decodedToken: DecodedToken = jwt.jwtDecode(token);
@@ -148,7 +154,10 @@ export class AuthService implements IAuthenticationService {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-          httpsAgent: new https.Agent({ rejectUnauthorized: false }), //TODO remove this in production
+          httpsAgent: new https.Agent({
+            rejectUnauthorized:
+              this.configService.getConfig().NODE_ENV === 'production',
+          }), //TODO remove this in production
           timeout: 5000, // Set a timeout of 5 seconds
         },
       );
@@ -156,5 +165,38 @@ export class AuthService implements IAuthenticationService {
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
+  }
+  /**
+   * This method regist in cache how many times the "username:ip" pair
+   * @param username
+   * @param ip
+   * @returns past value + 1
+   */
+
+  async record(username: string, ip: string): Promise<number> {
+    const key = `login:${username}:${this.normalizeIp(ip)}`;
+    const raw = await this.cacheManager.get(key);
+
+    // Aseguramos que sea un número >= 0
+    const prev = typeof raw === 'number' && raw >= 0 ? raw : 0;
+    const next = prev + 1;
+
+    await this.cacheManager.set(
+      key,
+      next,
+      this.configService.getConfig().API_GATEWAY?.THROTTLE_TTL_MS,
+    );
+    return next;
+  }
+  async isBlocked(username: string, ip: string): Promise<boolean> {
+    const key = `login:${username}:${this.normalizeIp(ip)}`;
+    const raw = await this.cacheManager.get(key);
+    const count = typeof raw === 'number' && raw >= 0 ? raw : 0;
+    return (
+      count >= (this.configService.getConfig().API_GATEWAY?.THROTTLE_LIMIT ?? 5)
+    );
+  }
+  private normalizeIp(ip: string): string {
+    return ip.replace(/^::ffff:/, '').replace(/:/g, '-');
   }
 }

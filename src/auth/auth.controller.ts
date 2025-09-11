@@ -12,16 +12,21 @@ import {
   InternalServerErrorException,
   Res,
   Inject,
+  UseGuards,
 } from '@nestjs/common';
 
 import { JoiValidationPipe } from 'src/pipes/password-grant/password-grant.pipe';
 import { UserPasswordSchema } from 'src/pipes/validation-schemas/userpassword';
-import { ApiTags, ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiBody, ApiResponse, ApiOkResponse } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { Session as ExpressSession, SessionData } from 'express-session';
 import { EncryptionResponseInterceptor } from 'src/encryption-response/encryption-response.interceptor';
 import * as session from 'express-session';
 import { AUTH_SERVICE_TOKEN, IAuthenticationService } from './auth.interface';
+import { LoginThrottleGuard } from './login-throttle.guard';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { AuthSuccessDto } from './services/dtos/auth-success.dto';
+
 interface CustomSession extends ExpressSession {
   accessToken?: string;
   user?: any;
@@ -41,18 +46,22 @@ export class AuthenticateController {
   ) {}
   @ApiTags('Autenticación')
   @UsePipes(new JoiValidationPipe(UserPasswordSchema))
+  @UseGuards(ThrottlerGuard)
   @ApiBody({ schema: { example: { user: 'usuario', password: 'contraseña' } } })
-  @ApiResponse({ status: 200, description: 'Login exitoso' })
+  @ApiOkResponse({ description: 'Authentication successful' })
   @Post()
   @HttpCode(200)
+
+  //@Throttle({ default: { limit: 5, ttl: 15 * 60 * 1000 } }) //Límite: 5 intentos por IP cada 15 minutos
   async login(
     @Session() session: Record<string, any>,
     @Body() body: { user: string; password: string },
-  ): Promise<any> {
+    @Req() req: Request,
+  ): Promise<AuthSuccessDto> {
     const { user, password } = body;
 
-    const result = await this.authenticateService.login(user, password);
-
+    const result = await this.authenticateService.login(user, password, req.ip);
+    //    session.username = user;
     session.permissions = result?.user?.permissions;
     session.token = result?.token;
 

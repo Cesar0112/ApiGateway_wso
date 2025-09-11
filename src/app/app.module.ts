@@ -29,6 +29,7 @@ import { SessionService } from '../session/session.service';
       },
       inject: [SessionService],
     }),
+
     AuthenticateModule,
     EncryptionsModule,
     RolesModule,

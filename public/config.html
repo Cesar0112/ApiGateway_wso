@@ -100,6 +100,13 @@
         <label for="apiGatewayAuthenticationType">API_GATEWAY AUTH_TYPE:</label>
         <input type="text" id="apiGatewayAuthenticationType" name="apiGatewayAuthenticationType">
 
+        <label for="apiGatewayAuthenticationThrottleTtlMS">API_GATEWAY THROTTLE_TTL_MS:</label>
+        <input type="number" min="300000" id="apiGatewayAuthenticationThrottleTtlMS"
+            name="apiGatewayAuthenticationThrottleTtlMS">
+
+        <label for="apiGatewayAuthenticationThrottleLimit">API_GATEWAY THROTTLE_LIMIT:</label>
+        <input type="number" min="5" id="apiGatewayAuthenticationThrottleLimit"
+            name="apiGatewayAuthenticationThrottleLimit">
 
         <label for="sessionFolder">SESSION FOLDER:</label>
         <input type="text" id="sessionFolder" name="sessionFolder">
@@ -160,6 +167,8 @@
                     CORS_ORIGIN: document.getElementById('apiGatewayCorsOrigin').value,
                     HTTP_METHODS_ALLOWED: document.getElementById('apiGatewayHttpMethodsAllowed').value,
                     AUTH_TYPE: document.getElementById('apiGatewayAuthenticationType').value,
+                    THROTTLE_TTL_MS: document.getElementById('apiGatewayAuthenticationThrottleTtlMS').value,
+                    THROTTLE_LIMIT: document.getElementById('apiGatewayAuthenticationThrottleLimit').value,
                 },
                 SESSION: {
                     FOLDER: document.getElementById('sessionFolder').value,
@@ -218,6 +227,8 @@
                 document.getElementById('apiGatewayCorsOrigin').value = config.API_GATEWAY?.CORS_ORIGIN;
                 document.getElementById('apiGatewayHttpMethodsAllowed').value = config.API_GATEWAY?.HTTP_METHODS_ALLOWED;
                 document.getElementById('apiGatewayAuthenticationType').value = config.API_GATEWAY?.AUTH_TYPE;
+                document.getElementById('apiGatewayAuthenticationThrottleTtlMS').value = config.API_GATEWAY?.THROTTLE_TTL_MS;
+                document.getElementById('apiGatewayAuthenticationThrottleLimit').value = config.API_GATEWAY?.THROTTLE_LIMIT;
                 document.getElementById('sessionFolder').value = config.SESSION?.FOLDER;
                 document.getElementById('sessionSecret').value = config.SESSION?.SECRET;
                 document.getElementById('sessionTtlSeconds').value = config.SESSION?.TTL_SECONDS;

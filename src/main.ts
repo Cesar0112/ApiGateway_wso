@@ -4,13 +4,16 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as morgan from 'morgan';
 import { ConfigService } from './config/config.service';
 import * as express from 'express';
+import { NestExpressApplication } from '@nestjs/platform-express';
 async function main() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const cfg = app.get(ConfigService);
   if (process.env.NODE_ENV !== 'test') {
     app.use(morgan('combined')); // Use morgan for logging HTTP requests
   }
-
+  if (cfg.getConfig().API_GATEWAY?.PROXY) {
+    app.set('trust proxy', 'loopback'); // Trust requests from the loopback address
+  }
   //3. Servir configuración
   app.use(express.static('public'));
 

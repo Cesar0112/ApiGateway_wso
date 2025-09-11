@@ -25,7 +25,7 @@ export interface DecodedToken {
 }
 
 export interface IAuthenticationService {
-  login(user: string, password: string): Promise<any>;
+  login(user: string, password: string, ip?: string): Promise<any>;
   logout(sessionId: string): Promise<void>;
   refresh(sessionId: string): Promise<boolean>;
 }
