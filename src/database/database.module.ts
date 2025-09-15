@@ -1,5 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ConfigModule } from 'src/config/config.module';
 import { ConfigService } from 'src/config/config.service';
 import { Permission } from 'src/permissions/entities/permission.entity';
 import { Role } from 'src/roles/entities/role.entity';
@@ -13,12 +14,12 @@ export class DatabaseModule {
       module: DatabaseModule,
       imports: [
         TypeOrmModule.forRootAsync({
-          imports: [],
+          imports: [ConfigModule],
           inject: [ConfigService],
           useFactory: (cfg: ConfigService): TypeOrmModuleOptions => {
             const configDB = cfg.getConfig().DATABASE;
             const NODE_ENV = cfg.getConfig().NODE_ENV;
-
+            const ENTITIES = [User, Structure, Role, Permission];
             const ALLOWED = [
               'sqlite',
               'postgres',
@@ -40,7 +41,7 @@ export class DatabaseModule {
             }
             const base: TypeOrmModuleOptions = {
               type: TYPE,
-              entities: [User, Structure, Role, Permission],
+              entities: ENTITIES,
               synchronize: NODE_ENV !== 'production',
               logging: configDB?.LOGGING ?? NODE_ENV !== 'production',
             };

@@ -15,6 +15,8 @@
   Ajusta el parámetro `maxAge` de la cookie de sesión según el tiempo de inactividad permitido.
 - **Validación de firma JWT:**  
   Si es posible, valida la firma del token JWT usando la clave pública de WSO2 para asegurarte de que no ha sido manipulado.
+- **Evitar timming-attack**  
+  Dándole la misma cantidad de tiempo tanto para los 200 del login como los 401 y 500 y 400
 
 ## 3. Auditoría y logs
 

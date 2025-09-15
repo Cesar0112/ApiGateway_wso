@@ -43,16 +43,16 @@ export class AuthLocalService extends AuthWSO2Service {
   /**
    *
    * @param username
-   * @param password Contraseña cifrada
+   * @param password
    * @returns
    */
-  override async login(username: string, password: string) {
+  override async login(username: string, password: string, ip: string) {
     // 1. Buscar usuario (con roles y estructuras si quieres)
     const user = await this._usersService.findByUsername(username, {
-      relations: ['roles', 'structures'],
+      relations: ['roles', 'roles.permissions'],
     });
     // 2. Verificar existencia y contraseña
-    if (!user || password == user.password) {
+    if (!user || this.encryptionsService.decrypt(password) !== user.password) {
       throw new UnauthorizedException('Invalid credentials');
     }
     // 3. Opcional: usuario inactivo
@@ -60,17 +60,27 @@ export class AuthLocalService extends AuthWSO2Service {
       throw new UnauthorizedException('User is disabled');
     }
     // 4. Generar JWT (access + refresh si lo deseas)
-    const tokens = await this.generateTokens(user);
+    // 3. JWT local
+    const ROLES = user.roles.map((r) => r.name);
+    const PERMISSIONS = [
+      ...new Set(user.roles.flatMap((r) => r.permissions.map((p) => p.value))),
+    ];
+    const TOKEN = this._jwtService.sign({
+      sub: user.id,
+      username: user.username,
+      ROLES,
+      PERMISSIONS,
+    });
 
     return {
       success: true,
-      decodedToken: '',
-      token: '',
-      source: this.configService.getConfig().DATABASE?.TYPE,
+      decodedToken: this._jwtService.decode<IDecodedToken>(TOKEN),
+      token: TOKEN,
+      source: this.configService.getConfig().DATABASE?.TYPE ?? 'sqlite',
       user: {
         username: user.username,
-        roles: user.roles,
-        permissions: user.roles.map((role) => role.permissions),
+        roles: ROLES,
+        permissions: PERMISSIONS,
       },
       message: 'Autenticación exitosa',
     };

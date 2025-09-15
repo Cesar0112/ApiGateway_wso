@@ -31,7 +31,7 @@
     "PROXY_STATIC_MAP_PATH": "./routes.json",
     "CORS_ORIGIN": "http://localhost:8080",
     "HTTP_METHODS_ALLOWED": "GET,PUT,POST,HEADER,DELETE",
-    "AUTH_TYPE": "wso2", //puede ser 'sqlite' 'mysql'
+    "AUTH_TYPE": "wso2",
     "THROTTLE_TTL_MS": 900000,
     "THROTTLE_LIMIT": 5
   },

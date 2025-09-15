@@ -45,12 +45,12 @@ export class AuthWSO2Service implements IAuthenticationService {
     return await this.sessionService.refresh(sessionId, session);
   }
 
-  async login(user: string, password: string) {
+  async login(user: string, password: string, ip: string) {
     try {
-      const url: string =
+      const URL: string =
         this.configService.get('WSO2')?.URL_TOKEN ??
         'https://localhost:9443/oauth2/token';
-      const data = qs.stringify({
+      const DATA = qs.stringify({
         grant_type: 'password',
         client_id: this.configService.get('WSO2')?.CLIENT_ID,
         client_secret: this.configService.get('WSO2')?.CLIENT_SECRET,
@@ -72,7 +72,7 @@ export class AuthWSO2Service implements IAuthenticationService {
         ? new HttpsProxyAgent(proxyEnv)
         : new HttpsAgent({ rejectUnauthorized: false }); // o true en producción
 */
-      const response = await axios.post<IWSO2TokenResponse>(url, data, {
+      const response = await axios.post<IWSO2TokenResponse>(URL, DATA, {
         proxy: false, //TODO Arreglar para entornos que viaje la petición a traves del proxy
         headers,
         httpsAgent: new https.Agent({
@@ -80,8 +80,8 @@ export class AuthWSO2Service implements IAuthenticationService {
             this.configService.getConfig().NODE_ENV === 'production',
         }), //TODO remove this in production
       });
-      const token = response.data.access_token;
-      const decodedToken: IDecodedToken = jwt.jwtDecode(token);
+      const TOKEN = response.data.access_token;
+      const decodedToken: IDecodedToken = jwt.jwtDecode(TOKEN);
 
       if (!decodedToken.roles?.length) {
         throw new UnauthorizedException('El usuario no tiene roles asignados');
@@ -94,23 +94,23 @@ export class AuthWSO2Service implements IAuthenticationService {
 
       if (decodedToken.roles) {
         //decodedToken.roles
-        const scopes = await this.permissionsService.getPermissionsForRoles(
+        const SCOPES = await this.permissionsService.getPermissionsForRoles(
           decodedToken.roles,
           response.data.access_token,
         );
 
-        if (!scopes.length) {
+        if (!SCOPES.length) {
           throw new UnauthorizedException(
             'El usuario no tiene permisos asignados',
           );
         }
 
-        const permisos: string[] = [];
+        const PERMISSIONS: string[] = [];
 
-        for (const scope of scopes) {
+        for (const scope of SCOPES) {
           for (const permission of scope.permissions) {
-            if (!permisos.includes(permission.value)) {
-              permisos.push(permission.value);
+            if (!PERMISSIONS.includes(permission.value)) {
+              PERMISSIONS.push(permission.value);
             }
           }
         }
@@ -118,12 +118,12 @@ export class AuthWSO2Service implements IAuthenticationService {
         return {
           success: true,
           decodedToken,
-          token,
+          token: TOKEN,
           source: 'wso2',
           user: {
             username: user,
             roles: decodedToken.roles,
-            permissions: permisos,
+            permissions: PERMISSIONS,
           },
           message: 'Autenticación exitosa',
         };
@@ -133,20 +133,20 @@ export class AuthWSO2Service implements IAuthenticationService {
     }
   }
   async logout(sessionId: string): Promise<void> {
-    const revokeUrl =
+    const REVOKE_URL =
       this.configService.getConfig().WSO2?.REVOKE_URL ||
       'https://localhost:9443/oauth2/revoke';
     try {
-      const { TOKEN: token } =
+      const { token: TOKEN } =
         (await this.sessionService.getSession(sessionId)) ?? {};
 
-      if (!token) {
+      if (!TOKEN) {
         throw new InternalServerErrorException();
       }
       await axios.post(
-        revokeUrl,
+        REVOKE_URL,
         qs.stringify({
-          token,
+          TOKEN,
           client_id: this.configService.get('WSO2')?.CLIENT_ID,
           client_secret: this.configService.get('WSO2')?.CLIENT_SECRET,
         }),
@@ -175,29 +175,29 @@ export class AuthWSO2Service implements IAuthenticationService {
    */
 
   async record(username: string, ip: string): Promise<number> {
-    const key = `login:${username}:${this.normalizeIp(ip)}`;
-    const raw = await this.cacheManager.get(key);
+    const KEY = `login:${username}:${this._normalizeIp(ip)}`;
+    const raw = await this.cacheManager.get(KEY);
 
     // Aseguramos que sea un número >= 0
-    const prev = typeof raw === 'number' && raw >= 0 ? raw : 0;
-    const next = prev + 1;
+    const PREV = typeof raw === 'number' && raw >= 0 ? raw : 0;
+    const NEXT = PREV + 1;
 
     await this.cacheManager.set(
-      key,
-      next,
+      KEY,
+      NEXT,
       this.configService.getConfig().API_GATEWAY?.THROTTLE_TTL_MS,
     );
-    return next;
+    return NEXT;
   }
   async isBlocked(username: string, ip: string): Promise<boolean> {
-    const key = `login:${username}:${this.normalizeIp(ip)}`;
-    const raw = await this.cacheManager.get(key);
-    const count = typeof raw === 'number' && raw >= 0 ? raw : 0;
+    const KEY = `login:${username}:${this._normalizeIp(ip)}`;
+    const raw = await this.cacheManager.get(KEY);
+    const COUNT = typeof raw === 'number' && raw >= 0 ? raw : 0;
     return (
-      count >= (this.configService.getConfig().API_GATEWAY?.THROTTLE_LIMIT ?? 5)
+      COUNT >= (this.configService.getConfig().API_GATEWAY?.THROTTLE_LIMIT ?? 5)
     );
   }
-  private normalizeIp(ip: string): string {
+  private _normalizeIp(ip: string): string {
     return ip.replace(/^::ffff:/, '').replace(/:/g, '-');
   }
 }
