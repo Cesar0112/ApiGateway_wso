@@ -65,7 +65,7 @@ export class DatabaseConfig {
   PASSWORD?: string = '';
   @IsString()
   @IsOptional()
-  DATABASE_NAME?: '';
+  DATABASE_NAME?: 'database';
 
   @IsNumber()
   @IsOptional()
@@ -78,6 +78,10 @@ export class DatabaseConfig {
   @IsBoolean()
   @IsOptional()
   SYNCHRONIZE: true;
+
+  @IsIn([true, 'all', false])
+  @IsOptional()
+  LOGGING: 'all';
 }
 
 export class ApiGatewayConfig {

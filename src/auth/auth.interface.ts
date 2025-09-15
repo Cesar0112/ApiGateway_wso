@@ -1,4 +1,4 @@
-export interface WSO2TokenResponse {
+export interface IWSO2TokenResponse {
   access_token: string;
   token_type: string;
   expires_in: number;
@@ -12,11 +12,11 @@ export interface WSO2TokenResponse {
   error_description?: string;
   error_uri?: string;
 }
-export interface SessionTimers {
+export interface ISessionTimers {
   warningTimer?: NodeJS.Timeout;
   logoutTimer?: NodeJS.Timeout;
 }
-export interface DecodedToken {
+export interface IDecodedToken {
   roles?: string[] | string;
   scope?: string[] | string;
   aud?: string | string[];

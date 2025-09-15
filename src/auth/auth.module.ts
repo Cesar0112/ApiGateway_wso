@@ -12,11 +12,13 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from 'src/config/config.module';
 import { AuthLocalService } from './services/auth_local.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
 import { Structure } from 'src/structures/entities/structure.entity';
 import { Permission } from 'src/permissions/entities/permission.entity';
 import { Role } from 'src/roles/entities/role.entity';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { UsersService } from 'src/users/users.service';
 @Module({
   imports: [
     SessionModule,
@@ -33,38 +35,68 @@ import { Role } from 'src/roles/entities/role.entity';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (cfg: ConfigService) => {
+      useFactory: (cfg: ConfigService): TypeOrmModuleOptions => {
+        const config = cfg.getConfig();
         const configDB = cfg.getConfig().DATABASE;
-        const type = configDB?.TYPE ?? 'sqlite';
+        const ALLOWED = [
+          'sqlite',
+          'postgres',
+          'mysql',
+          'mariadb',
+          'mssql',
+          'oracle',
+          'cockroachdb',
+        ];
+        //const type: DatabaseType = (configDB?.TYPE ?? 'sqlite') as DatabaseType;
+        const TYPE =
+          (configDB?.TYPE as 'sqlite' | 'postgres' | 'mysql') ?? 'sqlite';
+
+        if (!ALLOWED.includes(TYPE)) {
+          throw new Error(
+            `Database type "${TYPE}" is not supported by TypeORM.`,
+          );
+        }
         //TODO Aquí comprobar que si la configuración que quiere el usuario es de sqlite esta sea válida antes de configurar
         // SQLite no necesita host/port/user/pass
-        if (type === 'sqlite') {
+        if (TYPE === 'sqlite') {
           return {
-            type: 'sqlite',
+            type: TYPE,
             database: configDB?.DATABASE_NAME,
             entities: [User, Structure, Permission, Role],
-            synchronize: cfg.getConfig().NODE_ENV !== 'production',
+            synchronize: config.NODE_ENV !== 'production',
             logging: 'all',
-          };
+          } as TypeOrmModuleOptions;
         }
 
         // Postgres / MySQL
+        /*return {
+          type,
+          host: configDB?.HOST,
+          port: configDB?.PORT,
+          username: configDB?.USERNAME,
+          password: configDB?.PASSWORD,
+          database: configDB?.DATABASE_NAME,
+          entities: [User, Structure, Permission, Role],
+          synchronize: config.NODE_ENV !== 'production',
+          logging: 'all',
+          ssl: type === 'postgres' ? { rejectUnauthorized: false } : undefined,
+        } as TypeOrmModuleOptions;*/
         return {
-          type: type.type,
-          host: type.host,
-          port: type.port,
-          username: type.username,
-          password: type.password,
-          database: type.database,
-          entities: type.entities,
-          synchronize: type.synchronize,
-          logging: type.logging,
-          ssl:
-            type.type === 'postgres'
-              ? { rejectUnauthorized: false }
-              : undefined,
-        };
+          type: TYPE,
+          database: configDB?.DATABASE_NAME,
+          entities: [User, Structure, Permission, Role],
+          synchronize: config.NODE_ENV !== 'production',
+          logging: 'all',
+        } as TypeOrmModuleOptions;
       },
+    }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (cfg: ConfigService) => ({
+        secret: cfg.getConfig().API_GATEWAY?.SESSION_SECRET,
+        signOptions: { expiresIn: cfg.getConfig().SESSION?.TTL_SECONDS },
+      }),
     }),
   ],
   providers: [
@@ -74,21 +106,35 @@ import { Role } from 'src/roles/entities/role.entity';
     AuthWSO2Service,
     {
       provide: AUTH_SERVICE_TOKEN,
-      useFactory(cfg: ConfigService, cache: Cache) {
-        const authType = cfg.getConfig().API_GATEWAY?.AUTH_TYPE;
-        const encServ = new EncryptionsService(cfg);
-        const perServ = new PermissionsService(cfg);
-        const sessServ = new SessionService(cfg);
-        switch (authType) {
+      inject: [
+        ConfigService,
+        EncryptionsService,
+        PermissionsService,
+        SessionService,
+        CACHE_MANAGER,
+        UsersService,
+        JwtService,
+      ],
+      useFactory(
+        cfg: ConfigService,
+        enc: EncryptionsService,
+        per: PermissionsService,
+        sess: SessionService,
+        cache: Cache,
+        users: UsersService,
+        jwt: JwtService,
+      ) {
+        const AUTH_TYPE = cfg.getConfig().API_GATEWAY?.AUTH_TYPE;
+        const BASE_CONFIG = [cfg, enc, per, sess, cache] as const;
+        switch (AUTH_TYPE) {
           case 'wso2':
-            return new AuthWSO2Service(cfg, encServ, perServ, sessServ, cache);
+            return new AuthWSO2Service(...BASE_CONFIG);
           case 'local':
-            return new AuthLocalService(cfg, encServ, perServ, sessServ, cache);
+            return new AuthLocalService(...BASE_CONFIG, users, jwt);
           default:
-            return new AuthWSO2Service(cfg, encServ, perServ, sessServ, cache);
+            return new AuthWSO2Service(...BASE_CONFIG);
         }
       },
-      inject: [ConfigService, CACHE_MANAGER],
     },
   ],
   controllers: [AuthenticateController],

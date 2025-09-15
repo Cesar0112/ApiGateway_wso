@@ -5,11 +5,11 @@ import axios, { AxiosResponse } from 'axios';
 
 import * as https from 'https';
 import { jwtDecode } from 'jwt-decode';
-import { DecodedToken } from '../auth/auth.interface';
+import { IDecodedToken } from '../auth/auth.interface';
 
 import {
-  Permission,
-  RoleSearchResponse,
+  IPermission,
+  IRoleSearchResponse,
 } from '../roles/interfaces/role_search_response.interface';
 import { ConfigService } from '../config/config.service';
 
@@ -37,7 +37,7 @@ export class PermissionsService {
   }
 
   hasScope(token: string, requiredScope: string): boolean {
-    const decodedToken = jwtDecode<DecodedToken>(token);
+    const decodedToken = jwtDecode<IDecodedToken>(token);
 
     if (!decodedToken.scope) {
       return false;
@@ -55,8 +55,8 @@ export class PermissionsService {
   async getPermissionsForRoles(
     roles: string[] | string,
     token: string,
-  ): Promise<{ role: string; permissions: Permission[] }[]> {
-    const scopes: { role: string; permissions: Permission[] }[] = [];
+  ): Promise<{ role: string; permissions: IPermission[] }[]> {
+    const scopes: { role: string; permissions: IPermission[] }[] = [];
     const rolesArray = Array.isArray(roles) ? roles : [roles];
 
     if (!this.hasScope(token, 'internal_role_mgt_view')) {
@@ -67,8 +67,8 @@ export class PermissionsService {
     for (const role of rolesArray) {
       try {
         const url: string = `${this.configService.get('WSO2')?.HOST}:${this.configService.get('WSO2')?.PORT}/scim2/${this.configService.get('WSO2')?.API_VERSION}/Roles/.search`;
-        const { data }: AxiosResponse<RoleSearchResponse> =
-          await axios.post<RoleSearchResponse>(
+        const { data }: AxiosResponse<IRoleSearchResponse> =
+          await axios.post<IRoleSearchResponse>(
             url,
             {
               filter: `displayName eq ${role}`,

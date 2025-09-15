@@ -1,50 +1,50 @@
-export interface RoleSearchResponse {
+export interface IRoleSearchResponse {
   itemsPerPage: number;
-  Resources: Resource[];
+  Resources: IResource[];
   schemas: string[];
   startIndex: number;
   totalResults: number;
 }
 
-export interface Resource {
-  audience: Audience;
+export interface IResource {
+  audience: IAudience;
   displayName: string;
-  meta: Meta;
-  permissions: Permission[];
-  groups: Group[];
+  meta: IMeta;
+  permissions: IPermission[];
+  groups: IGroup[];
   id: string;
-  associatedApplications: AssociatedApplication[];
-  users: User[];
+  associatedApplications: IAssociatedApplication[];
+  users: IUser[];
 }
 
-interface Audience {
+interface IAudience {
   display: string;
   type: string;
   value: string;
 }
 
-interface Meta {
+interface IMeta {
   location: string;
 }
 
-export interface Permission {
+export interface IPermission {
   display: string;
   value: string;
   $ref: string;
 }
 
-interface Group {
+interface IGroup {
   display: string;
   value: string;
   $ref: string;
 }
 
-interface AssociatedApplication {
+interface IAssociatedApplication {
   value: string;
   $ref: string;
 }
 
-interface User {
+interface IUser {
   display: string;
   value: string;
   $ref: string;

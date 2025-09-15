@@ -3,6 +3,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -31,7 +33,8 @@ export class Structure {
   @OneToMany(() => Structure, (child) => child.parent, { cascade: true })
   children: Structure[];
 
-  // usuarios que pertenecen a esta estructura (inversa)
-  @OneToMany(() => User, (user) => user.structure)
+  // usuarios que pertenecen a esta estructura
+  @ManyToMany(() => User, (user) => user.structures, { eager: true })
+  @JoinTable()
   users: User[];
 }

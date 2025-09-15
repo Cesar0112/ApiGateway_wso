@@ -2,36 +2,42 @@ import { Role } from 'src/roles/entities/role.entity';
 import { Structure } from 'src/structures/entities/structure.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   JoinTable,
   ManyToMany,
-  ManyToOne,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @PrimaryColumn()
+  @Column({ unique: true })
   username: string;
 
   @Column()
   password: string;
 
-  @ManyToOne(() => Structure, (st) => st.users, {
+  @Column({ default: true })
+  isActive: boolean;
+
+  @ManyToMany(() => Structure, (structure) => structure.users, {
     onDelete: 'SET NULL',
     nullable: true,
   })
-  @JoinColumn({ name: 'structureId' })
-  structure: Structure | null;
-
-  @Column({ nullable: true })
-  structureId: string | null;
+  @JoinColumn()
+  structures: Structure[];
 
   @ManyToMany(() => Role, { eager: true })
   @JoinTable()
   roles: Role[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

@@ -1,13 +1,13 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import { SessionTimers } from '../auth/auth.interface';
+import { ISessionTimers } from '../auth/auth.interface';
 import { SessionService } from 'src/session/session.service';
 import { Socket } from 'socket.io';
 //import { SessionData } from 'src/session/interfaces/session.interface';
 
-import { SessionData } from 'src/session/interfaces/session.interface';
+import { ISessionData } from 'src/session/interfaces/session.interface';
 @Injectable()
 export class SessionTimerService implements OnModuleDestroy {
-  private timers = new Map<string, SessionTimers>();
+  private timers = new Map<string, ISessionTimers>();
   private sockets = new Map<string, Socket>();
 
   constructor(private readonly sessionService: SessionService) {}
@@ -24,9 +24,9 @@ export class SessionTimerService implements OnModuleDestroy {
     this.stop(sessionId); // por si ya existía
     const socket = this.sockets.get(sessionId);
     if (!socket) return; // no conectado → no hacemos nada
-    const session: SessionData = (await this.sessionService.getSession(
+    const session: ISessionData = (await this.sessionService.getSession(
       sessionId,
-    )) as SessionData;
+    )) as ISessionData;
     if (!session) return;
 
     const expiresVal = session.cookie?.expires;
@@ -37,7 +37,7 @@ export class SessionTimerService implements OnModuleDestroy {
 
     if (ttl <= 0) return; // ya expiró
 
-    const timers: SessionTimers = {};
+    const timers: ISessionTimers = {};
 
     // 1) Advertencia a 1 min antes
     const warningMs = Math.max(ttl - 60_000, 0);

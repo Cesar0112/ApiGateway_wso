@@ -45,98 +45,150 @@
     <h1>Editar Configuración General</h1>
     <form id="configForm">
         <!-- Campos para la configuración general -->
+        <!-- ENTORNO -->
         <label for="nodeEnv">Entorno (NODE_ENV):</label>
         <input type="text" id="nodeEnv" name="nodeEnv" required readonly>
 
-        <label for="ws2Host">WSO2 HOST:</label>
-        <input type="text" id="ws2Host" name="ws2Host">
+        <!-- INICIO WSO2 -->
+        <div class="section">
+            <h2>WSO2</h2>
+            <label for="ws2Host">HOST:</label>
+            <input type="text" id="ws2Host" name="ws2Host">
 
-        <label for="ws2Port">WSO2 PORT:</label>
-        <input type="number" id="ws2Port" name="ws2Port">
+            <label for="ws2Port">PORT:</label>
+            <input type="number" id="ws2Port" name="ws2Port">
 
-        <label for="ws2ApiVersion">WSO2 API_VERSION:</label>
-        <input type="text" id="ws2ApiVersion" name="ws2ApiVersion">
+            <label for="ws2ApiVersion">API_VERSION:</label>
+            <input type="text" id="ws2ApiVersion" name="ws2ApiVersion">
 
-        <label for="ws2ClientId">WSO2 CLIENT_ID:</label>
-        <input type="text" id="ws2ClientId" name="ws2ClientId">
+            <label for="ws2ClientId">CLIENT_ID:</label>
+            <input type="text" id="ws2ClientId" name="ws2ClientId">
 
-        <label for="ws2ClientSecret">WSO2 CLIENT_SECRET:</label>
-        <input type="text" id="ws2ClientSecret" name="ws2ClientSecret">
+            <label for="ws2ClientSecret">CLIENT_SECRET:</label>
+            <input type="text" id="ws2ClientSecret" name="ws2ClientSecret">
 
-        <label for="ws2UrlToken">WSO2 URL_TOKEN:</label>
-        <input type="text" id="ws2UrlToken" name="ws2UrlToken">
+            <label for="ws2UrlToken">URL_TOKEN:</label>
+            <input type="text" id="ws2UrlToken" name="ws2UrlToken">
+            <!-- FIN WSO2 -->
+        </div>
+        <!-- INICIO DATABASE -->
+        <div class="section">
+            <h2>DATABASE</h2>
+            <label for="dbType">TYPE:</label>
+            <select id="dbType" name="dbType">
+                <option value="sqlite">sqlite</option>
+                <option value="mysql">mysql</option>
+            </select>
 
+            <label for="dbHost">HOST:</label>
+            <input type="text" id="dbHost" name="dbHost" />
 
-        <label for="apiGatewayHost">API_GATEWAY HOST:</label>
-        <input type="text" id="apiGatewayHost" name="apiGatewayHost">
+            <label for="dbPort">PORT:</label>
+            <input type="text" id="dbPort" name="dbPort" />
 
-        <label for="apiGatewayPort">API_GATEWAY PORT:</label>
-        <input type="number" id="apiGatewayPort" name="apiGatewayPort">
+            <label for="dbUsername">USERNAME:</label>
+            <input type="text" id="dbUsername" name="dbUsername" />
 
-        <label for="apiGatewaySessionSecret">API_GATEWAY SESSION_SECRET:</label>
-        <input type="text" id="apiGatewaySessionSecret" name="apiGatewaySessionSecret">
+            <label for="dbPassword">PASSWORD:</label>
+            <input type="text" id="dbPassword" name="dbPassword" />
 
-        <label for="apiGatewayProxy">API_GATEWAY PROXY:</label>
-        <input type="checkbox" id="apiGatewayProxy" name="apiGatewayProxy">
+            <label for="dbDatabaseName">DATABASE_NAME:</label>
+            <input type="text" id="dbDatabaseName" name="dbDatabaseName" />
 
-        <label for="apiGatewayApiUrl">API_GATEWAY API_URL:</label>
-        <input type="text" id="apiGatewayApiUrl" name="apiGatewayApiUrl">
+            <label for="dbRetryDelay">RETRY_DELAY (ms):</label>
+            <input type="number" id="dbRetryDelay" name="dbRetryDelay" />
 
-        <label for="apiGatewayEncryptionPassword">API_GATEWAY ENCRYPTION_PASSWORD:</label>
-        <input type="text" id="apiGatewayEncryptionPassword" name="apiGatewayEncryptionPassword">
+            <label for="dbAutoLoadEntities">AUTO_LOAD_ENTITIES:</label>
+            <input type="checkbox" id="dbAutoLoadEntities" name="dbAutoLoadEntities" />
 
-        <label for="apiGatewayRedisUrl">API_GATEWAY REDIS_URL:</label>
-        <input type="text" id="apiGatewayRedisUrl" name="apiGatewayRedisUrl">
+            <label for="dbSynchronize">SYNCHRONIZE:</label>
+            <input type="checkbox" id="dbSynchronize" name="dbSynchronize" />
 
-        <label for="apiGatewayProxyStaticMapPath">API_GATEWAY PROXY_STATIC_MAP_PATH:</label>
-        <input type="text" id="apiGatewayProxyStaticMapPath" name="apiGatewayProxyStaticMapPath" readonly>
+            <label for="dbLogging">LOGGING:</label>
+            <input type="text" id="dbLogging" name="dbLogging" />
+        </div>
+        <!-- FIN DATABASE -->
 
-        <label for="apiGatewayCorsOrigin">API_GATEWAY CORS_ORIGIN:</label>
-        <input type="text" id="apiGatewayCorsOrigin" name="apiGatewayCorsOrigin">
+        <!-- INICIO API_GATEWAY -->
+        <div class="section">
+            <h2>API_GATEWAY</h2>
+            <label for="apiGatewayHost">HOST:</label>
+            <input type="text" id="apiGatewayHost" name="apiGatewayHost">
 
-        <label for="apiGatewayHttpMethodsAllowed">API_GATEWAY HTTP_METHODS_ALLOWED:</label>
-        <input type="text" id="apiGatewayHttpMethodsAllowed" name="apiGatewayHttpMethodsAllowed">
+            <label for="apiGatewayPort">PORT:</label>
+            <input type="number" id="apiGatewayPort" name="apiGatewayPort">
 
-        <label for="apiGatewayAuthenticationType">API_GATEWAY AUTH_TYPE:</label>
-        <input type="text" id="apiGatewayAuthenticationType" name="apiGatewayAuthenticationType">
+            <label for="apiGatewaySessionSecret">SESSION_SECRET:</label>
+            <input type="text" id="apiGatewaySessionSecret" name="apiGatewaySessionSecret">
 
-        <label for="apiGatewayAuthenticationThrottleTtlMS">API_GATEWAY THROTTLE_TTL_MS:</label>
-        <input type="number" min="300000" id="apiGatewayAuthenticationThrottleTtlMS"
-            name="apiGatewayAuthenticationThrottleTtlMS">
+            <label for="apiGatewayProxy">PROXY:</label>
+            <input type="checkbox" id="apiGatewayProxy" name="apiGatewayProxy">
 
-        <label for="apiGatewayAuthenticationThrottleLimit">API_GATEWAY THROTTLE_LIMIT:</label>
-        <input type="number" min="5" id="apiGatewayAuthenticationThrottleLimit"
-            name="apiGatewayAuthenticationThrottleLimit">
+            <label for="apiGatewayApiUrl">API_URL:</label>
+            <input type="text" id="apiGatewayApiUrl" name="apiGatewayApiUrl">
 
-        <label for="sessionFolder">SESSION FOLDER:</label>
-        <input type="text" id="sessionFolder" name="sessionFolder">
+            <label for="apiGatewayEncryptionPassword">ENCRYPTION_PASSWORD:</label>
+            <input type="text" id="apiGatewayEncryptionPassword" name="apiGatewayEncryptionPassword">
 
-        <label for="sessionSecret">SESSION SECRET:</label>
-        <input type="text" id="sessionSecret" name="sessionSecret">
+            <label for="apiGatewayRedisUrl">REDIS_URL:</label>
+            <input type="text" id="apiGatewayRedisUrl" name="apiGatewayRedisUrl">
 
-        <label for="sessionTtlSeconds">SESSION TTL_SECONDS:</label>
-        <input type="number" id="sessionTtlSeconds" name="sessionTtlSeconds">
+            <label for="apiGatewayProxyStaticMapPath">PROXY_STATIC_MAP_PATH:</label>
+            <input type="text" id="apiGatewayProxyStaticMapPath" name="apiGatewayProxyStaticMapPath" readonly>
 
-        <label for="sessionCookieName">SESSION COOKIE_NAME:</label>
-        <input type="text" id="sessionCookieName" name="sessionCookieName">
+            <label for="apiGatewayCorsOrigin">CORS_ORIGIN:</label>
+            <input type="text" id="apiGatewayCorsOrigin" name="apiGatewayCorsOrigin">
 
-        <label for="sessionHost">SESSION HOST:</label>
-        <input type="text" id="sessionHost" name="sessionHost">
+            <label for="apiGatewayHttpMethodsAllowed">HTTP_METHODS_ALLOWED:</label>
+            <input type="text" id="apiGatewayHttpMethodsAllowed" name="apiGatewayHttpMethodsAllowed">
 
-        <label for="sessionPort">SESSION PORT:</label>
-        <input type="number" id="sessionPort" name="sessionPort">
+            <label for="apiGatewayAuthenticationType">AUTH_TYPE:</label>
+            <input type="text" id="apiGatewayAuthenticationType" name="apiGatewayAuthenticationType">
 
-        <label>SESSION STRATEGY:</label>
-        <input type="radio" id="sessionStrategyRedis" name="sessionStrategy" value="redis">
-        <label for="sessionStrategyRedis">Redis</label>
-        <input type="radio" id="sessionStrategySqlite" name="sessionStrategy" value="sqlite">
-        <label for="sessionStrategySqlite">Sqlite</label>
+            <label for="apiGatewayAuthenticationThrottleTtlMS">THROTTLE_TTL_MS:</label>
+            <input type="number" min="300000" id="apiGatewayAuthenticationThrottleTtlMS"
+                name="apiGatewayAuthenticationThrottleTtlMS">
 
-        <label for="sessionTls">SESSION TLS:</label>
-        <input type="checkbox" id="sessionTls" name="sessionTls">
+            <label for="apiGatewayAuthenticationThrottleLimit">THROTTLE_LIMIT:</label>
+            <input type="number" min="5" id="apiGatewayAuthenticationThrottleLimit"
+                name="apiGatewayAuthenticationThrottleLimit">
+        </div>
+        <!-- FIN API_GATEWAY -->
 
-        <label for="sessionSecure">SESSION SECURE:</label>
-        <input type="checkbox" id="sessionSecure" name="sessionSecure">
+        <!-- INICIO SESSION -->
+        <div class="section">
+            <h2>SESSION</h2>
+            <label for="sessionFolder">FOLDER:</label>
+            <input type="text" id="sessionFolder" name="sessionFolder">
+
+            <label for="sessionSecret">SECRET:</label>
+            <input type="text" id="sessionSecret" name="sessionSecret">
+
+            <label for="sessionTtlSeconds">TTL_SECONDS:</label>
+            <input type="number" id="sessionTtlSeconds" name="sessionTtlSeconds">
+
+            <label for="sessionCookieName">COOKIE_NAME:</label>
+            <input type="text" id="sessionCookieName" name="sessionCookieName">
+
+            <label for="sessionHost">HOST:</label>
+            <input type="text" id="sessionHost" name="sessionHost">
+
+            <label for="sessionPort">PORT:</label>
+            <input type="number" id="sessionPort" name="sessionPort">
+
+            <label>STRATEGY:</label>
+            <input type="radio" id="sessionStrategyRedis" name="sessionStrategy" value="redis">
+            <label for="sessionStrategyRedis" style="display:inline;">Redis</label>
+            <input type="radio" id="sessionStrategySqlite" name="sessionStrategy" value="sqlite">
+            <label for="sessionStrategySqlite" style="display:inline;">Sqlite</label>
+
+            <label for="sessionTls">TLS:</label>
+            <input type="checkbox" id="sessionTls" name="sessionTls">
+
+            <label for="sessionSecure">SECURE:</label>
+            <input type="checkbox" id="sessionSecure" name="sessionSecure">
+        </div>
+        <!-- FIN SESSION -->
 
         <button type="submit">Guardar Configuración</button>
     </form>
@@ -154,6 +206,18 @@
                     CLIENT_ID: document.getElementById('ws2ClientId').value,
                     CLIENT_SECRET: document.getElementById('ws2ClientSecret').value,
                     URL_TOKEN: document.getElementById('ws2UrlToken').value,
+                },
+                DATABASE: {
+                    TYPE: document.getElementById('dbType').value,
+                    HOST: document.getElementById('dbHost').value.trim(),
+                    PORT: document.getElementById('dbPort').value.trim(),
+                    USERNAME: document.getElementById('dbUsername').value.trim(),
+                    PASSWORD: document.getElementById('dbPassword').value.trim(),
+                    DATABASE_NAME: document.getElementById('dbDatabaseName').value.trim(),
+                    RETRY_DELAY: parseInt(document.getElementById('dbRetryDelay').value, 10),
+                    AUTO_LOAD_ENTITIES: document.getElementById('dbAutoLoadEntities').checked,
+                    SYNCHRONIZE: document.getElementById('dbSynchronize').checked,
+                    LOGGING: document.getElementById('dbLogging').value.trim(),
                 },
                 API_GATEWAY: {
                     HOST: document.getElementById('apiGatewayHost').value,
@@ -192,11 +256,7 @@
                     body: JSON.stringify(config),
                 });
 
-                if (response.ok) {
-                    alert('Configuración actualizada correctamente');
-                } else {
-                    alert('Error al actualizar la configuración');
-                }
+                alert(response.ok ? 'Configuración actualizada' : 'Error al actualizar');
             } catch (error) {
                 console.error('Error:', error);
                 alert('Error al actualizar la configuración');
@@ -210,12 +270,25 @@
                 const config = await response.json();
 
                 document.getElementById('nodeEnv').value = config.NODE_ENV;
+                // WSO2
                 document.getElementById('ws2Host').value = config.WSO2?.HOST;
                 document.getElementById('ws2Port').value = config.WSO2?.PORT;
                 document.getElementById('ws2ApiVersion').value = config.WSO2?.API_VERSION;
                 document.getElementById('ws2ClientId').value = config.WSO2?.CLIENT_ID;
                 document.getElementById('ws2ClientSecret').value = config.WSO2?.CLIENT_SECRET;
                 document.getElementById('ws2UrlToken').value = config.WSO2?.URL_TOKEN;
+                // DATABASE
+                document.getElementById('dbType').value = c.DATABASE?.TYPE ?? 'sqlite';
+                document.getElementById('dbHost').value = c.DATABASE?.HOST ?? '';
+                document.getElementById('dbPort').value = c.DATABASE?.PORT ?? '';
+                document.getElementById('dbUsername').value = c.DATABASE?.USERNAME ?? '';
+                document.getElementById('dbPassword').value = c.DATABASE?.PASSWORD ?? '';
+                document.getElementById('dbDatabaseName').value = c.DATABASE?.DATABASE_NAME ?? '';
+                document.getElementById('dbRetryDelay').value = c.DATABASE?.RETRY_DELAY ?? 3000;
+                document.getElementById('dbAutoLoadEntities').checked = c.DATABASE?.AUTO_LOAD_ENTITIES ?? true;
+                document.getElementById('dbSynchronize').checked = c.DATABASE?.SYNCHRONIZE ?? true;
+                document.getElementById('dbLogging').value = c.DATABASE?.LOGGING ?? 'all';
+                // API_GATEWAY
                 document.getElementById('apiGatewayHost').value = config.API_GATEWAY?.HOST;
                 document.getElementById('apiGatewayPort').value = config.API_GATEWAY?.PORT;
                 document.getElementById('apiGatewaySessionSecret').value = config.API_GATEWAY?.SESSION_SECRET;
@@ -229,6 +302,7 @@
                 document.getElementById('apiGatewayAuthenticationType').value = config.API_GATEWAY?.AUTH_TYPE;
                 document.getElementById('apiGatewayAuthenticationThrottleTtlMS').value = config.API_GATEWAY?.THROTTLE_TTL_MS;
                 document.getElementById('apiGatewayAuthenticationThrottleLimit').value = config.API_GATEWAY?.THROTTLE_LIMIT;
+                // SESSION
                 document.getElementById('sessionFolder').value = config.SESSION?.FOLDER;
                 document.getElementById('sessionSecret').value = config.SESSION?.SECRET;
                 document.getElementById('sessionTtlSeconds').value = config.SESSION?.TTL_SECONDS;

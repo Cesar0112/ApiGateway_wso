@@ -15,10 +15,11 @@
     "PORT": "DB_PORT",
     "USERNAME": "",
     "PASSWORD": "",
-    "DATABASE_NAME": "",
+    "DATABASE_NAME": "database",
     "RETRY_DELAY": 3000,
     "AUTO_LOAD_ENTITIES": true,
-    "SYNCHRONIZE": true
+    "SYNCHRONIZE": true,
+    "LOGGING": "all"
   },
   "API_GATEWAY": {
     "HOST": "localhost",

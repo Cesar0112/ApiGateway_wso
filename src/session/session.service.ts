@@ -6,16 +6,16 @@ import { createClient } from 'redis';
 import { RedisStore } from 'connect-redis';
 import { createKeyv as createKeyvRedis } from '@keyv/redis';
 import { createKeyv as createKeyvSQLite } from '@keyv/sqlite';
-import { SessionData } from './interfaces/session.interface';
+import { ISessionData } from './interfaces/session.interface';
 
 //import { SessionData } from './interfaces/session.interface';
 
 @Injectable()
 export class SessionService {
-  constructor(private readonly cfg: ConfigService) {}
+  constructor(private readonly _cfg: ConfigService) {}
 
   getStore(): Keyv {
-    const { STRATEGY, URL } = this.cfg.getConfig().SESSION ?? {
+    const { STRATEGY, URL } = this._cfg.getConfig().SESSION ?? {
       STRATEGY: 'redis',
       URL: 'redis://localhost:6379',
     };
@@ -33,7 +33,10 @@ export class SessionService {
         return new Keyv();
     }
   }
-  async refresh(sessionID: string, sessionData: SessionData): Promise<boolean> {
+  async refresh(
+    sessionID: string,
+    sessionData: ISessionData,
+  ): Promise<boolean> {
     const store = this.getExpressSessionStore();
 
     return new Promise((resolve) => {
@@ -47,7 +50,7 @@ export class SessionService {
     });
   }
   getExpressSessionStore(): session.Store {
-    const { STRATEGY, URL } = this.cfg.getConfig().SESSION ?? {
+    const { STRATEGY, URL } = this._cfg.getConfig().SESSION ?? {
       STRATEGY: 'redis',
       URL: 'redis://localhost:6379',
     };
@@ -65,8 +68,8 @@ export class SessionService {
       }
       case 'sqlite': {
         const connectSqlite3 = require('connect-sqlite3');
-        const SQLiteStore = connectSqlite3(session);
-        return new SQLiteStore({
+        const sqliteStore = connectSqlite3(session);
+        return new sqliteStore({
           db: 'sessions.sqlite',
           dir: './db',
         }) as unknown as session.Store;
@@ -75,7 +78,7 @@ export class SessionService {
         return new session.MemoryStore();
     }
   }
-  getSession(sessionID: string): Promise<SessionData | null> {
+  getSession(sessionID: string): Promise<ISessionData | null> {
     const store = this.getExpressSessionStore();
 
     return new Promise((resolve, reject) =>
@@ -85,11 +88,11 @@ export class SessionService {
           reject(error);
           return;
         }
-        resolve(data as SessionData | null);
+        resolve(data as ISessionData | null);
       }),
     );
   }
-  isExpired(session: SessionData): boolean {
+  isExpired(session: ISessionData): boolean {
     const expires: Date = session.cookie?.expires as Date;
     return expires && Date.now() > new Date(expires).getTime();
   }

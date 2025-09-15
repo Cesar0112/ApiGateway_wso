@@ -10,8 +10,8 @@ import * as qs from 'querystring';
 import * as https from 'https';
 import * as jwt from 'jwt-decode';
 import {
-  WSO2TokenResponse,
-  DecodedToken,
+  IWSO2TokenResponse,
+  IDecodedToken,
   IAuthenticationService,
 } from '../auth.interface';
 import { EncryptionsService } from '../../encryptions/encryptions.service';
@@ -72,7 +72,7 @@ export class AuthWSO2Service implements IAuthenticationService {
         ? new HttpsProxyAgent(proxyEnv)
         : new HttpsAgent({ rejectUnauthorized: false }); // o true en producción
 */
-      const response = await axios.post<WSO2TokenResponse>(url, data, {
+      const response = await axios.post<IWSO2TokenResponse>(url, data, {
         proxy: false, //TODO Arreglar para entornos que viaje la petición a traves del proxy
         headers,
         httpsAgent: new https.Agent({
@@ -81,7 +81,7 @@ export class AuthWSO2Service implements IAuthenticationService {
         }), //TODO remove this in production
       });
       const token = response.data.access_token;
-      const decodedToken: DecodedToken = jwt.jwtDecode(token);
+      const decodedToken: IDecodedToken = jwt.jwtDecode(token);
 
       if (!decodedToken.roles?.length) {
         throw new UnauthorizedException('El usuario no tiene roles asignados');
@@ -137,7 +137,8 @@ export class AuthWSO2Service implements IAuthenticationService {
       this.configService.getConfig().WSO2?.REVOKE_URL ||
       'https://localhost:9443/oauth2/revoke';
     try {
-      const { token } = (await this.sessionService.getSession(sessionId)) ?? {};
+      const { TOKEN: token } =
+        (await this.sessionService.getSession(sessionId)) ?? {};
 
       if (!token) {
         throw new InternalServerErrorException();
