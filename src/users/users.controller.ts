@@ -10,11 +10,14 @@ import {
 import { UsersService } from './users.service';
 import { CreateUsersDto } from './dto/create-users.dto';
 import { UpdateUsersDto } from './dto/update-users.dto';
+import { ApiBody, ApiResponse } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly _usersService: UsersService) {}
   @Post()
+  @ApiBody({ type: CreateUsersDto })
+  @ApiResponse({ status: 201, description: 'Usuario creado' })
   create(@Body() createUsersDto: CreateUsersDto) {
     return this._usersService.create(createUsersDto);
   }

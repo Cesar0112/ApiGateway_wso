@@ -1,15 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateUsersDto } from './dto/create-users.dto';
 import { UpdateUsersDto } from './dto/update-users.dto';
-
+import * as bcrypt from 'bcrypt';
+import { Role } from 'src/roles/entities/role.entity';
+import { Structure } from 'src/structures/entities/structure.entity';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly _userRepo: Repository<User>,
+    @InjectRepository(Role)
+    private readonly _roleRepo: Repository<Role>,
+    @InjectRepository(Structure)
+    private readonly _structureRepo: Repository<Structure>,
   ) {}
 
   async findByUsername(
@@ -21,8 +27,25 @@ export class UsersService {
       relations: options?.relations || [],
     });
   }
-  create(createUsersDto: CreateUsersDto) {
-    return 'This action adds a new users2';
+  async create(dto: CreateUsersDto): Promise<User> {
+    const SALT = await bcrypt.genSalt();
+    const HASH = await bcrypt.hash(dto.plainCipherPassword, SALT);
+
+    // 2. construye entidad
+    const user = this._userRepo.create({
+      username: dto.username,
+      password: HASH,
+      email: dto.email,
+      isActive: dto.isActive ?? true,
+      roles: dto.roleIds
+        ? await this._roleRepo.findBy({ id: In(dto.roleIds) })
+        : [],
+      structures: dto.structureIds
+        ? await this._structureRepo.findBy({ id: In(dto.structureIds) })
+        : [],
+    });
+
+    return this._userRepo.save(user);
   }
 
   findAll() {

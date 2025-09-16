@@ -43,5 +43,9 @@
     "URL": "redis://localhost:6379",
     "SECURE": false,
     "STRATEGY": "redis"
+  },
+  "USERS": {
+    "USERNAME_MIN_SIZE": 4,
+    "PASSWORD_MIN_SIZE": 8
   }
 }

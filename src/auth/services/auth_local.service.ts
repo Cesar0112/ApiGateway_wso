@@ -20,6 +20,7 @@ import { AuthWSO2Service } from './auth_wso2.service';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthLocalService extends AuthWSO2Service {
   constructor(
@@ -43,7 +44,7 @@ export class AuthLocalService extends AuthWSO2Service {
   /**
    *
    * @param username
-   * @param password
+   * @param password Cipher password
    * @returns
    */
   override async login(username: string, password: string, ip: string) {
@@ -52,12 +53,13 @@ export class AuthLocalService extends AuthWSO2Service {
       relations: ['roles', 'roles.permissions'],
     });
     // 2. Verificar existencia y contraseña
-    if (!user || this.encryptionsService.decrypt(password) !== user.password) {
+    if (!user || !user.isActive) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    // 3. Opcional: usuario inactivo
-    if (!user.isActive) {
-      throw new UnauthorizedException('User is disabled');
+    const PASSWORD_RAW = this.encryptionsService.decrypt(password);
+    const OK = await bcrypt.compare(PASSWORD_RAW, user.password);
+    if (!OK) {
+      throw new UnauthorizedException('Invalid credentials');
     }
     // 4. Generar JWT (access + refresh si lo deseas)
     // 3. JWT local

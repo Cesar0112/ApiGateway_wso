@@ -1,34 +1,45 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { StructuresService } from './structures.service';
 import { CreateStructureDto } from './dto/create-structure.dto';
 import { UpdateStructureDto } from './dto/update-structure.dto';
 
 @Controller('structures')
 export class StructuresController {
-  constructor(private readonly structuresService: StructuresService) {}
+  constructor(private readonly _structuresService: StructuresService) {}
 
   @Post()
   create(@Body() createStructureDto: CreateStructureDto) {
-    return this.structuresService.create(createStructureDto);
+    return this._structuresService.create(createStructureDto);
   }
 
   @Get()
   findAll() {
-    return this.structuresService.findAll();
+    return this._structuresService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.structuresService.findOne(+id);
+    return this._structuresService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStructureDto: UpdateStructureDto) {
-    return this.structuresService.update(+id, updateStructureDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateStructureDto: UpdateStructureDto,
+  ) {
+    return this._structuresService.update(+id, updateStructureDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.structuresService.remove(+id);
+    return this._structuresService.remove(+id);
   }
 }

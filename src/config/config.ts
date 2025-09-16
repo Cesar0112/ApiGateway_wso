@@ -7,6 +7,8 @@ import {
   IsBoolean,
   IsArray,
   IsIn,
+  IsInt,
+  IsPositive,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -175,6 +177,15 @@ export class SessionConfig {
   @IsOptional()
   STRATEGY: 'redis' | 'sqlite' = 'redis';
 }
+export class UsersConfig {
+  @IsInt()
+  @IsPositive()
+  USERNAME_MIN_SIZE: number = 4;
+
+  @IsInt()
+  @IsPositive()
+  PASSWORD_MIN_SIZE: number = 8;
+}
 
 export class Config {
   @IsIn(['dev', 'production'])
@@ -199,6 +210,11 @@ export class Config {
   @ValidateNested()
   @Type(() => SessionConfig)
   SESSION?: SessionConfig;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UsersConfig)
+  USERS?: UsersConfig;
 }
 
 export class RoutesConfig {
