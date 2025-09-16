@@ -1,4 +1,4 @@
-# Pasos siguientes recomendados para robustecer el API Gateway
+# 1. Pasos siguientes recomendados para robustecer el API Gateway
 
 ## 1. Validación y limpieza de sesión
 
@@ -53,9 +53,14 @@
 - **Control de acceso:**  
   Si tu aplicación usa permisos, revisa que se apliquen correctamente en los endpoints que lo requieran, usando guards adicionales si es necesario.
 
+## 8. Revisión de permisos
+
+- **Optimizaciones:**  
+  Optimizar la búsqueda de los permisos requridos por parte del usuario para hacer peticiones a los endpoints, agregando un Árbol de prefijos en lugar de un simple HASH MAP cambiar la estructura y carga del routes.json para que sea fácil de serializar/deserializar para mejorar la velocidad cuando los endpoints sean muchos, puede que en el futuro sea configurable este aspecto
+
 ---
 
-# Apartado: Flujo de negocio recomendado
+# 2. Apartado: Flujo de negocio recomendado
 
 ## Flujo general de la aplicación
 

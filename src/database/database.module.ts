@@ -5,7 +5,7 @@ import { ConfigService } from 'src/config/config.service';
 import { Permission } from 'src/permissions/entities/permission.entity';
 import { Role } from 'src/roles/entities/role.entity';
 import { Structure } from 'src/structures/entities/structure.entity';
-import { User } from 'src/users/user.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Module({})
 export class DatabaseModule {

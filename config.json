@@ -15,11 +15,11 @@
     "PORT": "DB_PORT",
     "USERNAME": "",
     "PASSWORD": "",
-    "DATABASE_NAME": "database",
+    "DATABASE_NAME": "database.sqlite",
     "RETRY_DELAY": 3000,
     "AUTO_LOAD_ENTITIES": true,
     "SYNCHRONIZE": true,
-    "LOGGING": "all"
+    "LOGGING": false
   },
   "API_GATEWAY": {
     "HOST": "localhost",
@@ -31,7 +31,7 @@
     "PROXY_STATIC_MAP_PATH": "./routes.json",
     "CORS_ORIGIN": "http://localhost:8080",
     "HTTP_METHODS_ALLOWED": "GET,PUT,POST,HEADER,DELETE",
-    "AUTH_TYPE": "wso2",
+    "AUTH_TYPE": "local",
     "THROTTLE_TTL_MS": 900000,
     "THROTTLE_LIMIT": 5
   },

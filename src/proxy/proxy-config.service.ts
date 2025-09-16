@@ -8,29 +8,29 @@ import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class ProxyConfigService implements OnModuleInit {
-  private readonly key = 'proxy:routes';
-  private readonly filePath = 'routes.json';
+  private readonly _key = 'proxy:routes';
+  private readonly _filePath = 'routes.json';
 
   constructor(
-    private readonly cfg: ConfigService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly _cfg: ConfigService,
+    @Inject(CACHE_MANAGER) private _cacheManager: Cache,
   ) {}
 
   async onModuleInit() {
-    const exists = (await this.cacheManager.get(this.key)) !== undefined;
-    if (exists) return; // Ya está en el SessionStore
+    const EXISTS = (await this._cacheManager.get(this._key)) !== undefined;
+    if (EXISTS) return; // Ya está en el SessionStore
 
-    const map: RoutesConfig = this.cfg.getRoutes();
+    const map: RoutesConfig = this._cfg.getRoutes();
 
-    await this.cacheManager.set(this.key, JSON.stringify(map));
+    await this._cacheManager.set(this._key, JSON.stringify(map));
   }
 
   async getMap(): Promise<{ [key: string]: string[] }> {
-    const raw = await this.cacheManager.get<string>(this.key);
-    return raw ? (JSON.parse(raw) as { [key: string]: string[] }) : {};
+    const RAW = await this._cacheManager.get<string>(this._key);
+    return RAW ? (JSON.parse(RAW) as { [key: string]: string[] }) : {};
   }
 
   async setMap(map: Record<string, string[]>) {
-    await this.cacheManager.set(this.key, JSON.stringify(map), 0);
+    await this._cacheManager.set(this._key, JSON.stringify(map), 0);
   }
 }

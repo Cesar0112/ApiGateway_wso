@@ -37,10 +37,10 @@ async function main() {
     allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'Origin'], // Allow specific headers
     credentials: true, // Allow credentials
   });
-  const port = cfg.getConfig().API_GATEWAY?.PORT ?? 3000;
-  await app.listen(port);
+  const PORT = cfg.getConfig().API_GATEWAY?.PORT ?? 3000;
+  await app.listen(PORT);
   console.log(
-    `🚀 API Gateway listening on http://localhost:${port}/apigateway`,
+    `🚀 API Gateway listening on http://localhost:${PORT}/apigateway`,
   );
 }
 main();

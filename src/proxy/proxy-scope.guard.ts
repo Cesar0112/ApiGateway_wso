@@ -13,21 +13,20 @@ import { SessionService } from 'src/session/session.service';
 @Injectable()
 export class ProxyScopeGuard implements CanActivate {
   constructor(
-    private readonly proxyConfigService: ProxyConfigService,
-    private readonly sessionService: SessionService,
+    private readonly _proxyConfigService: ProxyConfigService,
+    private readonly _sessionService: SessionService,
   ) {}
 
   async canActivate(ctx: ExecutionContext): Promise<boolean> {
     const req: Request = ctx.switchToHttp().getRequest();
-    const map: any = await this.proxyConfigService.getMap();
-    const key: string = req.method.toUpperCase() + req.path;
+    const map: any = await this._proxyConfigService.getMap();
+    const KEY: string = req.method.toUpperCase() + req.path;
 
-    const required = map[key] ?? [];
+    const required = map[KEY] ?? [];
 
     if (!required.length) return true; // Público
-    const sessionData = await this.sessionService.getSession(req.sessionID);
+    const sessionData = await this._sessionService.getSession(req.sessionID);
 
     return required.every((r) => sessionData?.permissions.includes(r));
-    return true;
   }
 }

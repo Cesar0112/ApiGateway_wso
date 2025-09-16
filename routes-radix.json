@@ -1,0 +1,1003 @@
+{
+    "GET": {
+        "children": {
+            "services": {
+                "children": {
+                    "": {
+                        "perms": [],
+                        "children": {}
+                    }
+                },
+                "perms": []
+            },
+            "apigateway": {
+                "children": {
+                    "getCameraMarks": {
+                        "perms": [],
+                        "children": {}
+                    },
+                    "getCameraModels": {
+                        "perms": [],
+                        "children": {}
+                    },
+                    "getCameraProtocols": {
+                        "perms": [],
+                        "children": {}
+                    },
+                    "getCameraCodecs": {
+                        "perms": [],
+                        "children": {}
+                    },
+                    "getCameraMarks": {
+                        "perms": [],
+                        "children": {}
+                    },
+                    "getCameraModels": {
+                        "perms": [],
+                        "children": {}
+                    },
+                    "getCameraProtocols": {
+                        "perms": [],
+                        "children": {}
+                    },
+                    "getCameraCodecs": {
+                        "perms": [],
+                        "children": {}
+                    },
+                    "getCameraMarks": {
+                        "perms": [],
+                        "children": {}
+                    },
+                    "getCameraModels": {
+                        "perms": [],
+                        "children": {}
+                    },
+                    "getCameraProtocols": {
+                        "perms": [],
+                        "children": {}
+                    },
+                    "getCameraCodecs": {
+                        "perms": [],
+                        "children": {}
+                    }
+                },
+                "perms": []
+            }
+        },
+        "perms": []
+    },
+    "POST": {
+        "children": {
+            "services": {
+                "authenticate": {
+                    "perms": [],
+                    "children": {}
+                },
+                "testSocket": {
+                    "perms": [],
+                    "children": {}
+                },
+                "testCamNotif": {
+                    "perms": [],
+                    "children": {}
+                }
+            },
+            "apigateway": {
+                "readEncryptedLogs": {
+                    "perms": [
+                        "log:search"
+                    ],
+                    "children": {}
+                },
+                "addCamera": {
+                    "perms": [
+                        "camera:add"
+                    ],
+                    "children": {}
+                },
+                "deleteCamera": {
+                    "perms": [
+                        "camera:delete"
+                    ],
+                    "children": {}
+                },
+                "editCameraOld": {
+                    "perms": [
+                        "camera:update"
+                    ],
+                    "children": {}
+                },
+                "editCamera": {
+                    "perms": [
+                        "camera:update"
+                    ],
+                    "children": {}
+                },
+                "pingCamera": {
+                    "perms": [
+                        "camera:update"
+                    ],
+                    "children": {}
+                },
+                "previewVideo": {
+                    "perms": [],
+                    "children": {}
+                },
+                "deletePreviewVideo": {
+                    "perms": [],
+                    "children": {}
+                },
+                "getAllCameras": {
+                    "perms": [
+                        "camera:update"
+                    ],
+                    "children": {}
+                },
+                "getAllCamerasSimple": {
+                    "perms": [
+                        "camera:update"
+                    ],
+                    "children": {}
+                },
+                "getSingleCameraById": {
+                    "perms": [
+                        "camera:update"
+                    ],
+                    "children": {}
+                },
+                "assignedAndUnassignedCameras": {
+                    "perms": [
+                        "camera:update"
+                    ],
+                    "children": {}
+                },
+                "assignCameras": {
+                    "perms": [
+                        "server:assign_camera_to_server"
+                    ],
+                    "children": {}
+                },
+                "unassignCameras": {
+                    "perms": [
+                        "server:assign_camera_to_server"
+                    ],
+                    "children": {}
+                },
+                "get_a_camera": {
+                    "perms": [
+                        "camera:update"
+                    ],
+                    "children": {}
+                },
+                "controlCamera": {
+                    "perms": [
+                        "sector:control_ptz"
+                    ],
+                    "children": {}
+                },
+                "updateCameraStructure": {
+                    "perms": [
+                        "camera:update"
+                    ],
+                    "children": {}
+                },
+                "getAServer": {
+                    "perms": [
+                        "server:add"
+                    ],
+                    "children": {}
+                },
+                "getAllServers": {
+                    "perms": [
+                        "server:add"
+                    ],
+                    "children": {}
+                },
+                "updateServer": {
+                    "perms": [
+                        "server:update"
+                    ],
+                    "children": {}
+                },
+                "deleteServer": {
+                    "perms": [
+                        "server:delete"
+                    ],
+                    "children": {}
+                },
+                "checkServerConnection": {
+                    "perms": [
+                        "server:check_connection_of_server"
+                    ],
+                    "children": {}
+                },
+                "checkCamerasServersDatabase": {
+                    "perms": [
+                        "server:check_connection_of_server"
+                    ],
+                    "children": {}
+                },
+                "updateServerStructure": {
+                    "perms": [
+                        "server:update"
+                    ],
+                    "children": {}
+                },
+                "getChildServers": {
+                    "perms": [
+                        "server:add"
+                    ],
+                    "children": {}
+                },
+                "addChildServer": {
+                    "perms": [
+                        "server:add"
+                    ],
+                    "children": {}
+                },
+                "updateChildServer": {
+                    "perms": [
+                        "server:update"
+                    ],
+                    "children": {}
+                },
+                "updateChildServerState": {
+                    "perms": [
+                        "server:update"
+                    ],
+                    "children": {}
+                },
+                "deleteChildServer": {
+                    "perms": [
+                        "server:delete"
+                    ],
+                    "children": {}
+                },
+                "forceToDeleteChildServer": {
+                    "perms": [
+                        "server:delete"
+                    ],
+                    "children": {}
+                },
+                "addParentServer": {
+                    "perms": [
+                        "server:add"
+                    ],
+                    "children": {}
+                },
+                "updateParentServer": {
+                    "perms": [
+                        "server:update"
+                    ],
+                    "children": {}
+                },
+                "updateParentServerState": {
+                    "perms": [
+                        "server:update"
+                    ],
+                    "children": {}
+                },
+                "deleteParentServer": {
+                    "perms": [
+                        "server:delete"
+                    ],
+                    "children": {}
+                },
+                "getParentServer": {
+                    "perms": [
+                        "server:add"
+                    ],
+                    "children": {}
+                },
+                "enableHttps": {
+                    "perms": [],
+                    "children": {}
+                },
+                "enableWss": {
+                    "perms": [],
+                    "children": {}
+                },
+                "enableHttpsRequest": {
+                    "perms": [],
+                    "children": {}
+                },
+                "consumeRemoteApi": {
+                    "perms": [],
+                    "children": {}
+                },
+                "deleteLogKeys": {
+                    "perms": [
+                        "log:search"
+                    ],
+                    "children": {}
+                },
+                "insert_bulk_servers": {
+                    "perms": [
+                        "server:add"
+                    ],
+                    "children": {}
+                },
+                "insertServer": {
+                    "perms": [
+                        "server:add"
+                    ],
+                    "children": {}
+                },
+                "deleteServer2": {
+                    "perms": [
+                        "server:delete"
+                    ],
+                    "children": {}
+                },
+                "insertView": {
+                    "perms": [
+                        "view:create"
+                    ],
+                    "children": {}
+                },
+                "updateView": {
+                    "perms": [
+                        "view:update"
+                    ],
+                    "children": {}
+                },
+                "getViews": {
+                    "perms": [
+                        "view:select"
+                    ],
+                    "children": {}
+                },
+                "deleteView": {
+                    "perms": [
+                        "view:delete"
+                    ],
+                    "children": {}
+                },
+                "getMonitoringViews": {
+                    "perms": [
+                        "view:select"
+                    ],
+                    "children": {}
+                },
+                "getDeployedCamera": {
+                    "perms": [
+                        "deploy:info_camera"
+                    ],
+                    "children": {}
+                },
+                "getView": {
+                    "perms": [
+                        "view:select"
+                    ],
+                    "children": {}
+                },
+                "addView": {
+                    "perms": [
+                        "view:create"
+                    ],
+                    "children": {}
+                },
+                "editView": {
+                    "perms": [
+                        "view:update"
+                    ],
+                    "children": {}
+                },
+                "removeView": {
+                    "perms": [
+                        "view:delete"
+                    ],
+                    "children": {}
+                },
+                "addAction": {
+                    "perms": [],
+                    "children": {}
+                },
+                "updateAction": {
+                    "perms": [],
+                    "children": {}
+                },
+                "deleteAction": {
+                    "perms": [],
+                    "children": {}
+                },
+                "getAction": {
+                    "perms": [],
+                    "children": {}
+                },
+                "add_deployment": {
+                    "perms": [
+                        "deploy:add"
+                    ],
+                    "children": {}
+                },
+                "update_deployment": {
+                    "perms": [
+                        "deploy:update"
+                    ],
+                    "children": {}
+                },
+                "get_deployment": {
+                    "perms": [
+                        "deploy:view"
+                    ],
+                    "children": {}
+                },
+                "delete_camera_deployment_camera": {
+                    "perms": [
+                        "deploy:delete_camera"
+                    ],
+                    "children": {}
+                },
+                "add_camera_deployment_camera": {
+                    "perms": [
+                        "deploy:assign_camera"
+                    ],
+                    "children": {}
+                },
+                "get_camera_deployment": {
+                    "perms": [
+                        "deploy:view"
+                    ],
+                    "children": {}
+                },
+                "get_one_deployment": {
+                    "perms": [
+                        "deploy:view"
+                    ],
+                    "children": {}
+                },
+                "delete_deployment": {
+                    "perms": [
+                        "deploy:delete"
+                    ],
+                    "children": {}
+                },
+                "add_deploy": {
+                    "perms": [
+                        "deploy:add"
+                    ],
+                    "children": {}
+                },
+                "get_deploy": {
+                    "perms": [
+                        "deploy:view"
+                    ],
+                    "children": {}
+                },
+                "update_deploy": {
+                    "perms": [
+                        "deploy:update"
+                    ],
+                    "children": {}
+                },
+                "delete_deploy": {
+                    "perms": [
+                        "deploy:delete"
+                    ],
+                    "children": {}
+                },
+                "getAllCamerasLocation": {
+                    "perms": [],
+                    "children": {}
+                },
+                "addUpdateCameraLocation": {
+                    "perms": [],
+                    "children": {}
+                },
+                "deleteCameraLocation": {
+                    "perms": [],
+                    "children": {}
+                },
+                "addUpdateMapLocation": {
+                    "perms": [],
+                    "children": {}
+                },
+                "getMapLocation": {
+                    "perms": [],
+                    "children": {}
+                },
+                "pluginsCameraInfo": {
+                    "perms": [],
+                    "children": {}
+                },
+                "getOnvifInformation": {
+                    "perms": [
+                        "onvif:read"
+                    ],
+                    "children": {}
+                },
+                "moveCamera": {
+                    "perms": [
+                        "sector:control_ptz"
+                    ],
+                    "children": {}
+                },
+                "getSingleURL": {
+                    "perms": [],
+                    "children": {}
+                },
+                "presets": {
+                    "perms": [],
+                    "children": {}
+                },
+                "onvifSearch": {
+                    "perms": [
+                        "onvif:read"
+                    ],
+                    "children": {}
+                },
+                "getAnalyticsCamera": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "getConfigAnalyticsCamera": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "closeWindowAnalyticsCamera": {
+                    "perms": [
+                        "analytic:delete"
+                    ],
+                    "children": {}
+                },
+                "switchTreeNodesAnalyticsCamera": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "createEditAnalyticsCamera": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "removeAnalyticsCamera": {
+                    "perms": [
+                        "analytic:delete"
+                    ],
+                    "children": {}
+                },
+                "createVideoSource": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "setProperties": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "getInspectAndConfigAnalyticsCamera": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "getInspectAnalyticNode": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "updateAnalyticNode": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "getAllCamerasAcXessFaceAnalytic": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "startStopTrainingAnalytic": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "removeTrainingFaceNodes": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "createTraingingFaceAnalytic": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "createAnaliticServerWiewer": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "deleteNode": {
+                    "perms": [
+                        "analytic:delete"
+                    ],
+                    "children": {}
+                },
+                "setAcXessSearchSideFace": {
+                    "perms": [
+                        "analytic:add"
+                    ],
+                    "children": {}
+                },
+                "testMongodb": {
+                    "perms": [],
+                    "children": {}
+                },
+                "startRecording": {
+                    "perms": [
+                        "recording:statistics"
+                    ],
+                    "children": {}
+                },
+                "takePicture": {
+                    "perms": [],
+                    "children": {}
+                },
+                "addCameraRecord": {
+                    "perms": [
+                        "recording:statistics"
+                    ],
+                    "children": {}
+                },
+                "editCameraRecord": {
+                    "perms": [
+                        "recording:statistics"
+                    ],
+                    "children": {}
+                },
+                "deleteCameraRecord": {
+                    "perms": [
+                        "recording:statistics"
+                    ],
+                    "children": {}
+                },
+                "getCameraRecordList": {
+                    "perms": [
+                        "recording:statistics"
+                    ],
+                    "children": {}
+                },
+                "removeMedias": {
+                    "perms": [],
+                    "children": {}
+                },
+                "getCameraRecordState": {
+                    "perms": [
+                        "recording:statistics"
+                    ],
+                    "children": {}
+                },
+                "enableAudio": {
+                    "perms": [],
+                    "children": {}
+                },
+                "getStateStreaming": {
+                    "perms": [],
+                    "children": {}
+                },
+                "insertMarcadores": {
+                    "perms": [],
+                    "children": {}
+                },
+                "getAllMarcadores": {
+                    "perms": [],
+                    "children": {}
+                },
+                "updateMarcadores": {
+                    "perms": [],
+                    "children": {}
+                },
+                "deleteMarcadores": {
+                    "perms": [],
+                    "children": {}
+                },
+                "addStructure": {
+                    "perms": [
+                        "structure:add"
+                    ],
+                    "children": {}
+                },
+                "updateStructure": {
+                    "perms": [
+                        "structure:update"
+                    ],
+                    "children": {}
+                },
+                "deleteStructure": {
+                    "perms": [
+                        "structure:delete"
+                    ],
+                    "children": {}
+                },
+                "getStructure": {
+                    "perms": [
+                        "structure:get"
+                    ],
+                    "children": {}
+                },
+                "addUser": {
+                    "perms": [
+                        "user:update"
+                    ],
+                    "children": {}
+                },
+                "updateUser": {
+                    "perms": [
+                        "user:update"
+                    ],
+                    "children": {}
+                },
+                "deleteUser": {
+                    "perms": [
+                        "user:update"
+                    ],
+                    "children": {}
+                },
+                "getUser": {
+                    "perms": [
+                        "user:update"
+                    ],
+                    "children": {}
+                },
+                "authenticate": {
+                    "perms": [],
+                    "children": {}
+                },
+                "api/signin": {
+                    "perms": [],
+                    "children": {}
+                },
+                "addAlarmCenter": {
+                    "perms": [],
+                    "children": {}
+                },
+                "updateAlarmCenter": {
+                    "perms": [],
+                    "children": {}
+                },
+                "deleteAlarmCenter": {
+                    "perms": [],
+                    "children": {}
+                },
+                "getAlarmCenter": {
+                    "perms": [],
+                    "children": {}
+                },
+                "getAlarmCenterByServer": {
+                    "perms": [],
+                    "children": {}
+                },
+                "unassignedAlarms": {
+                    "perms": [],
+                    "children": {}
+                }
+            },
+            "perms": []
+        },
+        "_ALL": {
+            "children": {
+                "api_vehiclemanager": {
+                    "children": {
+                        "*": {
+                            "perms": [
+                                "vehicle:read"
+                            ],
+                            "children": {}
+                        }
+                    },
+                    "perms": []
+                },
+                "api_taskManager": {
+                    "children": {
+                        "*": {
+                            "perms": [
+                                "task:read"
+                            ],
+                            "children": {}
+                        }
+                    },
+                    "perms": []
+                },
+                "api_accessmanager": {
+                    "children": {
+                        "*": {
+                            "perms": [
+                                "access:read"
+                            ],
+                            "children": {}
+                        }
+                    },
+                    "perms": []
+                },
+                "onvif": {
+                    "children": {
+                        "*": {
+                            "perms": [
+                                "onvif:read"
+                            ],
+                            "children": {}
+                        }
+                    },
+                    "perms": []
+                }
+            },
+            "perms": []
+        },
+        "POST": {
+            "children": {
+                "api_forensicsearch": {
+                    "children": {
+                        "search": {
+                            "perms": [
+                                "forensic:search"
+                            ],
+                            "children": {}
+                        },
+                        "onCancelSearch": {
+                            "perms": [
+                                "forensic:search"
+                            ],
+                            "children": {}
+                        },
+                        "onFaceSearch": {
+                            "perms": [
+                                "forensic:face"
+                            ],
+                            "children": {}
+                        },
+                        "onAlprSearch": {
+                            "perms": [
+                                "forensic:plate"
+                            ],
+                            "children": {}
+                        },
+                        "onObjectSearch": {
+                            "perms": [
+                                "forensic:motion"
+                            ],
+                            "children": {}
+                        },
+                        "onColorSearch": {
+                            "perms": [
+                                "forensic:search"
+                            ],
+                            "children": {}
+                        },
+                        "onOnvifEventSearch": {
+                            "perms": [
+                                "forensic:search"
+                            ],
+                            "children": {}
+                        }
+                    },
+                    "perms": []
+                },
+                "api_media": {
+                    "children": {
+                        "createPlayer": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "createPlayerList": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "deletePlayerL": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "deletePlayer": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "deleteOnePlayer": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "playMedia": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "pauseMedia": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "upSlowList": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "changeSpeedList": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "gotoPosition": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "setJanusUrl": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "seek": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "seekList": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "getVideoInfoList": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "playList": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "getRecordingStatByDayList": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        },
+                        "createSimplePlayer": {
+                            "perms": [
+                                "media:read"
+                            ],
+                            "children": {}
+                        }
+                    },
+                    "perms": []
+                }
+            },
+            "perms": []
+        }
+    },
+    "perms": []
+}

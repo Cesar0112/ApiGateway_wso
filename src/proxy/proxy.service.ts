@@ -6,7 +6,7 @@ import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class ProxyService {
-  constructor(private readonly cfg: ConfigService) {}
+  constructor(private readonly _cfg: ConfigService) {}
   async sendRequest(
     path: string,
     method: string,
@@ -17,7 +17,7 @@ export class ProxyService {
 
     switch (channel) {
       case Channel.HTTP:
-        strategy = new strategies.HttpClientStrategy(this.cfg);
+        strategy = new strategies.HttpClientStrategy(this._cfg);
         break;
       case Channel.NATS:
         strategy = new strategies.NatsClientStrategy();

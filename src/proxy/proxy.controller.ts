@@ -20,8 +20,8 @@ import { EncryptionResponseInterceptor } from '../encryption-response/encryption
 @UseGuards(ProxyScopeGuard)
 export class ProxyController {
   constructor(
-    private readonly proxyService: ProxyService,
-    private readonly gatewayService: ProxyGateway,
+    private readonly _proxyService: ProxyService,
+    private readonly _gatewayService: ProxyGateway,
   ) {}
 
   @UseInterceptors(EncryptionResponseInterceptor)
@@ -32,7 +32,7 @@ export class ProxyController {
     const channel: Channel =
       (req.headers['x-channel'] as Channel) || Channel.HTTP;
 
-    const response: AxiosResponse = await this.proxyService.sendRequest(
+    const response: AxiosResponse = await this._proxyService.sendRequest(
       req.path,
       req.method,
       req.body,

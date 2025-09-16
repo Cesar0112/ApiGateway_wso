@@ -18,7 +18,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { AuthWSO2Service } from './auth_wso2.service';
 import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/user.entity';
+import { User } from 'src/users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthLocalService extends AuthWSO2Service {

@@ -21,15 +21,15 @@ export class ProxyGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly _configService: ConfigService) {}
 
   handleConnection(socket: Socket) {
-    const namespace = socket.nsp.name;
+    const NAMESPACE = socket.nsp.name;
     // Para el namespace raíz
-    console.log('Nueva conexión socket:', socket.id, 'namespace:', namespace);
-    const url = this.configService.getConfig().API_GATEWAY?.API_URL;
+    console.log('Nueva conexión socket:', socket.id, 'namespace:', NAMESPACE);
+    const URL = this._configService.getConfig().API_GATEWAY?.API_URL;
 
-    const backendSocket = ClientIO(url, {
+    const backendSocket = ClientIO(URL, {
       transports: ['polling', 'websocket', 'webtransport'],
       secure: false,
       rejectUnauthorized: false,

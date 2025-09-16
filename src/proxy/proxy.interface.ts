@@ -1,4 +1,4 @@
-export interface ProxyResponse {
+export interface IProxyResponse {
   status: number;
   headers: Record<string, any>;
   body: any;

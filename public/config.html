@@ -278,16 +278,16 @@
                 document.getElementById('ws2ClientSecret').value = config.WSO2?.CLIENT_SECRET;
                 document.getElementById('ws2UrlToken').value = config.WSO2?.URL_TOKEN;
                 // DATABASE
-                document.getElementById('dbType').value = c.DATABASE?.TYPE ?? 'sqlite';
-                document.getElementById('dbHost').value = c.DATABASE?.HOST ?? '';
-                document.getElementById('dbPort').value = c.DATABASE?.PORT ?? '';
-                document.getElementById('dbUsername').value = c.DATABASE?.USERNAME ?? '';
-                document.getElementById('dbPassword').value = c.DATABASE?.PASSWORD ?? '';
-                document.getElementById('dbDatabaseName').value = c.DATABASE?.DATABASE_NAME ?? '';
-                document.getElementById('dbRetryDelay').value = c.DATABASE?.RETRY_DELAY ?? 3000;
-                document.getElementById('dbAutoLoadEntities').checked = c.DATABASE?.AUTO_LOAD_ENTITIES ?? true;
-                document.getElementById('dbSynchronize').checked = c.DATABASE?.SYNCHRONIZE ?? true;
-                document.getElementById('dbLogging').value = c.DATABASE?.LOGGING ?? 'all';
+                document.getElementById('dbType').value = config.DATABASE?.TYPE ?? 'sqlite';
+                document.getElementById('dbHost').value = config.DATABASE?.HOST ?? '';
+                document.getElementById('dbPort').value = config.DATABASE?.PORT ?? '';
+                document.getElementById('dbUsername').value = config.DATABASE?.USERNAME ?? '';
+                document.getElementById('dbPassword').value = config.DATABASE?.PASSWORD ?? '';
+                document.getElementById('dbDatabaseName').value = config.DATABASE?.DATABASE_NAME ?? '';
+                document.getElementById('dbRetryDelay').value = config.DATABASE?.RETRY_DELAY ?? 3000;
+                document.getElementById('dbAutoLoadEntities').checked = config.DATABASE?.AUTO_LOAD_ENTITIES ?? true;
+                document.getElementById('dbSynchronize').checked = config.DATABASE?.SYNCHRONIZE ?? true;
+                document.getElementById('dbLogging').value = config.DATABASE?.LOGGING ?? 'all';
                 // API_GATEWAY
                 document.getElementById('apiGatewayHost').value = config.API_GATEWAY?.HOST;
                 document.getElementById('apiGatewayPort').value = config.API_GATEWAY?.PORT;

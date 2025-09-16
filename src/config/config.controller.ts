@@ -5,28 +5,28 @@ import { ConfigService } from './config.service';
 
 @Controller('config')
 export class ConfigController {
-  constructor(private configService: ConfigService) {}
+  constructor(private _configService: ConfigService) {}
 
   @Get()
   getConfig() {
-    return this.configService.getConfig();
+    return this._configService.getConfig();
   }
 
   @Post()
   updateConfig(@Body() config: any) {
     fs.writeFileSync('config.json', JSON.stringify(config, null, 2));
-    this.configService.loadConfig();
+    this._configService.loadConfig();
     return { message: 'Configuración actualizada' };
   }
   @Get('routes')
   getRoutes() {
-    return this.configService.getRoutes();
+    return this._configService.getRoutes();
   }
 
   @Post('routes')
   updateRoutes(@Body() routes: any) {
     fs.writeFileSync('routes.json', JSON.stringify(routes, null, 2));
-    this.configService.loadRoutes();
+    this._configService.loadRoutes();
     return { message: 'Rutas actualizadas' };
   }
 }

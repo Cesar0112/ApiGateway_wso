@@ -6,8 +6,8 @@ import { Config, RoutesConfig } from './config';
 
 @Injectable()
 export class ConfigService {
-  private config: Config;
-  private routes: RoutesConfig;
+  private _config: Config;
+  private _routes: RoutesConfig;
   constructor() {
     this.loadConfig();
     this.loadRoutes();
@@ -21,29 +21,26 @@ export class ConfigService {
     });
   }
   public getConfig(): Config {
-    return this.config;
+    return this._config;
   }
   public loadConfig() {
-    const raw = fs.readFileSync('config.json', 'utf8');
-    this.config = JSON.parse(raw) as Config;
+    const RAW = fs.readFileSync('config.json', 'utf8');
+    this._config = JSON.parse(RAW) as Config;
   }
   public loadRoutes() {
-    const raw = fs.readFileSync('routes.json', 'utf8');
-    this.routes = JSON.parse(raw) as RoutesConfig;
-    /*this.cacheManager.set('proxy:routes', raw).catch((err) => {
-      console.error('Error al guardar rutas en caché:', err);
-    });*/
+    const RAW = fs.readFileSync('routes.json', 'utf8');
+    this._routes = JSON.parse(RAW) as RoutesConfig;
   }
   get<K extends keyof Config>(key: K): Config[K] {
-    return this.config[key];
+    return this._config[key];
   }
   getRoutes(): RoutesConfig {
-    return this.routes || {};
+    return this._routes || {};
   }
   getRoute(
     method: 'PUT' | 'POST' | 'PATCH' | 'GET' | 'DELETE',
     endpoint: string,
   ): string[] {
-    return this.routes[method + endpoint] as string[];
+    return this._routes[method + endpoint] as string[];
   }
 }

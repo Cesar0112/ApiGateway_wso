@@ -3,7 +3,7 @@ import * as https from 'https';
 import { ClientStrategy } from './client-strategy';
 import { ConfigService } from '../config/config.service';
 
-interface RequestOptions {
+interface IRequestOptions {
   path: string;
   method: string;
   body?: any;
@@ -11,13 +11,13 @@ interface RequestOptions {
 }
 
 export class HttpClientStrategy implements ClientStrategy {
-  private http: AxiosInstance;
-  constructor(private readonly cfg: ConfigService) {
-    this.cfg = cfg;
-    this.http = axios.create({
+  private _http: AxiosInstance;
+  constructor(private readonly _cfg: ConfigService) {
+    this._cfg = _cfg;
+    this._http = axios.create({
       proxy: false,
       httpsAgent: new https.Agent({
-        rejectUnauthorized: this.cfg.getConfig().NODE_ENV === 'production',
+        rejectUnauthorized: this._cfg.getConfig().NODE_ENV === 'production',
       }),
     });
   }
@@ -28,12 +28,12 @@ export class HttpClientStrategy implements ClientStrategy {
     withToken: boolean = true,
   ): Promise<AxiosResponse> {
     // 1. Normalizar entrada
-    const safePath = String(path ?? '').trim();
+    const SAFE_PATH = String(path ?? '').trim();
     const safeBody = body ?? {};
 
     // 3. Ensamblar URL
-    const apiUrl = this.cfg.getConfig().API_GATEWAY?.API_URL;
-    const url = `${apiUrl}${safePath}`.trim();
+    const API_URL = this._cfg.getConfig().API_GATEWAY?.API_URL;
+    const url = `${API_URL}${SAFE_PATH}`.trim();
     // 4. Validar URL
     try {
       new URL(url);
@@ -42,7 +42,7 @@ export class HttpClientStrategy implements ClientStrategy {
     }
 
     // 5. Limpiar body de caracteres de control
-    const sanitizedBody = JSON.stringify(safeBody).replace(
+    const SANITIZED_BODY = JSON.stringify(safeBody).replace(
       /[\x00-\x1F\x7F]/g,
       '',
     );
@@ -56,11 +56,11 @@ export class HttpClientStrategy implements ClientStrategy {
     // if (withToken) headers['Authorization'] = `Bearer ${token}`;
 
     // 7. Petición
-    const response: AxiosResponse = await this.http({
+    const response: AxiosResponse = await this._http({
       url,
       method: method.toLowerCase(),
       headers,
-      data: sanitizedBody,
+      data: SANITIZED_BODY,
     });
 
     return response;
