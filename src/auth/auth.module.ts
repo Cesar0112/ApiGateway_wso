@@ -10,7 +10,7 @@ import { SessionService } from 'src/session/session.service';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { ConfigModule } from 'src/config/config.module';
+import { ConfigModule } from '../config/config.module';
 import { AuthLocalService } from './services/auth_local.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';

@@ -40,12 +40,16 @@
     "SECRET": "T9PjTVNCvvONGAof4RecIkIopwlWorpqUj",
     "TTL_SECONDS": 86400,
     "COOKIE_NAME": "apigateway_sid",
-    "URL": "redis://localhost:6379",
+    "URL": "redis://127.0.0.1:6379",
     "SECURE": false,
     "STRATEGY": "redis"
   },
   "USERS": {
     "USERNAME_MIN_SIZE": 4,
     "PASSWORD_MIN_SIZE": 8
+  },
+  "REDIS": {
+    "HOST": "127.0.0.1",
+    "PORT": 6379
   }
 }

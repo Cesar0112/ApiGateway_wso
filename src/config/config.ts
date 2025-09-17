@@ -9,6 +9,8 @@ import {
   IsIn,
   IsInt,
   IsPositive,
+  IsIP,
+  IsPort,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -186,38 +188,47 @@ export class UsersConfig {
   @IsPositive()
   PASSWORD_MIN_SIZE: number = 8;
 }
-
+export class RoutesConfig {
+  @IsArray()
+  ROUTE: string[];
+}
+export class RedisConfig {
+  @IsIP()
+  HOST: string = '127.0.0.1';
+  @IsPort()
+  PORT: number = 6380;
+}
 export class Config {
   @IsIn(['dev', 'production'])
   @IsString()
   NODE_ENV: string;
 
-  @IsOptional()
   @ValidateNested()
   @Type(() => WSO2Config)
-  WSO2?: WSO2Config;
+  WSO2: WSO2Config;
 
-  @IsOptional()
   @ValidateNested()
-  DATABASE?: DatabaseConfig;
+  DATABASE: DatabaseConfig;
 
-  @IsOptional()
   @ValidateNested()
   @Type(() => ApiGatewayConfig)
-  API_GATEWAY?: ApiGatewayConfig;
+  API_GATEWAY: ApiGatewayConfig;
 
-  @IsOptional()
   @ValidateNested()
   @Type(() => SessionConfig)
-  SESSION?: SessionConfig;
+  SESSION: SessionConfig;
 
-  @IsOptional()
+  /**
+   * Configuración para validar tanto los datos de los usuarios
+   */
   @ValidateNested()
   @Type(() => UsersConfig)
-  USERS?: UsersConfig;
-}
+  USERS: UsersConfig;
 
-export class RoutesConfig {
-  @IsArray()
-  ROUTE: string[];
+  /**
+   * Configuración necesaria para Bull
+   */
+  @ValidateNested()
+  @Type(() => RedisConfig)
+  REDIS: RedisConfig;
 }
