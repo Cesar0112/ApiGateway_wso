@@ -41,6 +41,10 @@ export class WSO2Config {
 
   @IsString()
   @IsOptional()
+  ROLE_SEARCH: string = `${this.URL}/scim2/v2/Roles/.search`;
+
+  @IsString()
+  @IsOptional()
   CLIENT_ID: string = 'cIGhYzy75LwxzSVFb9k4BsSavT0a';
 
   @IsString()

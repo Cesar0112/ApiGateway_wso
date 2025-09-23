@@ -68,7 +68,13 @@
             <input type="text" id="ws2ClientSecret" name="ws2ClientSecret">
 
             <label for="ws2UrlToken">URL_TOKEN:</label>
-            <input type="text" id="ws2UrlToken" name="ws2UrlToken">
+            <input type="url" id="ws2UrlToken" name="ws2UrlToken">
+
+            <label for="ws2RevokeUrl">REVOKE_URL:</label>
+            <input type="url" id="ws2RevokeUrl" name="ws2RevokeUrl">
+
+            <label for="ws2RoleSearch">ROLE_SEARCH:</label>
+            <input type="url" id="ws2RoleSearch" name="ws2RoleSearch">
             <!-- FIN WSO2 -->
         </div>
         <!-- INICIO DATABASE -->
@@ -226,6 +232,8 @@
                     CLIENT_ID: document.getElementById('ws2ClientId').value,
                     CLIENT_SECRET: document.getElementById('ws2ClientSecret').value,
                     URL_TOKEN: document.getElementById('ws2UrlToken').value,
+                    REVOKE_URL: document.getElementById('ws2RevokeUrl').value,
+                    ROLE_SEARCH: document.getElementById('ws2RoleSearch').value,
                 },
                 DATABASE: {
                     TYPE: document.getElementById('dbType').value,
@@ -304,6 +312,8 @@
                 document.getElementById('ws2ApiVersion').value = config.WSO2?.API_VERSION;
                 document.getElementById('ws2ClientId').value = config.WSO2?.CLIENT_ID;
                 document.getElementById('ws2ClientSecret').value = config.WSO2?.CLIENT_SECRET;
+                document.getElementById('ws2RevokeUrl').value = config.WSO2?.REVOKE_URL;
+                document.getElementById('ws2RoleSearch').value = config.WSO2?.ROLE_SEARCH;
                 document.getElementById('ws2UrlToken').value = config.WSO2?.URL_TOKEN;
                 // DATABASE
                 document.getElementById('dbType').value = config.DATABASE?.TYPE ?? 'sqlite';

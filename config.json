@@ -7,7 +7,8 @@
     "CLIENT_ID": "cIGhYzy75LwxzSVFb9k4BsSavT0a",
     "CLIENT_SECRET": "T9PjTVNCvvONGAof4Rec_70BZVvuYAts8PmDt5aikPga",
     "URL_TOKEN": "https://10.12.24.205:9443/oauth2/token",
-    "REVOKE_URL": "https://10.12.24.205:9443/oauth2/revoke"
+    "REVOKE_URL": "https://10.12.24.205:9443/oauth2/revoke",
+    "ROLE_SEARCH": "https://10.12.24.205:9443/scim2/v2/Roles/.search"
   },
   "DATABASE": {
     "TYPE": "sqlite",
