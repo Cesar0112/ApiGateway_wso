@@ -65,13 +65,13 @@ export class StructuresController {
   ) {
     return this._structuresService.update(id, updateStructureDto);
   }
-  @Patch(':CurrentName')
+  @Patch(':currentName')
   updateByName(
-    @Param('CurrentName') CurrentName: string,
+    @Param('currentName') currentName: string,
     @Body() updateStructureDto: UpdateStructureDto,
   ) {
     return this._structuresService.updateByCurrentName(
-      CurrentName,
+      currentName,
       updateStructureDto,
     );
   }
