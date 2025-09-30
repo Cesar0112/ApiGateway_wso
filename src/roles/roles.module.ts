@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { RolesService } from './roles.service';
+import { RoleWSO2Service } from './services/role_wso2.service';
 import { RolesController } from './roles.controller';
 
 import { ConfigService } from '../config/config.service';
@@ -7,10 +7,11 @@ import { SessionModule } from '../session/session.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Role } from './entities/role.entity';
 import { Permission } from 'src/permissions/entities/permission.entity';
+import { AuthenticateModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [SessionModule, TypeOrmModule.forFeature([Role, Permission])],
+  imports: [AuthenticateModule, SessionModule, TypeOrmModule.forFeature([Role, Permission])],
   controllers: [RolesController],
-  providers: [RolesService, ConfigService],
+  providers: [RoleWSO2Service, ConfigService],
 })
-export class RolesModule {}
+export class RolesModule { }

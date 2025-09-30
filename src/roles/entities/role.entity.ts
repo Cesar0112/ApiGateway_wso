@@ -1,20 +1,22 @@
 import { Permission } from 'src/permissions/entities/permission.entity';
+
 import {
+  PrimaryGeneratedColumn,
   Entity,
   JoinTable,
   ManyToMany,
   PrimaryColumn,
-  PrimaryGeneratedColumn,
 } from 'typeorm';
-@Entity()
-export class Role {
+export abstract class BaseIdEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+  id?: string;
+}
+@Entity()
+export class Role extends BaseIdEntity {
   @PrimaryColumn()
   name: string;
 
   @ManyToMany(() => Permission, { eager: true })
   @JoinTable()
-  permissions: Permission[];
+  permissions?: Permission[];
 }

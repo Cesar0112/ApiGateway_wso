@@ -21,6 +21,16 @@ export class CreateUsersDto {
   @ApiProperty({ example: 'a8*f14d5h?yu89l*_Secr3t!' })
   plainCipherPassword!: string;
 
+  @IsString()
+  @MinLength(3)
+  @ApiProperty({ example: 'Carlos' })
+  firstName?: string;
+
+  @IsString()
+  @MinLength(3)
+  @ApiProperty({ example: 'Perez' })
+  lastName?: string;
+
   @IsOptional()
   @IsEmail()
   @ApiPropertyOptional({ example: 'jdoe@corp.com' })

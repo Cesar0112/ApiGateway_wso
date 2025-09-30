@@ -12,14 +12,13 @@ import { ISessionData } from './interfaces/session.interface';
 
 @Injectable()
 export class SessionService {
-  constructor(private readonly _cfg: ConfigService) {}
+  constructor(private readonly _cfg: ConfigService) { }
 
   getStore(): Keyv {
     const { STRATEGY, URL } = this._cfg.getConfig().SESSION ?? {
       STRATEGY: 'redis',
       URL: 'redis://localhost:6379',
     };
-
     switch (STRATEGY) {
       case 'redis': {
         const store = createKeyvRedis(URL);
