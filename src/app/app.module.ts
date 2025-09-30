@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { HttpModule, HttpService } from '@nestjs/axios';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthenticateModule } from '../auth/auth.module';
@@ -17,6 +18,9 @@ import { SessionService } from '../session/session.service';
 import { DatabaseModule } from 'src/database/database.module';
 @Module({
   imports: [
+    HttpModule.register({
+      global: true
+    }),
     ConfigModule,
     DatabaseModule.forRoot(),
     SessionModule,
@@ -42,4 +46,4 @@ import { DatabaseModule } from 'src/database/database.module';
   controllers: [AppController, ConfigController],
   providers: [AppService, ConfigService],
 })
-export class AppModule {}
+export class AppModule { }

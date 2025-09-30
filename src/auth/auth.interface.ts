@@ -28,5 +28,6 @@ export interface IAuthenticationService {
   login(user: string, password: string, ip?: string): Promise<any>;
   logout(sessionId: string): Promise<void>;
   refresh(sessionId: string): Promise<boolean>;
+  getTokenOfSessionId(sessionId: string): Promise<string | undefined>;
 }
 export const AUTH_SERVICE_TOKEN = Symbol('AUTH_SERVICE');

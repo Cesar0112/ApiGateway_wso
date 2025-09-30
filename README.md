@@ -60,6 +60,10 @@
 
 ---
 
+## 9. TODOs
+
+1. **Terminar la autenticación local**
+
 # 2. Apartado: Flujo de negocio recomendado
 
 ## Flujo general de la aplicación
@@ -91,3 +95,6 @@
 - **Seguridad:** El token y la sesión nunca salen del backend.
 - **Centralización:** Todas las reglas de negocio, permisos y sesiones se controlan en un solo lugar.
 - **Simplicidad en el frontend:** El frontend solo se preocupa por mostrar información y reaccionar a respuestas.
+
+## Consideraciones para el despliegue 
+  - Para que la Api-Gateway llegue por la red a WSO2 IS tiene que estar fuera del proxy
