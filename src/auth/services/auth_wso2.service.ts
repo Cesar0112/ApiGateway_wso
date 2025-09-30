@@ -1,5 +1,6 @@
 // src/auth/auth.service.ts
 import {
+  BadRequestException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -28,7 +29,7 @@ export class AuthWSO2Service implements IAuthenticationService {
     protected readonly permissionsService: PermissionsService,
     protected readonly sessionService: SessionService,
     @Inject(CACHE_MANAGER) protected cacheManager: Cache,
-  ) {}
+  ) { }
   test_short(sessionId: string) {
     const store = this.sessionService.getExpressSessionStore();
     store.get(sessionId, (err, sess) => {
@@ -50,15 +51,29 @@ export class AuthWSO2Service implements IAuthenticationService {
       const URL: string =
         this.configService.get('WSO2')?.URL_TOKEN ??
         'https://localhost:9443/oauth2/token';
-      const DATA = qs.stringify({
-        grant_type: 'password',
-        client_id: this.configService.get('WSO2')?.CLIENT_ID,
-        client_secret: this.configService.get('WSO2')?.CLIENT_SECRET,
+      // Build request payload from config when available so scope/grant_type/etc. can be customized
+      const wso2Cfg =
+        this.configService.getConfig().WSO2 ??
+        this.configService.get('WSO2') ??
+        {};
+
+      const grantType: string = wso2Cfg.GRANT_TYPE ?? 'password';
+      const scope: string =
+        wso2Cfg.SCOPE ??
+        'openid groups id_structure profile roles internal_role_mgt_view internal_user_mgt_list internal_user_mgt_create internal_user_mgt_view internal_user_mgt_update internal_user_mgt_delete';
+
+      const payload: Record<string, string> = {
+        grant_type: grantType,
+        client_id: wso2Cfg.CLIENT_ID ?? this.configService.get('WSO2')?.CLIENT_ID,
+        client_secret:
+          wso2Cfg.CLIENT_SECRET ??
+          this.configService.get('WSO2')?.CLIENT_SECRET,
         username: user,
         password: this.encryptionsService.decrypt(password),
-        scope:
-          'openid groups id_structure profile roles internal_role_mgt_view',
-      });
+        scope,
+      };
+
+      const DATA = qs.stringify(payload);
       const headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
       };
@@ -94,7 +109,7 @@ export class AuthWSO2Service implements IAuthenticationService {
 
       if (decodedToken.roles) {
         //decodedToken.roles
-        const SCOPES = await this.permissionsService.getPermissionsForRoles(
+        const SCOPES = await this.permissionsService.getPermissionsFromRoles(
           decodedToken.roles,
           response.data.access_token,
         );
@@ -173,7 +188,6 @@ export class AuthWSO2Service implements IAuthenticationService {
    * @param ip
    * @returns past value + 1
    */
-
   async record(username: string, ip: string): Promise<number> {
     const KEY = `login:${username}:${this._normalizeIp(ip)}`;
     const raw = await this.cacheManager.get(KEY);
@@ -199,5 +213,24 @@ export class AuthWSO2Service implements IAuthenticationService {
   }
   private _normalizeIp(ip: string): string {
     return ip.replace(/^::ffff:/, '').replace(/:/g, '-');
+  }
+  async getTokenOfSessionId(sessionId: string): Promise<string> {
+    try {
+      const session = await this.sessionService.getSession(sessionId);
+      const token = session?.token;
+      if (!token) {
+        throw new BadRequestException(`No session token found for sessionId: ${sessionId}`);
+      }
+      return token;
+    } catch (e: unknown) {
+      // If parsing fails, throws exception to indicate no token available
+      throw new BadRequestException(
+        typeof e === 'string'
+          ? e
+          : e instanceof Error
+            ? e.message
+            : 'Error durante la obtención del token dado un sessionId',
+      );
+    }
   }
 }
