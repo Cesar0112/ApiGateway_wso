@@ -1,9 +1,14 @@
-import { Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseIdEntity } from 'src/roles/entities/role.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
-export class Permission {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @PrimaryColumn()
+export class Permission extends BaseIdEntity {
+  @Column({ unique: true })
   value: string;
+
+
+  @Column({ unique: true, nullable: true })
+  displayName?: string;
+
+  @Column({ nullable: true })
+  description?: string;
 }
