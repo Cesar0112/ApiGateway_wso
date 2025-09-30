@@ -17,10 +17,11 @@ import { SessionService } from '../../session/session.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { AuthWSO2Service } from './auth_wso2.service';
-import { UsersService } from 'src/users/users.service';
+import { UsersWSO2Service } from 'src/users/services/users_wso2.service';
 import { User } from 'src/users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { UsersLocalService } from 'src/users/services/users_local.service';
 @Injectable()
 export class AuthLocalService extends AuthWSO2Service {
   constructor(
@@ -29,7 +30,7 @@ export class AuthLocalService extends AuthWSO2Service {
     permissionsService: PermissionsService,
     sessionService: SessionService,
     @Inject(CACHE_MANAGER) cacheManager: Cache,
-    private readonly _usersService: UsersService,
+    private readonly _usersService: UsersLocalService,
     private readonly _jwtService: JwtService,
   ) {
     super(
@@ -65,7 +66,7 @@ export class AuthLocalService extends AuthWSO2Service {
     // 3. JWT local
     const ROLES = user.roles.map((r) => r.name);
     const PERMISSIONS = [
-      ...new Set(user.roles.flatMap((r) => r.permissions.map((p) => p.value))),
+      ...new Set(user.roles.flatMap((r) => r.permissions?.map((p) => p.value) ?? [])),
     ];
     const TOKEN = this._jwtService.sign({
       sub: user.id,

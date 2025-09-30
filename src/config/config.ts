@@ -11,13 +11,14 @@ import {
   IsPositive,
   IsIP,
   IsPort,
+  IsUrl,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class WSO2Config {
-  @IsString()
+  @IsUrl()
   @IsOptional()
-  HOST: string = '10.12.24.205';
+  HOST: string = 'https://10.12.24.205';
 
   @IsNumber()
   @IsOptional()
@@ -27,15 +28,15 @@ export class WSO2Config {
   @IsOptional()
   API_VERSION: string = 'v2';
 
-  @IsString()
+  @IsUrl()
   @IsOptional()
   URL: string = `https://${this.HOST}:${this.PORT}`;
 
-  @IsString()
+  @IsUrl()
   @IsOptional()
   URL_TOKEN: string = `${this.URL}/oauth2/token`;
 
-  @IsString()
+  @IsUrl()
   @IsOptional()
   REVOKE_URL: string = `${this.URL}/oauth2/revoke`;
 
@@ -50,6 +51,16 @@ export class WSO2Config {
   @IsString()
   @IsOptional()
   CLIENT_SECRET: string = 'T9PjTVNCvvONGAof4Rec_70BZVvuYAts8PmDt5aikPga';
+
+  @IsString()
+  @IsOptional()
+  @IsIn(['password'])
+  GRANT_TYPE: string = 'password';
+
+  @IsString()
+  @IsOptional()
+  SCOPE: string = 'openid groups id_structure profile roles internal_role_mgt_view internal_user_mgt_list internal_user_mgt_create internal_user_mgt_view internal_user_mgt_update';
+
 }
 
 export class DatabaseConfig {

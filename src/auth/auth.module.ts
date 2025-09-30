@@ -13,8 +13,10 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '../config/config.module';
 import { AuthLocalService } from './services/auth_local.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
+import { UsersWSO2Service } from 'src/users/services/users_wso2.service';
 import { UsersModule } from 'src/users/users.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Permission } from 'src/permissions/entities/permission.entity';
 
 @Module({
   imports: [
@@ -38,6 +40,7 @@ import { UsersModule } from 'src/users/users.module';
         signOptions: { expiresIn: cfg.getConfig().SESSION?.TTL_SECONDS },
       }),
     }),
+    TypeOrmModule.forFeature([Permission]),
   ],
   providers: [
     ConfigService,
@@ -52,7 +55,7 @@ import { UsersModule } from 'src/users/users.module';
         PermissionsService,
         SessionService,
         CACHE_MANAGER,
-        UsersService,
+        UsersWSO2Service,
         JwtService,
       ],
       useFactory(
@@ -61,7 +64,7 @@ import { UsersModule } from 'src/users/users.module';
         per: PermissionsService,
         sess: SessionService,
         cache: Cache,
-        users: UsersService,
+        users: UsersWSO2Service,
         jwt: JwtService,
       ) {
         const AUTH_TYPE = cfg.getConfig().API_GATEWAY?.AUTH_TYPE;
@@ -69,14 +72,15 @@ import { UsersModule } from 'src/users/users.module';
         switch (AUTH_TYPE) {
           case 'wso2':
             return new AuthWSO2Service(...BASE_CONFIG);
-          case 'local':
-            return new AuthLocalService(...BASE_CONFIG, users, jwt);
+          /*case 'local':
+            return new AuthLocalService(...BASE_CONFIG, users, jwt);*/
           default:
             return new AuthWSO2Service(...BASE_CONFIG);
         }
       },
     },
   ],
+  exports: [AUTH_SERVICE_TOKEN],
   controllers: [AuthenticateController],
 })
-export class AuthenticateModule {}
+export class AuthenticateModule { }
