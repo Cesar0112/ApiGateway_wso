@@ -6,42 +6,40 @@ import {
   Patch,
   Param,
   Delete,
-  SetMetadata,
 } from '@nestjs/common';
 import { PermissionsService } from './permissions.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 
+//TODO Crear una bifurcación para que detecte si es la autenticación local o por wso2
 @Controller('permissions')
 export class PermissionsController {
-  constructor(private readonly permissionsService: PermissionsService) {}
+  constructor(private readonly _permissionsService: PermissionsService) {}
   @Post()
   create(@Body() createPermissionDto: CreatePermissionDto) {
-    return this.permissionsService.create(createPermissionDto);
+    return this._permissionsService.create(createPermissionDto);
   }
 
   @Get()
   findAll() {
-    return this.permissionsService.findAll();
+    return this._permissionsService.getScopesFromApiResource('asda');
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.permissionsService.findOne(+id);
+  @Get(':value')
+  findOne(@Param('value') value: string) {
+    return this._permissionsService.findOne(value);
   }
 
-  @SetMetadata('scope', 'internal_role_mgt_update')
-  @Patch(':id')
+  @Patch(':value')
   update(
-    @Param('id') id: string,
+    @Param('value') value: string,
     @Body() updatePermissionDto: UpdatePermissionDto,
   ) {
-    return this.permissionsService.update(+id, updatePermissionDto);
+    return this._permissionsService.update(value, updatePermissionDto);
   }
 
-  @SetMetadata('scope', 'internal_role_mgt_delete')
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.permissionsService.remove(+id);
+  @Delete(':value')
+  remove(@Param('value') value: string) {
+    return this._permissionsService.remove(value);
   }
 }
