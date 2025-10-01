@@ -13,7 +13,7 @@ export class RoleWSO2Service {
 
   constructor(protected readonly configService: ConfigService) {
     const wso2Config = this.configService.getConfig().WSO2;
-    this.baseUrl = `${wso2Config.HOST}:${wso2Config.PORT}/scim2/Roles`;
+    this.baseUrl = `${wso2Config.HOST}:${wso2Config.PORT}/scim2/v2/Roles`;
   }
 
   private getRequestOptions(token: string): AxiosRequestConfig {
