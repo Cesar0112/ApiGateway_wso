@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { RoleWSO2Service } from './services/role_wso2.service';
 import { RolesController } from './roles.controller';
 
@@ -10,8 +10,9 @@ import { Permission } from 'src/permissions/entities/permission.entity';
 import { AuthenticateModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [AuthenticateModule, SessionModule, TypeOrmModule.forFeature([Role, Permission])],
+  imports: [forwardRef(() => AuthenticateModule), SessionModule, TypeOrmModule.forFeature([Role, Permission])],
   controllers: [RolesController],
   providers: [RoleWSO2Service, ConfigService],
+  exports: [RoleWSO2Service]
 })
 export class RolesModule { }
