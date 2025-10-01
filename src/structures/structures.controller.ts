@@ -7,14 +7,14 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { StructuresService } from './structures.service';
+import { StructuresService } from './services/structures.service';
 import { CreateStructureDto } from './dto/create-structure.dto';
 import { UpdateStructureDto } from './dto/update-structure.dto';
 import { CreateBulkDto } from './dto/create-bulk.dto';
 
 @Controller('structures')
 export class StructuresController {
-  constructor(private readonly _structuresService: StructuresService) {}
+  constructor(private readonly _structuresService: StructuresService) { }
 
   /* 1.  Jerarquía pequeña (≤ 20 nodos) – 1 HTTP call */
   @Post()

@@ -19,7 +19,7 @@ export class RoleWSO2Service {
   private getRequestOptions(token: string): AxiosRequestConfig {
     return {
       //TODO Configurar proxy por configuraciones no directamente
-      proxy: false,
+      proxy: false as const,
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -133,20 +133,14 @@ export class RoleWSO2Service {
   async deleteByName(name: string, token: string): Promise<void> {
     try {
       // Buscar el rol por nombre
-      const getRes = await axios.get(`${this.baseUrl}?filter=name eq "${name}"`, {
-        headers: { Authorization: `Bearer ${token}` },
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-      });
+      const getRes = await axios.get(`${this.baseUrl}?filter=name eq "${name}"`, this.getRequestOptions(token));
 
       const existingRole = getRes.data.Resources?.[0];
       if (!existingRole) {
         throw new NotFoundException(`Role with name "${name}" not found`);
       }
 
-      await axios.delete(`${this.baseUrl}/${existingRole.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-      });
+      await axios.delete(`${this.baseUrl}/${existingRole.id}`, this.getRequestOptions(token));
     } catch (error: any) {
       if (error.response?.status === 404) {
         throw new NotFoundException(error.response.data);
@@ -154,5 +148,39 @@ export class RoleWSO2Service {
       throw new InternalServerErrorException(error.message);
     }
   }
+  async getUserRoles(userId: string, token: string): Promise<Role[]> {
+    try {
+
+      const res = await axios.get(this.baseUrl, {
+        ...this.getRequestOptions(token),
+        params: {
+          filter: `users.value eq "${userId}"`,
+        }
+      });
+
+      const resources = res.data.Resources ?? [];
+
+      return resources.map((role: any) => (RoleMapper.fromWSO2Response(role)));
+    } catch (error) {
+      throw new Error(`Error al obtener roles del usuario: ${error.message}`);
+    }
+  }
+  async getUserRolesByUsername(username: string, token: string): Promise<Role[]> {
+    try {
+      const res = await axios.get(this.baseUrl, {
+        ...this.getRequestOptions(token),
+        params: {
+          filter: `users.display eq "${username}"`,
+        },
+      });
+
+      const resources = res.data.Resources ?? [];
+
+      return resources.map((role: any) => (RoleMapper.fromWSO2Response(role)));
+    } catch (error) {
+      throw new Error(`Error al obtener roles del usuario: ${error.message}`);
+    }
+  }
+
 
 }

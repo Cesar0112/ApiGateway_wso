@@ -6,8 +6,8 @@ export class CreateStructureDto {
   name: string;
 
   @IsOptional()
-  @IsUUID()
-  parentId?: string | null;
+  @IsString()
+  parentName?: string | null;
 
   @IsOptional()
   @ValidateNested({ each: true })

@@ -7,6 +7,7 @@ import {
   IsArray,
   ArrayMinSize,
   IsBoolean,
+  IsUUID,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -41,21 +42,21 @@ export class CreateUsersDto {
   @ApiPropertyOptional({ default: true })
   isActive?: boolean = true;
 
-  /*  Relaciones: solo IDs (strings)  */
-  @IsOptional()
-  @IsArray()
-  @ArrayMinSize(0)
-  @IsString({ each: true })
-  @ApiPropertyOptional({ type: [String], example: ['admin', 'viewer'] })
-  roleIds?: string[]; // nombres o UUIDs de roles
 
   @IsOptional()
   @IsArray()
   @ArrayMinSize(0)
   @IsString({ each: true })
+  @ApiPropertyOptional({ type: [String], example: ['admin', 'viewer'] })
+  rolesNames?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(0)
+  @IsUUID('all', { each: true })
   @ApiPropertyOptional({
     type: [String],
     example: ['uuid-str-1', 'uuid-str-2'],
   })
-  structureIds?: string[]; // UUIDs de estructuras
+  structureIds?: string[];
 }

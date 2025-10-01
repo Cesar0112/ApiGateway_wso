@@ -9,5 +9,6 @@ import { SessionModule } from '../session/session.module';
   providers: [EncryptionsService, ConfigService, SessionService],
   imports: [SessionModule],
   controllers: [EncryptionsController],
+  exports: [EncryptionsService]
 })
-export class EncryptionsModule {}
+export class EncryptionsModule { }

@@ -2,23 +2,27 @@ import { CreateUsersDto } from "./dto/create-users.dto";
 import { UpdateUsersDto } from "./dto/update-users.dto";
 import { UserResponseDto } from "./dto/user-response.dto";
 import { User } from "./entities/user.entity";
+import { Role } from "../roles/entities/role.entity";
+import { Structure } from "../structures/entities/structure.entity";
+import { RoleMapper } from "src/roles/role.mapper";
 
-// Mapeador entre DTO/User y el payload SCIM2 de WSO2
 export class UserMapper {
-    static toWSO2PayloadForCreate(dto: CreateUsersDto): any {
+    // ------------------------
+    // TO WSO2 PAYLOAD
+    // ------------------------
+    static fromCreateUsersDtoToWSO2Payload(dto: CreateUsersDto): any {
         return {
-            userName: dto.username, // tu DTO tiene `name`, no `userName`
             name: {
                 givenName: dto.firstName ?? "",
                 familyName: dto.lastName ?? "",
             },
+            userName: dto.username,
             emails: dto.email ? [{ value: dto.email, primary: true }] : [],
             password: dto.plainCipherPassword,
-            active: dto.isActive ?? true,
         };
     }
 
-    static toWSO2PayloadForUpdate(dto: UpdateUsersDto): any {
+    static fromUpdateUsersDtoToWSO2Payload(dto: UpdateUsersDto): any {
         const payload: any = {};
 
         if (dto.username) {
@@ -39,37 +43,93 @@ export class UserMapper {
 
         return payload;
     }
-    static fromWSO2Response(data: any): User {
+
+    // ------------------------
+    // FROM WSO2 RESPONSE → ENTITY
+    // ------------------------
+    static fromWSO2ResponseToUser(data: any, roles: Role[] = [], structures: Structure[] = []): User {
         return {
             id: data.id,
             username: data.userName,
-            email: data.emails?.[0]?.value,
+            password: "",
+            email: data.emails?.[0]?.value ?? null,
             isActive: data.active,
+            roles,
+            structures,
+            createdAt: data.meta?.created ? new Date(data.meta.created) : undefined,
+            updatedAt: data.meta?.lastModified ? new Date(data.meta.lastModified) : undefined,
         } as User;
     }
-    static toResponseList(users: User[]): UserResponseDto[] {
-        return users.map((user) => this.toResponseDto(user));
-    }
-    static toDto(user: User): UserResponseDto {
+
+    // ------------------------
+    // TO RESPONSE DTO
+    // ------------------------
+    static toResponseDto(user: User): UserResponseDto {
         return {
             id: user.id,
             username: user.username,
-            email: user.email,
+            email: user.email ?? "",
             isActive: user.isActive,
-            roles: user.roles?.map((role) => ({
-                id: role.id,
+            roles: user.roles?.map((role: Role) => ({
+                id: role.id ?? "",
                 name: role.name,
-                permissions: role.permissions?.map((p) => p.name) ?? [],
+                permissions: role.permissions?.map((p) => p.value) ?? [],
             })) ?? [],
-            structures: user.structures?.map((s) => ({
-                id: s.id,
+            structures: user.structures?.map((s: Structure) => ({
+                id: s.id ?? "",
                 name: s.name,
             })) ?? [],
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
         };
     }
-    static toList(users: User[]): UserResponseDto[] {
-        return users.map((u) => this.toDto(u));
+
+    static toResponseList(users: User[]): UserResponseDto[] {
+        return users.map((user) => this.toResponseDto(user));
+    }
+
+    // ------------------------
+    // TO ENTITY (CREATE/UPDATE)
+    // ------------------------
+    /*static fromCreateDto(dto: CreateUsersDto): User {
+        return {
+            id: "",
+            username: dto.username,
+            password: dto.plainCipherPassword,
+            email: dto.email,
+            isActive: dto.isActive ?? true,
+            roles: dto.roleIds ?? [],
+            structures: [],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        } as User;
+    }*/
+
+    /*static fromUpdateDto(dto: UpdateUsersDto, existingUser: User): User {
+        return {
+            ...existingUser,
+            username: dto.username ?? existingUser.username,
+            email: dto.email ?? existingUser.email,
+            isActive: dto.isActive ?? existingUser.isActive,
+            updatedAt: new Date(),
+        } as User;
+    }*/
+
+    // ------------------------
+    // HELPERS (ROLES/STRUCTURES)
+    // ------------------------
+    static mapRoles(roles: Role[]): { id: string; name: string; permissions: string[] }[] {
+        return roles.map((role) => ({
+            id: role.id ?? "",
+            name: role.name,
+            permissions: role.permissions?.map((p) => p.value) ?? [],
+        }));
+    }
+
+    static mapStructures(structures: Structure[]): { id: string; name: string }[] {
+        return structures.map((s) => ({
+            id: s.id ?? "",
+            name: s.name,
+        }));
     }
 }

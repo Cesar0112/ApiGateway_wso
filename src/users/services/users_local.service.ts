@@ -37,8 +37,8 @@ export class UsersLocalService {
       password: HASH,
       email: dto.email,
       isActive: dto.isActive ?? true,
-      roles: dto.roleIds
-        ? await this._roleRepo.findBy({ id: In(dto.roleIds) })
+      roles: dto.rolesNames
+        ? await this._roleRepo.findBy({ id: In(dto.rolesNames) })
         : [],
       structures: dto.structureIds
         ? await this._structureRepo.findBy({ id: In(dto.structureIds) })

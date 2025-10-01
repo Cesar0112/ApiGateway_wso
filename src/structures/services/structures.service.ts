@@ -1,19 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateStructureDto } from './dto/create-structure.dto';
-import { UpdateStructureDto } from './dto/update-structure.dto';
+import { CreateStructureDto } from '../dto/create-structure.dto';
+import { UpdateStructureDto } from '../dto/update-structure.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Structure } from './entities/structure.entity';
+import { Structure } from '../entities/structure.entity';
 import { Repository } from 'typeorm';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { CreateBulkDto } from './dto/create-bulk.dto';
+import { CreateBulkDto } from '../dto/create-bulk.dto';
 @Injectable()
 export class StructuresService {
   constructor(
     @InjectRepository(Structure)
     private readonly _structureRepository: Repository<Structure>,
     @InjectQueue('structure-bulk') private _bulkQueue: Queue,
-  ) {}
+  ) { }
   /* 1.  Jerarquía pequeña (cascade) */
   async create(createStructureDto: CreateStructureDto): Promise<Structure> {
     const newStructure = this._structureRepository.create({

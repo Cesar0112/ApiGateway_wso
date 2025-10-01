@@ -8,10 +8,12 @@ import { Role } from '../roles/entities/role.entity';
 import { AuthenticateModule } from '../auth/auth.module';
 import { ConfigModule } from '../config/config.module';
 import { UsersLocalService } from './services/users_local.service';
+import { RolesModule } from 'src/roles/roles.module';
+import { EncryptionsModule } from 'src/encryptions/encryptions.module';
 
 
 @Module({
-  imports: [forwardRef(() => AuthenticateModule), ConfigModule, TypeOrmModule.forFeature([User, Role, Structure])],
+  imports: [ConfigModule, TypeOrmModule.forFeature([User, Role, Structure]), forwardRef(() => AuthenticateModule), forwardRef(() => RolesModule), EncryptionsModule],
   controllers: [UsersController],
   providers: [UsersWSO2Service, UsersLocalService],
   exports: [UsersWSO2Service],
