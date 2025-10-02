@@ -59,7 +59,6 @@ export class AuthenticateController {
     @Req() req: Request,
   ): Promise<AuthSuccessDto> {
     const { user, password } = body;
-
     const result = await this.authenticateService.login(user, password, req.ip);
     //    session.username = user;
     session.permissions = result?.user?.permissions;

@@ -10,10 +10,11 @@ import { ConfigModule } from '../config/config.module';
 import { UsersLocalService } from './services/users_local.service';
 import { RolesModule } from 'src/roles/roles.module';
 import { EncryptionsModule } from 'src/encryptions/encryptions.module';
+import { StructuresModule } from 'src/structures/structures.module';
 
 
 @Module({
-  imports: [ConfigModule, TypeOrmModule.forFeature([User, Role, Structure]), forwardRef(() => AuthenticateModule), forwardRef(() => RolesModule), EncryptionsModule],
+  imports: [ConfigModule, TypeOrmModule.forFeature([User, Role, Structure]), forwardRef(() => AuthenticateModule), forwardRef(() => RolesModule), EncryptionsModule, StructuresModule],
   controllers: [UsersController],
   providers: [UsersWSO2Service, UsersLocalService],
   exports: [UsersWSO2Service],

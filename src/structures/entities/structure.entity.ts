@@ -32,6 +32,8 @@ export class Structure {
   // hijos
   @OneToMany(() => Structure, (child) => child.parent, { cascade: true })
   children: Structure[];
+  @Column({ nullable: true })
+  displayName: string; // ← cache del path que viene de WSO2
 
   // usuarios que pertenecen a esta estructura
   @ManyToMany(() => User, (user) => user.structures, { eager: true })

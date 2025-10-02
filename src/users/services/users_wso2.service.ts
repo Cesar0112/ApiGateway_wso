@@ -17,15 +17,20 @@ import { Role } from 'src/roles/entities/role.entity';
 import { RoleWSO2Service } from 'src/roles/services/role_wso2.service';
 import { EncryptionsService } from 'src/encryptions/encryptions.service';
 import { StructuresService } from 'src/structures/services/structures.service';
-
-
+import { StructuresWSO2Service } from 'src/structures/services/structures_wso2.service';
+import { Structure } from 'src/structures/entities/structure.entity';
 
 @Injectable()
 export class UsersWSO2Service {
   private readonly _logger = new Logger(UsersWSO2Service.name);
   private readonly _baseUrl: string;
 
-  constructor(private readonly _configService: ConfigService, private readonly _rolesService: RoleWSO2Service, private readonly _encryptionsService: EncryptionsService, private readonly _structureService: StructuresService) {
+  constructor(
+    private readonly _configService: ConfigService,
+    private readonly _rolesService: RoleWSO2Service,
+    private readonly _encryptionsService: EncryptionsService,
+    private readonly _structureService: StructuresWSO2Service,
+  ) {
     const wso2Config = this._configService.getConfig().WSO2;
     this._baseUrl = `${wso2Config.HOST}:${wso2Config.PORT}/scim2/Users`;
   }
@@ -52,13 +57,18 @@ export class UsersWSO2Service {
       });
       return map;
     } catch (err) {
-      this._logger.warn('No se pudieron obtener roles para enriquecer usuarios (seguir sin permisos de rol).', err);
+      this._logger.warn(
+        'No se pudieron obtener roles para enriquecer usuarios (seguir sin permisos de rol).',
+        err,
+      );
       return new Map();
     }
   }
   async create(dto: CreateUsersDto, token: string): Promise<User> {
     try {
-      dto.plainCipherPassword = this._encryptionsService.decrypt(dto.plainCipherPassword);
+      dto.plainCipherPassword = this._encryptionsService.decrypt(
+        dto.plainCipherPassword,
+      );
       // 1. Crear usuario en SCIM2
       const payload = UserMapper.fromCreateUsersDtoToWSO2Payload(dto);
       const resCreateResponse: AxiosResponse<any> = await axios.post(
@@ -68,9 +78,18 @@ export class UsersWSO2Service {
       );
       const createdUser = resCreateResponse.data;
       //const rolesMap = await this._buildRolesMap(token);
-      const roles = await this._rolesService.getUserRoles(createdUser.id, token);
-      const structures = await this._structureService.findByIds(dto.structureIds);
-      return UserMapper.fromWSO2ResponseToUser(createdUser, roles, structure.map((s) => s));
+      const roles = await this._rolesService.getUserRoles(
+        createdUser.id,
+        token,
+      );
+      let structures: Structure[] = [];
+      if (dto.structureIds) {
+        structures = await this._structureService.findByIds(
+          dto.structureIds,
+          token,
+        );
+      }
+      return UserMapper.fromWSO2ResponseToUser(createdUser, roles, structures);
     } catch (err: any) {
       this._logger.error('Error creando usuario en WSO2', err);
       if (err.response?.status === 409) {
@@ -83,12 +102,16 @@ export class UsersWSO2Service {
   async findAll(token: string): Promise<User[]> {
     try {
       const res: AxiosResponse<any> = await axios.get(
-        this._baseUrl,
+        `${this._baseUrl}?count=1000`,
         this._getRequestOptions(token),
       );
-      const rolesMap = await this._buildRolesMap(token);
       const resources = res.data?.Resources ?? [];
-      return resources.map((u: any) => UserMapper.fromResponse(u, rolesMap));
+      return await Promise.all(
+        resources.map(async (u: any) => {
+          const userRoles = await this._rolesService.getUserRoles(u.id, token);
+          return UserMapper.fromWSO2ResponseToUser(u, userRoles);
+        }),
+      );
     } catch (err) {
       this._logger.error('Error obteniendo usuarios en WSO2', err);
       throw new InternalServerErrorException('No se pudieron obtener usuarios');
@@ -98,11 +121,14 @@ export class UsersWSO2Service {
   async findById(id: string, token: string): Promise<User> {
     try {
       const res: AxiosResponse<any> = await axios.get(
-        `${this._baseUrl}/${(id)}`,
+        `${this._baseUrl}/${id}`,
         this._getRequestOptions(token),
       );
-      const rolesMap = await this._buildRolesMap(token);
-      return UserMapper.fromWSO2Response(res.data, rolesMap);
+      const userRoles = await this._rolesService.getUserRoles(
+        res.data.id,
+        token,
+      );
+      return UserMapper.fromWSO2ResponseToUser(res.data, userRoles);
     } catch (err) {
       if (err.response?.status === 404) {
         throw new NotFoundException(`Usuario ${id} no encontrado`);
@@ -119,11 +145,18 @@ export class UsersWSO2Service {
         this._getRequestOptions(token),
       );
       const userData = res.data?.Resources?.[0];
-      if (!userData) throw new NotFoundException(`Usuario ${username} no encontrado`);
-      const rolesMap = await this._buildRolesMap(token);
-      return UserMapper.fromWSO2Response(userData, rolesMap);
+      if (!userData)
+        throw new NotFoundException(`Usuario ${username} no encontrado`);
+      const userRoles = await this._rolesService.getUserRoles(
+        res.data.id,
+        token,
+      );
+      return UserMapper.fromWSO2ResponseToUser(userData, userRoles);
     } catch (err) {
-      this._logger.error(`Error buscando usuario por username ${username}`, err);
+      this._logger.error(
+        `Error buscando usuario por username ${username}`,
+        err,
+      );
       if (err instanceof NotFoundException) throw err;
       throw new InternalServerErrorException('No se pudo obtener el usuario');
     }
@@ -131,52 +164,71 @@ export class UsersWSO2Service {
 
   async update(id: string, dto: UpdateUsersDto, token: string): Promise<User> {
     try {
-      const payload = UserMapper.toWSO2PayloadForUpdate(dto);
+      const payload = UserMapper.fromUpdateUsersDtoToWSO2Payload(dto);
       const res: AxiosResponse<any> = await axios.put(
-        `${this._baseUrl}/${(id)}`,
+        `${this._baseUrl}/${id}`,
         payload,
         this._getRequestOptions(token),
       );
-      let rolesMap: Role[];
+      let rolesMap: Role[] = [];
       if (dto.id) {
         rolesMap = await this._rolesService.getUserRoles(dto.id, token);
       } else if (dto.username) {
-        rolesMap = await this._rolesService.getUserRolesByUsername(dto.username, token);
+        rolesMap = await this._rolesService.getUserRolesByUsername(
+          dto.username,
+          token,
+        );
       }
       return UserMapper.fromWSO2ResponseToUser(res.data, rolesMap);
     } catch (err) {
       this._logger.error(`Error actualizando usuario ${id}`, err);
-      throw new InternalServerErrorException('No se pudo actualizar el usuario');
+      throw new InternalServerErrorException(
+        'No se pudo actualizar el usuario',
+      );
     }
   }
-  async updateByUsername(username: string, dto: UpdateUsersDto, token: string): Promise<User> {
+  async updateByUsername(
+    username: string,
+    dto: UpdateUsersDto,
+    token: string,
+  ): Promise<User> {
     try {
       // buscar por username
       const resGet: AxiosResponse<any> = await axios.get(
-        `${this._baseUrl}?filter=userName eq "${(username)}"`,
+        `${this._baseUrl}?filter=userName eq "${username}"`,
         this._getRequestOptions(token),
       );
       const existing = resGet.data?.Resources?.[0];
-      if (!existing) throw new NotFoundException(`Usuario ${username} no encontrado`);
+      if (!existing)
+        throw new NotFoundException(`Usuario ${username} no encontrado`);
 
       const payload = UserMapper.fromUpdateUsersDtoToWSO2Payload(dto);
       const resUpdate: AxiosResponse<any> = await axios.put(
-        `${this._baseUrl}/${(existing.id)}`,
+        `${this._baseUrl}/${existing.id}`,
         payload,
         this._getRequestOptions(token),
       );
 
       return UserMapper.fromWSO2ResponseToUser(resUpdate.data);
     } catch (err: any) {
-      this._logger.error(`Error actualizando usuario por username ${username}`, err);
-      if (err.response?.status === 404) throw new NotFoundException(err.response.data);
-      throw new InternalServerErrorException('No se pudo actualizar el usuario');
+      this._logger.error(
+        `Error actualizando usuario por username ${username}`,
+        err,
+      );
+      if (err.response?.status === 404)
+        throw new NotFoundException(err.response.data);
+      throw new InternalServerErrorException(
+        'No se pudo actualizar el usuario',
+      );
     }
   }
 
   async remove(id: string, token: string): Promise<void> {
     try {
-      await axios.delete(`${this._baseUrl}/${(id)}`, this._getRequestOptions(token));
+      await axios.delete(
+        `${this._baseUrl}/${id}`,
+        this._getRequestOptions(token),
+      );
     } catch (err: any) {
       if (err.response?.status === 404) {
         throw new NotFoundException(`Usuario ${id} no encontrado`);
@@ -185,21 +237,27 @@ export class UsersWSO2Service {
     }
   }
 
-
   async removeByUsername(username: string, token: string): Promise<void> {
     try {
       const resGet: AxiosResponse<any> = await axios.get(
-        `${this._baseUrl}?filter=userName eq "${(username)}"`,
+        `${this._baseUrl}?filter=userName eq "${username}"`,
         this._getRequestOptions(token),
       );
       const existing = resGet.data?.Resources?.[0];
-      if (!existing) throw new NotFoundException(`Usuario ${username} no encontrado`);
-      await axios.delete(`${this._baseUrl}/${(existing.id)}`, this._getRequestOptions(token));
+      if (!existing)
+        throw new NotFoundException(`Usuario ${username} no encontrado`);
+      await axios.delete(
+        `${this._baseUrl}/${existing.id}`,
+        this._getRequestOptions(token),
+      );
     } catch (err: any) {
-      this._logger.error(`Error eliminando usuario por username ${username}`, err);
-      if (err.response?.status === 404) throw new NotFoundException(err.response.data);
+      this._logger.error(
+        `Error eliminando usuario por username ${username}`,
+        err,
+      );
+      if (err.response?.status === 404)
+        throw new NotFoundException(err.response.data);
       throw new InternalServerErrorException('No se pudo eliminar el usuario');
     }
   }
-
 }
