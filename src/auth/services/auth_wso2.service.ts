@@ -29,7 +29,7 @@ export class AuthWSO2Service implements IAuthenticationService {
     protected readonly permissionsService: PermissionsService,
     protected readonly sessionService: SessionService,
     @Inject(CACHE_MANAGER) protected cacheManager: Cache,
-  ) { }
+  ) {}
   test_short(sessionId: string) {
     const store = this.sessionService.getExpressSessionStore();
     store.get(sessionId, (err, sess) => {
@@ -64,7 +64,8 @@ export class AuthWSO2Service implements IAuthenticationService {
 
       const payload: Record<string, string> = {
         grant_type: grantType,
-        client_id: wso2Cfg.CLIENT_ID ?? this.configService.get('WSO2')?.CLIENT_ID,
+        client_id:
+          wso2Cfg.CLIENT_ID ?? this.configService.get('WSO2')?.CLIENT_ID,
         client_secret:
           wso2Cfg.CLIENT_SECRET ??
           this.configService.get('WSO2')?.CLIENT_SECRET,
@@ -109,12 +110,12 @@ export class AuthWSO2Service implements IAuthenticationService {
 
       if (decodedToken.roles) {
         //decodedToken.roles
-        const SCOPES = await this.permissionsService.getPermissionsFromRoles(
+        const SCOPE = await this.permissionsService.getPermissionsFromRoles(
           decodedToken.roles,
           response.data.access_token,
         );
 
-        if (!SCOPES.length) {
+        if (!SCOPE.length) {
           throw new UnauthorizedException(
             'El usuario no tiene permisos asignados',
           );
@@ -122,7 +123,7 @@ export class AuthWSO2Service implements IAuthenticationService {
 
         const PERMISSIONS: string[] = [];
 
-        for (const scope of SCOPES) {
+        for (const scope of SCOPE) {
           for (const permission of scope.permissions) {
             if (!PERMISSIONS.includes(permission.value)) {
               PERMISSIONS.push(permission.value);
@@ -219,7 +220,9 @@ export class AuthWSO2Service implements IAuthenticationService {
       const session = await this.sessionService.getSession(sessionId);
       const token = session?.token;
       if (!token) {
-        throw new BadRequestException(`No session token found for sessionId: ${sessionId}`);
+        throw new BadRequestException(
+          `No session token found for sessionId: ${sessionId}`,
+        );
       }
       return token;
     } catch (e: unknown) {

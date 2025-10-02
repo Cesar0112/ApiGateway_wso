@@ -99,13 +99,24 @@ export class UsersWSO2Service {
     }
   }
 
-  async findAll(token: string): Promise<User[]> {
+  /*async findAll(token: string): Promise<User[]> {
     try {
       const res: AxiosResponse<any> = await axios.get(
-        `${this._baseUrl}?count=1000`,
+        `${this._baseUrl}?count=1000&attributes=id,userName,emails,active,groups`,
         this._getRequestOptions(token),
       );
       const resources = res.data?.Resources ?? [];
+      const roles = await this._rolesService.getUserRoles(
+        createdUser.id,
+        token,
+      );
+      let structures: Structure[] = [];
+      if (dto.structureIds) {
+        structures = await this._structureService.findByIds(
+          dto.structureIds,
+          token,
+        );
+      }
       return await Promise.all(
         resources.map(async (u: any) => {
           const userRoles = await this._rolesService.getUserRoles(u.id, token);
@@ -116,8 +127,41 @@ export class UsersWSO2Service {
       this._logger.error('Error obteniendo usuarios en WSO2', err);
       throw new InternalServerErrorException('No se pudieron obtener usuarios');
     }
-  }
+  }*/
+  async findAll(token: string): Promise<User[]> {
+    try {
+      // 1. Traer usuarios con sus grupos
+      const res: AxiosResponse<any> = await axios.get(
+        `${this._baseUrl}?count=1000&attributes=id,userName,emails,active,groups`,
+        this._getRequestOptions(token),
+      );
+      const resources = res.data?.Resources ?? [];
 
+      // 2. Traer TODAS las estructuras (grupos) una sola vez
+      const allStructures = await this._structureService.findAll(token);
+
+      // 3. Armar usuarios con roles y estructuras
+      return await Promise.all(
+        resources.map(async (u: any) => {
+          const userRoles = await this._rolesService.getUserRoles(u.id, token);
+
+          // 4. Mapear grupos a estructuras
+          const userStructures = allStructures.filter(
+            (s) => u.groups?.some((g: any) => g.value === s.id),
+          );
+
+          return UserMapper.fromWSO2ResponseToUser(
+            u,
+            userRoles,
+            userStructures,
+          );
+        }),
+      );
+    } catch (err) {
+      this._logger.error('Error obteniendo usuarios en WSO2', err);
+      throw new InternalServerErrorException('No se pudieron obtener usuarios');
+    }
+  }
   async findById(id: string, token: string): Promise<User> {
     try {
       const res: AxiosResponse<any> = await axios.get(

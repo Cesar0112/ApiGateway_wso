@@ -68,9 +68,11 @@ export class PermissionsService {
     }
 
     try {
-      const URL = `${this._configService.getConfig().WSO2.HOST}:${this._configService.getConfig().WSO2.PORT}/api/server/v1/api-resources/${apiResourceId}/scopes`;
+      const URL = `${this._configService.getConfig().WSO2.HOST}:${
+        this._configService.getConfig().WSO2.PORT
+      }/api/server/v1/api-resources/${apiResourceId}/scopes`;
 
-      const { data: SCOPES }: AxiosResponse<IScope[]> = await axios.get<
+      const { data: SCOPE }: AxiosResponse<IScope[]> = await axios.get<
         IScope[]
       >(URL, {
         headers: {
@@ -84,7 +86,7 @@ export class PermissionsService {
         proxy: false,
       });
 
-      return SCOPES;
+      return SCOPE;
     } catch (err: unknown) {
       if (
         err &&
@@ -141,7 +143,7 @@ export class PermissionsService {
     roles: string[] | string,
     token: string,
   ): Promise<{ role: string; permissions: IPermission[] }[]> {
-    const SCOPES: { role: string; permissions: IPermission[] }[] = [];
+    const SCOPE: { role: string; permissions: IPermission[] }[] = [];
     const ROLES_ARRAY = Array.isArray(roles) ? roles : [roles];
 
     if (!this.hasScope(token, 'internal_role_mgt_view')) {
@@ -179,7 +181,7 @@ export class PermissionsService {
         const RESOURCES = data.Resources;
         if (RESOURCES && RESOURCES.length > 0) {
           const PERMISSIONS = RESOURCES[0].permissions || [];
-          SCOPES.push({
+          SCOPE.push({
             role: ROLE,
             permissions: PERMISSIONS,
           });
@@ -199,6 +201,6 @@ export class PermissionsService {
       }
     }
 
-    return SCOPES;
+    return SCOPE;
   }
 }

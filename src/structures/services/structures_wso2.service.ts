@@ -3,6 +3,7 @@ import {
   NotFoundException,
   InternalServerErrorException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { CreateStructureDto } from '../dto/create-structure.dto';
@@ -14,6 +15,7 @@ import { StructureNameHelper } from '../structure.helper';
 @Injectable()
 export class StructuresWSO2Service {
   private readonly _baseUrl: string;
+  private readonly logger = new Logger(StructuresWSO2Service.name);
   constructor(protected readonly configService: ConfigService) {
     const wso2Config = this.configService.getConfig().WSO2;
     this._baseUrl = `${wso2Config.HOST}:${wso2Config.PORT}/scim2/Groups`;
@@ -69,7 +71,7 @@ export class StructuresWSO2Service {
   }
 
   // Listar todas las estructuras
-  async findAll(token: string): Promise<Structure[]> {
+  /*async findAll(token: string): Promise<Structure[]> {
     try {
       const res: AxiosResponse<any> = await axios.get(
         `${this._baseUrl}?count=1000`,
@@ -77,6 +79,24 @@ export class StructuresWSO2Service {
       );
       return (res.data?.Resources ?? []).map((g: any) => this._mapFromWSO2(g));
     } catch (err: any) {
+      throw new InternalServerErrorException(
+        'Error obteniendo estructuras de WSO2',
+      );
+    }
+  }*/
+  // structures_wso2.service.ts
+  async findAll(token: string): Promise<Structure[]> {
+    try {
+      const res = await axios.get(
+        this._baseUrl,
+        this._getRequestOptions(token),
+      );
+      return (res.data?.Resources ?? []).map((g) => this._mapFromWSO2(g));
+    } catch (err: any) {
+      this.logger.error(
+        'Error crudo de WSO2 al traer grupos',
+        err.response?.data || err.message,
+      );
       throw new InternalServerErrorException(
         'Error obteniendo estructuras de WSO2',
       );
