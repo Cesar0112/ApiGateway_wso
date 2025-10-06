@@ -15,12 +15,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { JoiValidationPipe } from 'src/pipes/password-grant/password-grant.pipe';
-import { UserPasswordSchema } from 'src/pipes/validation-schemas/userpassword';
+import { JoiValidationPipe } from '../pipes/password-grant/password-grant.pipe';
+import { UserPasswordSchema } from '../pipes/validation-schemas/userpassword';
 import { ApiTags, ApiBody, ApiResponse, ApiOkResponse } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { Session as ExpressSession, SessionData } from 'express-session';
-import { EncryptionResponseInterceptor } from 'src/encryption-response/encryption-response.interceptor';
+import { EncryptionResponseInterceptor } from '../encryption-response/encryption-response.interceptor';
 import * as session from 'express-session';
 import { AUTH_SERVICE_TOKEN, IAuthenticationService } from './auth.interface';
 import { LoginThrottleGuard } from './login-throttle.guard';
@@ -59,6 +59,7 @@ export class AuthenticateController {
     @Req() req: Request,
   ): Promise<AuthSuccessDto> {
     const { user, password } = body;
+    console.log('pass', password);
     const result = await this.authenticateService.login(user, password, req.ip);
     //    session.username = user;
     session.permissions = result?.user?.permissions;

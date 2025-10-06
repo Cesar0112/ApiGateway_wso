@@ -6,17 +6,17 @@ import { PermissionsService } from '../permissions/permissions.service';
 import { SessionModule } from '../session/session.module';
 import { ConfigService } from '../config/config.service';
 import { AUTH_SERVICE_TOKEN } from './auth.interface';
-import { SessionService } from 'src/session/session.service';
+import { SessionService } from '../session/session.service';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '../config/config.module';
 import { AuthLocalService } from './services/auth_local.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { UsersWSO2Service } from 'src/users/services/users_wso2.service';
-import { UsersModule } from 'src/users/users.module';
+import { UsersWSO2Service } from '../users/services/users_wso2.service';
+import { UsersModule } from '../users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Permission } from 'src/permissions/entities/permission.entity';
+import { Permission } from '../permissions/entities/permission.entity';
 
 @Module({
   imports: [
@@ -83,4 +83,4 @@ import { Permission } from 'src/permissions/entities/permission.entity';
   exports: [AUTH_SERVICE_TOKEN],
   controllers: [AuthenticateController],
 })
-export class AuthenticateModule { }
+export class AuthenticateModule {}

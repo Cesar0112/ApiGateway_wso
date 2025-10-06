@@ -9,7 +9,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { CreateStructureDto } from '../dto/create-structure.dto';
 import { UpdateStructureDto } from '../dto/update-structure.dto';
 import { Structure } from '../entities/structure.entity';
-import { ConfigService } from 'src/config/config.service';
+import { ConfigService } from '../../config/config.service';
 import * as https from 'https';
 import { StructureNameHelper } from '../structure.helper';
 @Injectable()
@@ -36,10 +36,7 @@ export class StructuresWSO2Service {
   }
 
   // Crear estructura (grupo en SCIM2)
-  async create(
-    dto: CreateStructureDto,
-    token: string,
-  ): Promise<Structure | Partial<Structure>> {
+  async create(dto: CreateStructureDto, token: string): Promise<Structure> {
     try {
       // Construir nombre jerárquico o raíz
       const displayName = StructureNameHelper.buildPath(
@@ -107,10 +104,7 @@ export class StructuresWSO2Service {
     return allStructures.filter((s) => ids.includes(s.id));
   }
   // Buscar estructura por ID
-  async findOne(
-    id: string,
-    token: string,
-  ): Promise<Structure | Partial<Structure>> {
+  async findOne(id: string, token: string): Promise<Structure> {
     try {
       const res: AxiosResponse<any> = await axios.get(
         `${this._baseUrl}/${id}`,
@@ -126,11 +120,7 @@ export class StructuresWSO2Service {
     }
   }
 
-  // Buscar por nombre
-  async findOneByName(
-    name: string,
-    token: string,
-  ): Promise<Structure | Partial<Structure>> {
+  async findOneByName(name: string, token: string): Promise<Structure> {
     try {
       const res: AxiosResponse<any> = await axios.get(
         `${this._baseUrl}?filter=displayName eq "${name}"`,
@@ -146,12 +136,11 @@ export class StructuresWSO2Service {
     }
   }
 
-  // Actualizar
   async update(
     id: string,
     dto: UpdateStructureDto,
     token: string,
-  ): Promise<Structure | Partial<Structure>> {
+  ): Promise<Structure> {
     try {
       const displayName = StructureNameHelper.buildPath(
         dto.parentName ? [dto.parentName, dto.name] : [dto.name],
@@ -194,9 +183,43 @@ export class StructuresWSO2Service {
       );
     }
   }
-
+  async addUserToStructure(
+    groupId: string,
+    userId: string,
+    username: string,
+    token: string,
+  ): Promise<void> {
+    await axios.patch(
+      `${this._baseUrl}/${groupId}`,
+      {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'add',
+            path: 'members',
+            value: {
+              members: [
+                {
+                  display: username,
+                  value: userId,
+                },
+              ],
+            },
+          },
+        ],
+      },
+      this._getRequestOptions(token),
+    );
+  }
+  async getStructureIdByName(name: string, token: string): Promise<string> {
+    const structure: Structure = (await this.findOneByName(
+      name,
+      token,
+    )) as Structure;
+    return structure.id;
+  }
   // Mapper de SCIM2 → Entidad de dominio
-  private _mapFromWSO2(data: any): Structure | Partial<Structure> {
+  /*private _mapFromWSO2(data: any): Structure | Partial<Structure> {
     const parts = data.displayName.split('/');
     const name = parts[parts.length - 1];
     const parentPath = parts.length > 1 ? parts.slice(0, -1).join('/') : null;
@@ -205,6 +228,22 @@ export class StructuresWSO2Service {
       id: data.id,
       name,
       displayName: data.displayName,
+      users: [],
+    };
+  }*/
+  private _mapFromWSO2(data: any): Structure {
+    const parts = data.displayName.split('/');
+    const name = parts[parts.length - 1];
+    const parentPath = parts.length > 1 ? parts.slice(0, -1).join('/') : null;
+
+    return {
+      id: data.id,
+      name,
+      displayName: data.displayName,
+      parent: null,
+      parentId: null,
+      //parentName: parentPath, // path completo del padre (opcional)
+      children: [],
       users: [],
     };
   }

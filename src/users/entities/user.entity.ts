@@ -1,5 +1,5 @@
-import { Role } from 'src/roles/entities/role.entity';
-import { Structure } from 'src/structures/entities/structure.entity';
+import { Role } from '../../roles/entities/role.entity';
+import { Structure } from '../../structures/entities/structure.entity';
 import {
   Column,
   CreateDateColumn,

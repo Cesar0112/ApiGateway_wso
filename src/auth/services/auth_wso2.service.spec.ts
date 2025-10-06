@@ -9,6 +9,7 @@ import { AuthenticateController } from '../auth.controller';
 
 describe('AuthService', () => {
   let service: AuthWSO2Service;
+  let encryptionService: EncryptionsService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [SessionModule],
@@ -22,16 +23,14 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthWSO2Service>(AuthWSO2Service);
+    encryptionService = module.get<EncryptionsService>(EncryptionsService);
   });
 
   it('Debe retornar el token', async () => {
-    expect(
-      await service.login(
-        'superadmin',
-        'fNxH7jDwkuVtei93ExsMGU5yEKVyrhMAAFZgXxSl3zo=',
-        '10.12.24.205',
-      ),
-    ).toEqual(
+    const rawPassword = 'W7$"M^@\'ACM}hC;';
+    const encryptedPassword = encryptionService.encrypt(rawPassword); //
+    console.log(encryptedPassword);
+    expect(await service.login('superadmin', encryptedPassword)).toEqual(
       expect.objectContaining({
         success: true,
         token: expect.objectContaining({

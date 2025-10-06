@@ -16,36 +16,51 @@ import { RoleWSO2Service } from './services/role_wso2.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { SessionTokenGuard } from '../guards/session-token.guard';
-import { AUTH_SERVICE_TOKEN, IAuthenticationService } from 'src/auth/auth.interface';
+import {
+  AUTH_SERVICE_TOKEN,
+  IAuthenticationService,
+} from '../auth/auth.interface';
 import { Request } from 'express';
 import { RoleMapper } from './role.mapper';
 @Controller('roles')
 @UseGuards(SessionTokenGuard)
 export class RolesController {
-  constructor(private readonly _rolesService: RoleWSO2Service,
+  constructor(
+    private readonly _rolesService: RoleWSO2Service,
     @Inject(AUTH_SERVICE_TOKEN)
-    private readonly authenticateService: IAuthenticationService) { }
+    private readonly authenticateService: IAuthenticationService,
+  ) {}
 
   @Post()
   // Añadir "Req" a las importaciones desde '@nestjs/common'
-  async create(
-    @Body() createRoleDto: CreateRoleDto,
-    @Req() req: Request,
-  ) {
+  async create(@Body() createRoleDto: CreateRoleDto, @Req() req: Request) {
     try {
       const sessionId = req.sessionID || req.session?.id;
       if (!sessionId) {
-        throw new HttpException('Session ID not found', HttpStatus.UNAUTHORIZED);
+        throw new HttpException(
+          'Session ID not found',
+          HttpStatus.UNAUTHORIZED,
+        );
       }
 
-      const token = await this.authenticateService.getTokenOfSessionId(sessionId);
+      const token =
+        await this.authenticateService.getTokenOfSessionId(sessionId);
       if (!token) {
-        throw new HttpException('Token not found for session', HttpStatus.UNAUTHORIZED);
+        throw new HttpException(
+          'Token not found for session',
+          HttpStatus.UNAUTHORIZED,
+        );
       }
 
-      return await this._rolesService.createRole(RoleMapper.fromCreateDto(createRoleDto), token);
+      return await this._rolesService.createRole(
+        RoleMapper.fromCreateDto(createRoleDto),
+        token,
+      );
     } catch (error: any) {
-      throw new HttpException(error.message || 'Error creating role', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Error creating role',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -58,7 +73,10 @@ export class RolesController {
 
     const token = await this.authenticateService.getTokenOfSessionId(sessionId);
     if (!token) {
-      throw new HttpException('Token not found for session', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'Token not found for session',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     return this._rolesService.getRoles(token);
   }

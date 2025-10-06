@@ -15,11 +15,11 @@ import { ConfigController } from '../config/config.controller';
 import { ConfigModule } from '../config/config.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { SessionService } from '../session/session.service';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '../database/database.module';
 @Module({
   imports: [
     HttpModule.register({
-      global: true
+      global: true,
     }),
     ConfigModule,
     DatabaseModule.forRoot(),
@@ -46,4 +46,4 @@ import { DatabaseModule } from 'src/database/database.module';
   controllers: [AppController, ConfigController],
   providers: [AppService, ConfigService],
 })
-export class AppModule { }
+export class AppModule {}

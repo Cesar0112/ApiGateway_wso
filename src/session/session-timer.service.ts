@@ -1,10 +1,10 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { ISessionTimers } from '../auth/auth.interface';
-import { SessionService } from 'src/session/session.service';
+import { SessionService } from '../session/session.service';
 import { Socket } from 'socket.io';
-//import { SessionData } from 'src/session/interfaces/session.interface';
+//import { SessionData } from '../session/interfaces/session.interface';
 
-import { ISessionData } from 'src/session/interfaces/session.interface';
+import { ISessionData } from '../session/interfaces/session.interface';
 @Injectable()
 export class SessionTimerService implements OnModuleDestroy {
   private timers = new Map<string, ISessionTimers>();

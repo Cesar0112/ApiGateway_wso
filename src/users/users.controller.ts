@@ -19,7 +19,7 @@ import { Request } from 'express';
 import {
   AUTH_SERVICE_TOKEN,
   IAuthenticationService,
-} from 'src/auth/auth.interface';
+} from '../auth/auth.interface';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UserMapper } from './user_mapper';
 
@@ -29,7 +29,7 @@ export class UsersController {
     private readonly _usersService: UsersWSO2Service,
     @Inject(AUTH_SERVICE_TOKEN)
     private readonly _authenticateService: IAuthenticationService,
-  ) { }
+  ) {}
 
   @Post()
   @ApiBody({ type: CreateUsersDto })
@@ -74,7 +74,10 @@ export class UsersController {
   }
 
   @Get('by-username/:username')
-  async findByUsername(@Param('username') username: string, @Req() req: Request) {
+  async findByUsername(
+    @Param('username') username: string,
+    @Req() req: Request,
+  ) {
     const token = await this.getTokenFromSession(req);
     const user = await this._usersService.findByUsername(username, token);
     return UserMapper.toResponseDto(user);
@@ -103,16 +106,14 @@ export class UsersController {
     const token = await this.getTokenFromSession(req);
     return this._usersService.removeByUsername(username, token);
   }
-
   private async getTokenFromSession(req: Request): Promise<string> {
     const sessionId = req.sessionID || req.session?.id;
     if (!sessionId) {
       throw new HttpException('Session ID not found', HttpStatus.UNAUTHORIZED);
     }
 
-    const token = await this._authenticateService.getTokenOfSessionId(
-      sessionId,
-    );
+    const token =
+      await this._authenticateService.getTokenOfSessionId(sessionId);
     if (!token) {
       throw new HttpException(
         'Token not found for session',
@@ -122,3 +123,22 @@ export class UsersController {
     return token;
   }
 }
+//TODO Terminar esta clase para que la hereden todos los controladores que necesiten el token de un usuario dado su sessionId
+/*export class ControllerWithTokenFromSessionID {
+  private async getTokenFromSession(req: Request): Promise<string> {
+    const sessionId = req.sessionID || req.session?.id;
+    if (!sessionId) {
+      throw new HttpException('Session ID not found', HttpStatus.UNAUTHORIZED);
+    }
+
+    const token =
+      await this._authenticateService.getTokenOfSessionId(sessionId);
+    if (!token) {
+      throw new HttpException(
+        'Token not found for session',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    return token;
+  }
+}*/

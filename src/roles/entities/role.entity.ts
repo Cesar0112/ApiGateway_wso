@@ -1,4 +1,4 @@
-import { Permission } from 'src/permissions/entities/permission.entity';
+import { Permission } from '../../permissions/entities/permission.entity';
 
 import {
   PrimaryGeneratedColumn,
@@ -12,7 +12,10 @@ export abstract class BaseIdEntity {
   id?: string;
 }
 @Entity()
-export class Role extends BaseIdEntity {
+export class Role {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
   @PrimaryColumn()
   name: string;
 

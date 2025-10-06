@@ -1,4 +1,4 @@
-// src/proxy/proxy-config.service.ts
+// ../proxy/proxy-config.service.ts
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { Cache } from 'cache-manager';

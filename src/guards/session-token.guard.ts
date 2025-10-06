@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { SessionService } from 'src/session/session.service';
+import { SessionService } from '../session/session.service';
 
 /**
  * WARNING para acceder a los datos de session que almacena express-session no usar CACHE_MANAGER

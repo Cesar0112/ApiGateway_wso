@@ -4,7 +4,7 @@ import { UserResponseDto } from './dto/user-response.dto';
 import { User } from './entities/user.entity';
 import { Role } from '../roles/entities/role.entity';
 import { Structure } from '../structures/entities/structure.entity';
-import { RoleMapper } from 'src/roles/role.mapper';
+import { RoleMapper } from '../roles/role.mapper';
 
 export class UserMapper {
   // ------------------------

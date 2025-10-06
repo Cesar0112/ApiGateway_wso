@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { AppModule } from '../src/app/app.module';
+import { AppModule } from '../../app/app.module';
 import { io as ClientIO, Socket } from 'socket.io-client';
 
 describe('ProxyGateway (e2e)', () => {

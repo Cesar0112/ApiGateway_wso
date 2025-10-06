@@ -1,4 +1,4 @@
-// src/roles/services/role.wso2.service.ts
+// ../roles/services/role.wso2.service.ts
 import {
   ConflictException,
   Injectable,
@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as https from 'https';
-import { ConfigService } from 'src/config/config.service';
+import { ConfigService } from '../../config/config.service';
 import { Role } from '../entities/role.entity';
 import { RoleMapper } from '../role.mapper';
 
@@ -84,9 +84,7 @@ export class RoleWSO2Service {
     try {
       const res: AxiosResponse<any> = await axios.get(
         `${this.baseUrl}?filter=displayName eq "${name}"`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
+        this.getRequestOptions(token),
       );
 
       const roleData = res.data.Resources?.[0];
@@ -98,7 +96,11 @@ export class RoleWSO2Service {
       throw new InternalServerErrorException('No se pudo obtener el rol');
     }
   }
-
+  async getRoleIdByName(name: string, token: string): Promise<string> {
+    const role = await this.getRoleByName(name, token);
+    if (!role) throw new NotFoundException(`Rol "${name}" no existe`);
+    return role.id;
+  }
   async updateRole(id: string, data: Role, token: string): Promise<Role> {
     try {
       const payload = RoleMapper.toWSO2Payload(data);
@@ -181,47 +183,6 @@ export class RoleWSO2Service {
       throw new InternalServerErrorException(error.message);
     }
   }
-  /*async getUserRoles(userId: string, token: string): Promise<Role[]> {
-    try {
-      const res = await axios.get(
-        `${this.baseUrl}?filter=users.value eq "${userId}"&count=1000`,
-        this.getRequestOptions(token),
-      );
-
-      const resources = res.data.Resources ?? [];
-
-      return resources.map((role: any) => RoleMapper.fromWSO2Response(role));
-    } catch (error) {
-      throw new Error(`Error al obtener roles del usuario: ${error}`);
-    }
-  }*/
-  /* async getUserRoles(userId: string, token: string): Promise<Role[]> {
-    try {
-      const params = new URLSearchParams({
-        filter: `users.value eq "${userId}"`,
-        count: '1000',
-      });
-      const finalUrl = `${this.baseUrl}?${params.toString()}`;
-      this.logger.log('URL llamada: ' + finalUrl); // 👈 ver en consola
-      const res = await axios.get(
-        finalUrl, // 👈 solo la ruta base
-        {
-          ...this.getRequestOptions(token),
-          params, // 👈 axios concatena y codifica correctamente
-        },
-      );
-
-      return (
-        res.data.Resources?.map((r) => RoleMapper.fromWSO2Response(r)) ?? []
-      );
-    } catch (err: any) {
-      this.logger.error(`Error obteniendo roles del usuario ${userId}`, err);
-      throw new InternalServerErrorException(
-        'No se pudieron obtener los roles del usuario',
-      );
-    }
-  }*/
-
   async getUserRoles(userId: string, token: string): Promise<Role[]> {
     const allRoles = await this.getRoles(token);
     const rolesWithUser: Role[] = [];
@@ -248,6 +209,13 @@ export class RoleWSO2Service {
     );
     return res.data.users ?? [];
   }
+  /**
+   * This method isn't tested
+   * @description I think the filter is incorrect, look for a previous method to look for the user
+   * @param username
+   * @param token
+   * @returns
+   */
   async getUserRolesByUsername(
     username: string,
     token: string,
@@ -263,5 +231,26 @@ export class RoleWSO2Service {
     } catch (error) {
       throw new Error(`Error al obtener roles del usuario: ${error.message}`);
     }
+  }
+  /* Asignar un usuario a un rol */
+  async addUserToRole(
+    roleId: string,
+    userId: string,
+    token: string,
+  ): Promise<void> {
+    await axios.patch(
+      `${this.baseUrl}/${roleId}`,
+      {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'add',
+            path: 'users',
+            value: [{ value: userId }],
+          },
+        ],
+      },
+      this.getRequestOptions(token),
+    );
   }
 }

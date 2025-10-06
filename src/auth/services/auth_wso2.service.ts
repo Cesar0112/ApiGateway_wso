@@ -1,4 +1,4 @@
-// src/auth/auth.service.ts
+// ../auth/auth.service.ts
 import {
   BadRequestException,
   Inject,
@@ -46,7 +46,7 @@ export class AuthWSO2Service implements IAuthenticationService {
     return await this.sessionService.refresh(sessionId, session);
   }
 
-  async login(user: string, password: string, ip: string) {
+  async login(user: string, password: string, ip: string = 'localhost') {
     try {
       const URL: string =
         this.configService.get('WSO2')?.URL_TOKEN ??
@@ -89,7 +89,7 @@ export class AuthWSO2Service implements IAuthenticationService {
         : new HttpsAgent({ rejectUnauthorized: false }); // o true en producción
 */
       const response = await axios.post<IWSO2TokenResponse>(URL, DATA, {
-        proxy: false, //TODO Arreglar para entornos que viaje la petición a traves del proxy
+        proxy: false as const, //TODO Arreglar para entornos que viaje la petición a traves del proxy
         headers,
         httpsAgent: new https.Agent({
           rejectUnauthorized:

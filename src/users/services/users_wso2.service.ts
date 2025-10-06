@@ -1,4 +1,4 @@
-// src/users/services/users.wso2.service.ts
+// ../users/services/users.wso2.service.ts
 import {
   ConflictException,
   Injectable,
@@ -13,12 +13,12 @@ import { User } from '../entities/user.entity';
 import { CreateUsersDto } from '../dto/create-users.dto';
 import { UpdateUsersDto } from '../dto/update-users.dto';
 import { UserMapper } from '../user_mapper';
-import { Role } from 'src/roles/entities/role.entity';
-import { RoleWSO2Service } from 'src/roles/services/role_wso2.service';
-import { EncryptionsService } from 'src/encryptions/encryptions.service';
-import { StructuresService } from 'src/structures/services/structures.service';
-import { StructuresWSO2Service } from 'src/structures/services/structures_wso2.service';
-import { Structure } from 'src/structures/entities/structure.entity';
+import { Role } from '../../roles/entities/role.entity';
+import { RoleWSO2Service } from '../../roles/services/role_wso2.service';
+import { EncryptionsService } from '../../encryptions/encryptions.service';
+import { StructuresService } from '../../structures/services/structures.service';
+import { StructuresWSO2Service } from '../../structures/services/structures_wso2.service';
+import { Structure } from '../../structures/entities/structure.entity';
 
 @Injectable()
 export class UsersWSO2Service {
@@ -48,40 +48,36 @@ export class UsersWSO2Service {
       }),
     };
   }
-  private async _buildRolesMap(token: string): Promise<Map<string, Role>> {
-    try {
-      const roles = await this._rolesService.getRoles(token); // devuelve Role[] con permissions si tu RoleMapper lo hace
-      const map = new Map<string, Role>();
-      roles.forEach((r) => {
-        if (r?.id) map.set(r.id, r);
-      });
-      return map;
-    } catch (err) {
-      this._logger.warn(
-        'No se pudieron obtener roles para enriquecer usuarios (seguir sin permisos de rol).',
-        err,
-      );
-      return new Map();
-    }
-  }
-  async create(dto: CreateUsersDto, token: string): Promise<User> {
+  /*async create(dto: CreateUsersDto, token: string): Promise<User> {
     try {
       dto.plainCipherPassword = this._encryptionsService.decrypt(
         dto.plainCipherPassword,
       );
       // 1. Crear usuario en SCIM2
       const payload = UserMapper.fromCreateUsersDtoToWSO2Payload(dto);
-      const resCreateResponse: AxiosResponse<any> = await axios.post(
+      const resCreate: AxiosResponse<any> = await axios.post(
         this._baseUrl,
         payload,
         this._getRequestOptions(token),
       );
-      const createdUser = resCreateResponse.data;
-      //const rolesMap = await this._buildRolesMap(token);
-      const roles = await this._rolesService.getUserRoles(
-        createdUser.id,
-        token,
-      );
+      const createdUser = resCreate.data;
+      
+      let roles: Role[] = [];
+      if (dto.rolesNames) {
+        roles = await this._rolesService.getUserRoles(createdUser.id, token);
+      }
+      // 2. Resolver IDs de roles (nombres o IDs) *****************************
+      let roleIds: string[] = [];
+      if (dto.rolesNames?.length) {
+        // Resuelvo nombres → IDs
+        roleIds = await Promise.all(
+          dto.rolesNames.map((name) =>
+            this._rolesService.getRoleIdByName(name, token),
+          ),
+        );
+      } else if (dto.roleIds?.length) {
+        roleIds = dto.roleIds;
+      }
       let structures: Structure[] = [];
       if (dto.structureIds) {
         structures = await this._structureService.findByIds(
@@ -97,37 +93,87 @@ export class UsersWSO2Service {
       }
       throw new InternalServerErrorException('No se pudo crear el usuario');
     }
-  }
+  }*/
 
-  /*async findAll(token: string): Promise<User[]> {
+  async create(dto: CreateUsersDto, token: string): Promise<User> {
     try {
-      const res: AxiosResponse<any> = await axios.get(
-        `${this._baseUrl}?count=1000&attributes=id,userName,emails,active,groups`,
+      dto.plainCipherPassword = this._encryptionsService.decrypt(
+        dto.plainCipherPassword,
+      );
+
+      /* 1. Crear usuario en SCIM2 ********************************************/
+      const payload = UserMapper.fromCreateUsersDtoToWSO2Payload(dto);
+      const resCreate = await axios.post(
+        this._baseUrl,
+        payload,
         this._getRequestOptions(token),
       );
-      const resources = res.data?.Resources ?? [];
-      const roles = await this._rolesService.getUserRoles(
-        createdUser.id,
-        token,
-      );
-      let structures: Structure[] = [];
-      if (dto.structureIds) {
-        structures = await this._structureService.findByIds(
-          dto.structureIds,
+      const createdUser = resCreate.data;
+
+      /* 2. Resolver IDs de roles (nombres o IDs) *****************************/
+      let roleIds: string[] = [];
+      if (dto.rolesNames?.length) {
+        // Resuelvo nombres → IDs
+        roleIds = await Promise.all(
+          dto.rolesNames.map((name) =>
+            this._rolesService.getRoleIdByName(name, token),
+          ),
+        );
+      } else if (dto.roleIds?.length) {
+        roleIds = dto.roleIds;
+      }
+
+      /* 3. Resolver IDs de estructuras (nombres o IDs) ***********************/
+      let structureIds: string[] = [];
+      if (dto.structureNames?.length) {
+        // Resuelvo nombres → IDs
+        structureIds = await Promise.all(
+          dto.structureNames.map((name) =>
+            this._structureService.getStructureIdByName(name, token),
+          ),
+        );
+      } else if (dto.structureIds?.length) {
+        structureIds = dto.structureIds;
+      }
+
+      /* 4. Asignar roles al usuario ******************************************/
+      for (const roleId of roleIds) {
+        await this._rolesService.addUserToRole(roleId, createdUser.id, token);
+      }
+
+      /* 5. Asignar grupos (estructuras) al usuario ***************************/
+      for (const structId of structureIds) {
+        await this._structureService.addUserToStructure(
+          structId,
+          createdUser.id,
+          createdUser.username.split('/')[1], //Le paso la segunda parte porque el endpoint de wso2 devuelve 'PRIMARY/kim' y no el nombre solamente
           token,
         );
       }
-      return await Promise.all(
-        resources.map(async (u: any) => {
-          const userRoles = await this._rolesService.getUserRoles(u.id, token);
-          return UserMapper.fromWSO2ResponseToUser(u, userRoles);
-        }),
+
+      /* 6. Obtener estado final **********************************************/
+      const finalRoles = await this._rolesService.getUserRoles(
+        createdUser.id,
+        token,
       );
-    } catch (err) {
-      this._logger.error('Error obteniendo usuarios en WSO2', err);
-      throw new InternalServerErrorException('No se pudieron obtener usuarios');
+      const finalStructures = await this._structureService.findByIds(
+        structureIds,
+        token,
+      );
+
+      return UserMapper.fromWSO2ResponseToUser(
+        createdUser,
+        finalRoles,
+        finalStructures,
+      );
+    } catch (err: any) {
+      this._logger.error('Error creando usuario en WSO2', err);
+      if (err.response?.status === 409) {
+        throw new ConflictException('Usuario ya existe');
+      }
+      throw new InternalServerErrorException('No se pudo crear el usuario');
     }
-  }*/
+  }
   async findAll(token: string): Promise<User[]> {
     try {
       // 1. Traer usuarios con sus grupos

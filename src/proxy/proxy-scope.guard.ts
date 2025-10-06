@@ -1,4 +1,4 @@
-// src/proxy/proxy-scope.guard.ts
+// ../proxy/proxy-scope.guard.ts
 import {
   Injectable,
   CanActivate,
@@ -8,7 +8,7 @@ import {
 import { ProxyConfigService } from './proxy-config.service';
 import { Request } from 'express';
 import { Cache } from 'cache-manager';
-import { SessionService } from 'src/session/session.service';
+import { SessionService } from '../session/session.service';
 
 @Injectable()
 export class ProxyScopeGuard implements CanActivate {

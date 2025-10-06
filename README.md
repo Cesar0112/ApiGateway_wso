@@ -98,3 +98,75 @@
 
 ## Consideraciones para el despliegue 
   - Para que la Api-Gateway llegue por la red a WSO2 IS tiene que estar fuera del proxy
+
+# 🛠️ Guía de despliegue en producción: WSO2 Identity Server + PostgreSQL con Docker
+
+## 📦 Requisitos previos
+
+- Docker y Docker Compose instalados
+- PostgreSQL driver JDBC (`postgresql-42.x.x.jar`)
+- Scripts SQL de inicialización (`postgresql.sql`, `identity/postgresql.sql`, `consent/postgresql.sql`)
+- Certificados SSL válidos (opcional pero recomendado)
+- Acceso a dominio público si se usará fuera de localhost
+
+---
+
+## 🔐 Seguridad y configuración
+
+1. Define variables sensibles en `.env`:
+
+   ```env
+   DB_NAME=testdb
+   DB_USER=wso2admin
+   DB_PASS=una_contraseña_segura
+
+2. Usa estas variables en docker-compose.yml:
+  environment:
+    POSTGRES_DB: ${DB_NAME}
+    POSTGRES_USER: ${DB_USER}
+    POSTGRES_PASSWORD: ${DB_PASS}
+
+3. Configura deployment.toml para que todas las bases apunten a testdb:
+  name = "testdb"
+  username = "wso2admin"
+  password = "una_contraseña_segura"
+
+4. Cambia credenciales por defecto (admin/admin) en la sección [super_admin].
+5. Reemplaza el keystore autofirmado (wso2carbon.jks) por certificados SSL reales si usas dominios públicos.
+
+🧱 Persistencia y volúmenes
+1. Usa volumen pgdata para persistir datos de PostgreSQL:
+  volumes:
+  - pgdata:/var/lib/postgresql/data
+
+2. Monta los scripts SQL en initdb/ para inicialización automática:
+  volumes:
+  - ./initdb:/docker-entrypoint-initdb.d
+
+🔁 Puertos y conectividad
+1. Expon ambos puertos en wso2is minimo el 9443 para frontend y back
+  ports:
+  - "9443:9443"  # backend OAuth2
+  - "9444:9444"  # frontend SPA /console
+
+2. Asegúrate de que el Service Provider "Console" tenga registrada esta URL:
+  https://localhost:9444/console/login
+
+📊 Monitoreo y logs
+1. Monta logs en volúmenes persistentes si deseas conservarlos:
+  volumes:
+  - ./logs:/home/wso2carbon/wso2is-7.0.0/repository/logs
+
+2. Integra observabilidad con Grafana + Prometheus o ELK Stack.
+
+3. Activa el módulo de auditoría en WSO2 IS si necesitas trazabilidad.
+
+⚙️ Automatización y mantenimiento
+
+  1. Usa scripts para registrar Service Providers vía API REST de WSO2 IS.
+
+  2. Configura backups automáticos de PostgreSQL (por ejemplo, con pg_dump + cron).
+
+  3. Usa docker container prune regularmente para limpiar contenedores detenidos.
+
+  4. Documenta todos los cambios en un changelog técnico.

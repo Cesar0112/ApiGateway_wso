@@ -6,13 +6,17 @@ import { ConfigService } from '../config/config.service';
 import { SessionModule } from '../session/session.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Role } from './entities/role.entity';
-import { Permission } from 'src/permissions/entities/permission.entity';
-import { AuthenticateModule } from 'src/auth/auth.module';
+import { Permission } from '../permissions/entities/permission.entity';
+import { AuthenticateModule } from '../auth/auth.module';
 
 @Module({
-  imports: [forwardRef(() => AuthenticateModule), SessionModule, TypeOrmModule.forFeature([Role, Permission])],
+  imports: [
+    forwardRef(() => AuthenticateModule),
+    SessionModule,
+    TypeOrmModule.forFeature([Role, Permission]),
+  ],
   controllers: [RolesController],
   providers: [RoleWSO2Service, ConfigService],
-  exports: [RoleWSO2Service]
+  exports: [RoleWSO2Service],
 })
-export class RolesModule { }
+export class RolesModule {}
