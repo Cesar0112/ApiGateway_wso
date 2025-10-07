@@ -24,7 +24,7 @@ import { EncryptionResponseInterceptor } from '../encryption-response/encryption
 import * as session from 'express-session';
 import { AUTH_SERVICE_TOKEN, IAuthenticationService } from './auth.interface';
 import { LoginThrottleGuard } from './login-throttle.guard';
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { AuthSuccessDto } from './services/dtos/auth-success.dto';
 
 interface CustomSession extends ExpressSession {
@@ -51,15 +51,15 @@ export class AuthenticateController {
   @ApiOkResponse({ description: 'Authentication successful' })
   @Post()
   @HttpCode(200)
-
-  //@Throttle({ default: { limit: 5, ttl: 15 * 60 * 1000 } }) //Límite: 5 intentos por IP cada 15 minutos
+  //TODO Cambiar los limites por configuracion de Throttle
+  @Throttle({ default: { limit: 5, ttl: 15 * 60 * 1000 } }) //Límite: 5 intentos por IP cada 15 minutos
   async login(
     @Session() session: Record<string, any>,
     @Body() body: { user: string; password: string },
     @Req() req: Request,
   ): Promise<AuthSuccessDto> {
     const { user, password } = body;
-    console.log('pass', password);
+    //console.log('pass', password);
     const result = await this.authenticateService.login(user, password, req.ip);
     //    session.username = user;
     session.permissions = result?.user?.permissions;

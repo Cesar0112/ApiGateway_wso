@@ -19,7 +19,7 @@ async function main() {
 
   //4 .Prefijo golbal
   app.setGlobalPrefix('apigateway'); // Set global prefix for all routes
-
+  app.disable('x-powered-by');
   // 5. Documentación Swagger
   const swaggerConfig = new DocumentBuilder()
     .setTitle('API Gateway')
