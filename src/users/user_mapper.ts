@@ -56,7 +56,7 @@ export class UserMapper {
       id: data.id,
       username: data.userName,
       password: '',
-      email: data.emails?.[0]?.value ?? null,
+      email: data.emails?.[0] ?? null,
       isActive: data.active,
       roles,
       structures: groups,
