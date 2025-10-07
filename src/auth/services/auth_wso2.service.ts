@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import axios from 'axios';
@@ -23,6 +24,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 @Injectable()
 export class AuthWSO2Service implements IAuthenticationService {
+  private readonly logger = new Logger(AuthWSO2Service.name);
   constructor(
     protected readonly configService: ConfigService,
     protected readonly encryptionsService: EncryptionsService,
@@ -39,6 +41,9 @@ export class AuthWSO2Service implements IAuthenticationService {
     });
   }
   async refresh(sessionId: string): Promise<boolean> {
+    /*const encryptedPassword =
+      this.encryptionsService.encrypt('W7$"M^@\'ACM}hC;'); //
+    console.log(encryptedPassword);*/
     const session = await this.sessionService.getSession(sessionId);
     if (!session) {
       throw new UnauthorizedException();
@@ -144,7 +149,8 @@ export class AuthWSO2Service implements IAuthenticationService {
           message: 'Autenticación exitosa',
         };
       }
-    } catch {
+    } catch (e) {
+      this.logger.error('Error autenticando', e);
       throw new UnauthorizedException('Credenciales inválidas');
     }
   }
