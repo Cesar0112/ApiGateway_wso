@@ -6,18 +6,45 @@ import { ConfigService } from '../../config/config.service';
 import { PermissionsService } from '../../permissions/permissions.service';
 import { SessionModule } from '../../session/session.module';
 import { AuthenticateController } from '../auth.controller';
-
+import { CACHE_MANAGER, CacheModule } from '@nestjs/cache-manager';
+import { SessionService } from '../../session/session.service';
+import { ThrottlerModule } from '@nestjs/throttler';
 describe('AuthService', () => {
   let service: AuthWSO2Service;
   let encryptionService: EncryptionsService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [SessionModule],
+      imports: [
+        SessionModule,
+        CacheModule.register(),
+        ThrottlerModule.forRoot(),
+      ],
       providers: [
         ConfigService,
         AuthWSO2Service,
         EncryptionsService,
-        PermissionsService,
+        {
+          provide: PermissionsService,
+          useValue: {
+            getPermissionsFromRoles: jest.fn().mockResolvedValue([
+              {
+                permissions: [
+                  { value: 'read:users' },
+                  { value: 'write:users' },
+                ],
+              },
+            ]),
+          },
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: {
+            get: jest.fn(),
+            set: jest.fn(),
+            del: jest.fn(),
+            reset: jest.fn(),
+          },
+        },
       ],
       controllers: [AuthenticateController],
     }).compile();
