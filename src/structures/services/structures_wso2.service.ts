@@ -189,22 +189,21 @@ export class StructuresWSO2Service {
     username: string,
     token: string,
   ): Promise<void> {
+    const URL: string = `${this._baseUrl}/${groupId}`;
     await axios.patch(
-      `${this._baseUrl}/${groupId}`,
+      URL,
       {
         schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
         Operations: [
           {
             op: 'add',
             path: 'members',
-            value: {
-              members: [
-                {
-                  display: username,
-                  value: userId,
-                },
-              ],
-            },
+            value: [
+              {
+                display: username,
+                value: userId,
+              },
+            ],
           },
         ],
       },

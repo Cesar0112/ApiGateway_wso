@@ -5,6 +5,7 @@ import * as morgan from 'morgan';
 import { ConfigService } from './config/config.service';
 import * as express from 'express';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { ValidationPipe } from '@nestjs/common';
 async function main() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const cfg = app.get(ConfigService);
@@ -29,7 +30,13 @@ async function main() {
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('apigateway/docs', app, document);
-
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
   app.enableCors({
     origin: cfg.getConfig().API_GATEWAY?.CORS_ORIGIN, // Allow specific origins
     exposedHeaders: ['Set-Cookie'],

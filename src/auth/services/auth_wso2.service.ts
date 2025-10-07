@@ -41,9 +41,8 @@ export class AuthWSO2Service implements IAuthenticationService {
     });
   }
   async refresh(sessionId: string): Promise<boolean> {
-    /*const encryptedPassword =
-      this.encryptionsService.encrypt('W7$"M^@\'ACM}hC;'); //
-    console.log(encryptedPassword);*/
+    const encryptedPassword = this.encryptionsService.encrypt('Admin*123456'); //
+    console.log(encryptedPassword);
     const session = await this.sessionService.getSession(sessionId);
     if (!session) {
       throw new UnauthorizedException();

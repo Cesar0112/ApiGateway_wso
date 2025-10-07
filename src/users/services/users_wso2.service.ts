@@ -146,7 +146,7 @@ export class UsersWSO2Service {
         await this._structureService.addUserToStructure(
           structId,
           createdUser.id,
-          createdUser.username.split('/')[1], //Le paso la segunda parte porque el endpoint de wso2 devuelve 'PRIMARY/kim' y no el nombre solamente
+          createdUser.userName,
           token,
         );
       }
@@ -166,12 +166,18 @@ export class UsersWSO2Service {
         finalRoles,
         finalStructures,
       );
-    } catch (err: any) {
-      this._logger.error('Error creando usuario en WSO2', err);
-      if (err.response?.status === 409) {
+    } catch (error: any) {
+      this._logger.error(
+        'Error creando usuario en WSO2',
+        error.response ? error.response?.data?.detail : error.response,
+      );
+      if (error.response?.status === 409) {
         throw new ConflictException('Usuario ya existe');
       }
-      throw new InternalServerErrorException('No se pudo crear el usuario');
+      throw new InternalServerErrorException(
+        'No se pudo crear el usuario',
+        error.response?.data?.detail,
+      );
     }
   }
   async findAll(token: string): Promise<User[]> {

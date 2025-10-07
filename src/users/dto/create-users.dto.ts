@@ -9,6 +9,7 @@ import {
   IsBoolean,
   IsUUID,
   ValidateIf,
+  MaxLength,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -19,7 +20,6 @@ export class CreateUsersDto {
   username!: string;
 
   @IsString()
-  @MinLength(6)
   @ApiProperty({ example: 'a8*f14d5h?yu89l*_Secr3t!' })
   plainCipherPassword!: string;
 
