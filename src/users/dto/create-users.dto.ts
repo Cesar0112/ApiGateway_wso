@@ -12,12 +12,13 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { OneOf } from 'src/common/decorators/one-of.decorator';
 
-@OneOf(
-  { properties: ['rolesNames', 'roleIds'], allowAllEmpty: true },
-  { message: 'Usa rolesNames O roleIds, pero no ambas' },
-)
+@OneOf({ properties: ['rolesNames', 'roleIds'], allowAllEmpty: true })
 @OneOf({ properties: ['structureNames', 'structureIds'], allowAllEmpty: true })
 export class CreateUsersDto {
+  @IsOptional()
+  @IsUUID('4')
+  id?: string;
+
   @IsString()
   @MinLength(3)
   @ApiProperty({ example: 'jdoe' })

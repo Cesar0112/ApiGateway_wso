@@ -24,6 +24,12 @@ export class User {
   @Column({ nullable: true, default: null })
   email?: string; //TODO Agregar que sea un arreglo de string indicando que el primero es el primario
 
+  @Column({ nullable: true })
+  firstName?: string;
+
+  @Column({ nullable: true })
+  lastName?: string;
+
   @Column({ default: true })
   isActive: boolean;
 

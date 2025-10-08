@@ -19,6 +19,7 @@ import { EncryptionsService } from '../../encryptions/encryptions.service';
 import { StructuresService } from '../../structures/services/structures.service';
 import { StructuresWSO2Service } from '../../structures/services/structures_wso2.service';
 import { Structure } from '../../structures/entities/structure.entity';
+import { ChangeUsernameInternalDto } from '../dto/change-username-internal.dto';
 
 @Injectable()
 export class UsersWSO2Service {
@@ -260,6 +261,10 @@ export class UsersWSO2Service {
 
   async update(id: string, dto: UpdateUsersDto, token: string): Promise<User> {
     try {
+      if (dto.username)
+        throw new InternalServerErrorException(
+          'No se puede cambiar el username de un usuario ya creado',
+        );
       const payload = UserMapper.fromUpdateUsersDtoToWSO2Payload(dto);
       const res: AxiosResponse<any> = await axios.put(
         `${this._baseUrl}/${id}`,
@@ -279,7 +284,7 @@ export class UsersWSO2Service {
     } catch (err) {
       this._logger.error(`Error actualizando usuario ${id}`, err);
       throw new InternalServerErrorException(
-        'No se pudo actualizar el usuario',
+        err.message ?? 'No se pudo actualizar el usuario',
       );
     }
   }

@@ -7,6 +7,15 @@ import { Structure } from '../structures/entities/structure.entity';
 import { RoleMapper } from '../roles/role.mapper';
 
 export class UserMapper {
+  static fromUserToCreateUserDto(user: User): CreateUsersDto {
+    const { password, roles, structures, ...rest } = user;
+    return {
+      ...rest,
+      plainCipherPassword: password,
+      roleIds: roles?.map((r) => r.id),
+      structureIds: structures?.map((s) => s.id),
+    };
+  }
   // ------------------------
   // TO WSO2 PAYLOAD
   // ------------------------

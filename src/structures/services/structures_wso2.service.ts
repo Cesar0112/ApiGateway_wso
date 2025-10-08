@@ -34,6 +34,33 @@ export class StructuresWSO2Service {
       }),
     };
   }
+  async getUserStructures(userId: string, token: string): Promise<Structure[]> {
+    const url = `${this.configService.getConfig().WSO2.HOST}:${
+      this.configService.getConfig().WSO2.PORT
+    }/scim2/Users/${userId}?attributes=groups`;
+
+    try {
+      const res = await axios.get(url, this._getRequestOptions(token));
+      const groups = res.data?.groups ?? [];
+
+      return groups.map(
+        (g: any) =>
+          ({
+            id: g.value,
+            name: g.display,
+            displayName: g.display,
+          }) as Structure,
+      );
+    } catch (err: any) {
+      this.logger.error(
+        'Error obteniendo grupos de usuario',
+        err.response?.data || err.message,
+      );
+      throw new InternalServerErrorException(
+        'Error obteniendo estructuras del usuario en WSO2',
+      );
+    }
+  }
 
   // Crear estructura (grupo en SCIM2)
   async create(dto: CreateStructureDto, token: string): Promise<Structure> {

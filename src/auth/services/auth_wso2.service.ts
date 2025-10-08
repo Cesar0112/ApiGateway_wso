@@ -41,7 +41,8 @@ export class AuthWSO2Service implements IAuthenticationService {
     });
   }
   async refresh(sessionId: string): Promise<boolean> {
-    const encryptedPassword = this.encryptionsService.encrypt('Admin*123456'); //
+    const encryptedPassword =
+      this.encryptionsService.encrypt('W7$"M^@\'ACM}hC;'); //
     console.log(encryptedPassword);
     const session = await this.sessionService.getSession(sessionId);
     if (!session) {
@@ -61,13 +62,12 @@ export class AuthWSO2Service implements IAuthenticationService {
         this.configService.get('WSO2') ??
         {};
 
-      const grantType: string = wso2Cfg.GRANT_TYPE ?? 'password';
       const scope: string =
         wso2Cfg.SCOPE ??
         'openid groups id_structure profile roles internal_role_mgt_view internal_user_mgt_list internal_user_mgt_create internal_user_mgt_view internal_user_mgt_update internal_user_mgt_delete';
 
       const payload: Record<string, string> = {
-        grant_type: grantType,
+        grant_type: wso2Cfg.GRANT_TYPE ?? 'password',
         client_id:
           wso2Cfg.CLIENT_ID ?? this.configService.get('WSO2')?.CLIENT_ID,
         client_secret:
