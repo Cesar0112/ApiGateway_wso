@@ -22,7 +22,7 @@ export class User {
   password: string;
 
   @Column({ nullable: true, default: null })
-  email?: string;
+  email?: string; //TODO Agregar que sea un arreglo de string indicando que el primero es el primario
 
   @Column({ default: true })
   isActive: boolean;

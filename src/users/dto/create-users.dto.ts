@@ -6,13 +6,17 @@ import {
   IsOptional,
   IsArray,
   ArrayMinSize,
-  IsBoolean,
   IsUUID,
-  ValidateIf,
-  MaxLength,
+  IsBoolean,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { OneOf } from 'src/common/decorators/one-of.decorator';
 
+@OneOf(
+  { properties: ['rolesNames', 'roleIds'], allowAllEmpty: true },
+  { message: 'Usa rolesNames O roleIds, pero no ambas' },
+)
+@OneOf({ properties: ['structureNames', 'structureIds'], allowAllEmpty: true })
 export class CreateUsersDto {
   @IsString()
   @MinLength(3)
@@ -23,14 +27,16 @@ export class CreateUsersDto {
   @ApiProperty({ example: 'a8*f14d5h?yu89l*_Secr3t!' })
   plainCipherPassword!: string;
 
+  @IsOptional()
   @IsString()
   @MinLength(3)
-  @ApiProperty({ example: 'Carlos' })
+  @ApiPropertyOptional({ example: 'Carlos' })
   firstName?: string;
 
+  @IsOptional()
   @IsString()
   @MinLength(3)
-  @ApiProperty({ example: 'Perez' })
+  @ApiPropertyOptional({ example: 'Perez' })
   lastName?: string;
 
   @IsOptional()
@@ -43,41 +49,31 @@ export class CreateUsersDto {
   @ApiPropertyOptional({ default: true })
   isActive?: boolean = true;
 
+  /* XOR grupo 1 */
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(0)
+  @ArrayMinSize(1)
   @IsString({ each: true })
-  @ValidateIf((o) => !!o.roleIds)
   @ApiPropertyOptional({ type: [String], example: ['admin', 'viewer'] })
   rolesNames?: string[];
 
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(0)
-  @IsUUID('all', { each: true })
-  @ValidateIf((o) => !!o.rolesNames)
+  @ArrayMinSize(1)
+  @IsUUID('4', { each: true })
   @ApiPropertyOptional({ type: [String], example: ['uuid-1', 'uuid-2'] })
   roleIds?: string[];
 
+  /* XOR grupo 2 */
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(0)
   @IsString({ each: true })
-  @ValidateIf((o) => !!o.structureIds)
-  @ApiPropertyOptional({
-    type: [String],
-    example: ['Sede Central', 'Sede Norte'],
-  })
+  @ApiPropertyOptional({ type: [String], example: ['HQ', 'Store'] })
   structureNames?: string[];
 
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(0)
-  @IsUUID('all', { each: true })
-  @ValidateIf((o) => !!o.structureNames)
-  @ApiPropertyOptional({
-    type: [String],
-    example: ['uuid-str-1', 'uuid-str-2'],
-  })
+  @IsUUID('4', { each: true })
+  @ApiPropertyOptional({ type: [String], example: ['uuid-3', 'uuid-4'] })
   structureIds?: string[];
 }
