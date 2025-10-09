@@ -16,14 +16,14 @@ export class UsersLocalService {
     private readonly _roleRepo: Repository<Role>,
     @InjectRepository(Structure)
     private readonly _structureRepo: Repository<Structure>,
-  ) { }
+  ) {}
 
   async findByUsername(
     username: string,
     options?: { relations?: string[] },
   ): Promise<User | null> {
     return this._userRepo.findOne({
-      where: { username },
+      where: { userName: username },
       relations: options?.relations || [],
     });
   }
@@ -33,7 +33,7 @@ export class UsersLocalService {
 
     // 2. construye entidad
     const user = this._userRepo.create({
-      username: dto.username,
+      userName: dto.userName,
       password: HASH,
       email: dto.email,
       isActive: dto.isActive ?? true,

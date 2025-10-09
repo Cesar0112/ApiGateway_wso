@@ -5,5 +5,5 @@ import { IsString, MinLength } from 'class-validator';
 export class UpdateUsersDto extends PartialType(CreateUsersDto) {
   @IsString()
   @MinLength(3)
-  override username!: string;
+  override userName!: string;
 }

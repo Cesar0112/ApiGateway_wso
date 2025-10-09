@@ -8,6 +8,7 @@ import {
   ArrayMinSize,
   IsUUID,
   IsBoolean,
+  IsPhoneNumber,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { OneOf } from 'src/common/decorators/one-of.decorator';
@@ -22,7 +23,7 @@ export class CreateUsersDto {
   @IsString()
   @MinLength(3)
   @ApiProperty({ example: 'jdoe' })
-  username!: string;
+  userName!: string;
 
   @IsString()
   @ApiProperty({ example: 'a8*f14d5h?yu89l*_Secr3t!' })
@@ -48,7 +49,7 @@ export class CreateUsersDto {
   @IsOptional()
   @IsBoolean()
   @ApiPropertyOptional({ default: true })
-  isActive?: boolean = true;
+  isActive?: boolean;
 
   /* XOR grupo 1 */
   @IsOptional()
@@ -77,4 +78,12 @@ export class CreateUsersDto {
   @IsUUID('4', { each: true })
   @ApiPropertyOptional({ type: [String], example: ['uuid-3', 'uuid-4'] })
   structureIds?: string[];
+
+  @IsPhoneNumber()
+  @IsOptional()
+  phoneNumber?: string;
+
+  @IsString()
+  @IsOptional()
+  displayName?: string;
 }

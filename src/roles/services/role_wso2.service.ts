@@ -221,17 +221,32 @@ export class RoleWSO2Service {
     token: string,
   ): Promise<Role[]> {
     try {
-      const res: AxiosResponse<any> = await axios.get(
-        `${this.baseUrl}?filter=users.display eq "${username}"&count=1000`,
+      // 1️⃣ Obtener usuario desde el username
+      const userResponse = await axios.get(
+        `${this.configService.getConfig().WSO2.HOST}:${
+          this.configService.getConfig().WSO2.PORT
+        }/scim2/Users?filter=userName eq "${username}"`,
         this.getRequestOptions(token),
       );
-      return res.data.Resources?.map((role: any) =>
-        RoleMapper.fromWSO2Response(role),
-      );
+
+      const user = userResponse.data.Resources?.[0];
+      if (!user || !user.id) {
+        throw new NotFoundException(`Usuario "${username}" no encontrado`);
+      }
+
+      // 2️⃣ Reutilizar método existente
+      return await this.getUserRoles(user.id, token);
     } catch (error) {
-      throw new Error(`Error al obtener roles del usuario: ${error.message}`);
+      this.logger.error(
+        `Error al obtener roles del usuario ${username} en WSO2`,
+        error.response?.data ?? error.message,
+      );
+      throw new InternalServerErrorException(
+        `Error al obtener roles del usuario: ${error.message}`,
+      );
     }
   }
+
   /* Asignar un usuario a un rol */
   async addUserToRole(
     roleId: string,

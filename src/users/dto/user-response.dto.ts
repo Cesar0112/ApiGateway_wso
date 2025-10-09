@@ -21,6 +21,12 @@ export class UserResponseDto {
   @ApiProperty({ example: 'admin' })
   username: string;
 
+  @ApiProperty({ example: 'Carlos' })
+  firstName: string;
+
+  @ApiProperty({ example: 'Perez' })
+  lastName: string;
+
   @ApiProperty({ example: 'jdoe@corp.com', nullable: true })
   email: string | null;
 

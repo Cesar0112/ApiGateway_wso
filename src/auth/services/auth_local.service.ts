@@ -72,7 +72,7 @@ export class AuthLocalService extends AuthWSO2Service {
     ];
     const TOKEN = this._jwtService.sign({
       sub: user.id,
-      username: user.username,
+      username: user.userName,
       ROLES,
       PERMISSIONS,
     });
@@ -83,7 +83,7 @@ export class AuthLocalService extends AuthWSO2Service {
       token: TOKEN,
       source: this.configService.getConfig().DATABASE?.TYPE ?? 'sqlite',
       user: {
-        username: user.username,
+        username: user.userName,
         roles: ROLES,
         permissions: PERMISSIONS,
       },
@@ -96,7 +96,7 @@ export class AuthLocalService extends AuthWSO2Service {
   } {
     const payload = {
       sub: user.id,
-      username: user.username,
+      username: user.userName,
       roles: user.roles.map((r) => r.name),
     };
 

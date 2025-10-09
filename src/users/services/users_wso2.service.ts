@@ -41,7 +41,7 @@ export class UsersWSO2Service {
       proxy: false as const,
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/scim+json',
       },
       httpsAgent: new https.Agent({
         rejectUnauthorized:
@@ -218,7 +218,7 @@ export class UsersWSO2Service {
   async findById(id: string, token: string): Promise<User> {
     try {
       const res: AxiosResponse<any> = await axios.get(
-        `${this._baseUrl}/${id}`,
+        `${this._baseUrl}/${id}?attributes=id,userName,emails,name,groups,active`,
         this._getRequestOptions(token),
       );
       const userRoles = await this._rolesService.getUserRoles(
@@ -261,30 +261,56 @@ export class UsersWSO2Service {
 
   async update(id: string, dto: UpdateUsersDto, token: string): Promise<User> {
     try {
-      if (dto.username)
+      if (dto.userName)
         throw new InternalServerErrorException(
-          'No se puede cambiar el username de un usuario ya creado',
+          'No se puede cambiar el userName de un usuario ya creado',
         );
-      const payload = UserMapper.fromUpdateUsersDtoToWSO2Payload(dto);
+      if (dto.id)
+        throw new InternalServerErrorException(
+          'No se puede cambiar el identificador de un usuario',
+        );
+      //aqui agrego la propiedad userName porque scim2 requiere para actualizar un usuario ademas del id el userName
+      const currentUser = await this.findById(id, token);
+      dto.userName = currentUser.userName;
+      let payload = UserMapper.fromUpdateUsersDtoToWSO2Payload(dto);
+      //payload = this.preserveMissingFields(payload, currentUser);
+      if (payload.name) {
+        if (!payload.name.givenName) {
+          payload.name.givenName = currentUser.firstName;
+        }
+        if (!payload.name.familyName) {
+          payload.name.familyName = currentUser.lastName;
+        }
+      } else {
+        payload.name = {
+          givenName: currentUser.firstName,
+          familyName: currentUser.lastName,
+        };
+      }
+      if (!payload.emails || payload.emails.length === 0) {
+        payload.emails = currentUser.email
+          ? [{ value: currentUser.email, primary: true }]
+          : [];
+      }
       const res: AxiosResponse<any> = await axios.put(
-        `${this._baseUrl}/${id}`,
+        `${this._baseUrl}/${id}?attributes=id,userName,emails,name,groups,active`,
         payload,
         this._getRequestOptions(token),
       );
       let rolesMap: Role[] = [];
       if (dto.id) {
         rolesMap = await this._rolesService.getUserRoles(dto.id, token);
-      } else if (dto.username) {
+      } else if (dto.userName) {
         rolesMap = await this._rolesService.getUserRolesByUsername(
-          dto.username,
+          dto.userName,
           token,
         );
       }
       return UserMapper.fromWSO2ResponseToUser(res.data, rolesMap);
     } catch (err) {
-      this._logger.error(`Error actualizando usuario ${id}`, err);
+      this._logger.error(`Error actualizando usuario ${id}`, err.message);
       throw new InternalServerErrorException(
-        err.message ?? 'No se pudo actualizar el usuario',
+        'No se pudo actualizar el usuario',
       );
     }
   }
@@ -296,7 +322,7 @@ export class UsersWSO2Service {
     try {
       // buscar por username
       const resGet: AxiosResponse<any> = await axios.get(
-        `${this._baseUrl}?filter=userName eq "${username}"`,
+        `${this._baseUrl}?filter=userName eq "${username}"?attributes=id,userName,emails,name,groups,active`,
         this._getRequestOptions(token),
       );
       const existing = resGet.data?.Resources?.[0];
@@ -360,5 +386,28 @@ export class UsersWSO2Service {
         throw new NotFoundException(err.response.data);
       throw new InternalServerErrorException('No se pudo eliminar el usuario');
     }
+  }
+  preserveMissingFields<T extends object>(partial: T, full: T): T {
+    const result = { ...partial };
+    for (const [key, value] of Object.entries(full)) {
+      if (
+        result[key] === undefined ||
+        result[key] === null ||
+        (typeof result[key] === 'string' && result[key] === '') ||
+        (Array.isArray(result[key]) && result[key].length === 0)
+      ) {
+        result[key] = value;
+      } else if (
+        typeof value === 'object' &&
+        !Array.isArray(value) &&
+        value !== null
+      ) {
+        result[key] = this.preserveMissingFields(
+          result[key] as any,
+          value as any,
+        );
+      }
+    }
+    return result;
   }
 }
