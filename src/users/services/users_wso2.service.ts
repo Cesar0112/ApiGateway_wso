@@ -225,7 +225,8 @@ export class UsersWSO2Service {
         res.data.id,
         token,
       );
-      return UserMapper.fromWSO2ResponseToUser(res.data, userRoles);
+      const structs = await this._structureService.getUserStructures(id, token);
+      return UserMapper.fromWSO2ResponseToUser(res.data, userRoles, structs);
     } catch (err) {
       if (err.response?.status === 404) {
         throw new NotFoundException(`Usuario ${id} no encontrado`);

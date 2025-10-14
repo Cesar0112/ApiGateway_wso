@@ -6,6 +6,7 @@ import { Role } from '../roles/entities/role.entity';
 import { Structure } from '../structures/entities/structure.entity';
 import { RoleMapper } from '../roles/role.mapper';
 import { Permission } from 'src/permissions/entities/permission.entity';
+import { StructureNameHelper } from 'src/structures/structure.helper';
 
 export class UserMapper {
   static fromUserToCreateUserDto(user: User): CreateUsersDto {
@@ -107,6 +108,7 @@ export class UserMapper {
     roles: Role[] = [],
     groups: Structure[] = [],
   ): User {
+    groups.forEach((s) => (s.name = StructureNameHelper.getLeafName(s.name)));
     return {
       id: data.id,
       userName: data.userName,
