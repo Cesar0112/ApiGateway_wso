@@ -211,12 +211,12 @@ export class StructuresWSO2Service {
     }
   }
   async addUserToStructure(
-    groupId: string,
+    structureId: string,
     userId: string,
     username: string,
     token: string,
   ): Promise<void> {
-    const URL: string = `${this._baseUrl}/${groupId}`;
+    const URL: string = `${this._baseUrl}/${structureId}`;
     await axios.patch(
       URL,
       {
@@ -272,5 +272,24 @@ export class StructuresWSO2Service {
       children: [],
       users: [],
     };
+  }
+  async removeUserFromStructure(
+    structureId: string,
+    userId: string,
+    token: string,
+  ) {
+    await axios.patch(
+      `${this._baseUrl}/${structureId}`,
+      {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'remove',
+            path: `members[value eq "${userId}"]`,
+          },
+        ],
+      },
+      this._getRequestOptions(token),
+    );
   }
 }

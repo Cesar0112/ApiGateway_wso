@@ -56,7 +56,7 @@ export class UsersController {
     return UserMapper.toResponseDto(user);
   }
 
-  @Patch(':id')
+  @Patch(':id') //Es un patch pero por dentro hace put o patch segun convenga
   async update(
     @Param('id') id: string,
     @Body() updateUsersDto: UpdateUsersDto,

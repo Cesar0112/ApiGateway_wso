@@ -272,6 +272,13 @@ export class UsersWSO2Service {
       //aqui agrego la propiedad userName porque scim2 requiere para actualizar un usuario ademas del id el userName
       const currentUser = await this.findById(id, token);
       dto.userName = currentUser.userName;
+
+      if (dto.structureIds?.length) {
+        await this.updateUserStructuresByIds(id, dto.structureIds, token);
+        /* quitarlo del payload PUT para que no choque */
+        delete dto.structureIds;
+      }
+
       let payload = UserMapper.fromUpdateUsersDtoToWSO2Payload(dto);
       //payload = this.preserveMissingFields(payload, currentUser);
       if (payload.name) {
@@ -289,7 +296,7 @@ export class UsersWSO2Service {
       }
       if (!payload.emails || payload.emails.length === 0) {
         payload.emails = currentUser.email
-          ? [{ value: currentUser.email, primary: true }]
+          ? [{ type: 'work', value: currentUser.email, primary: true }]
           : [];
       }
       const res: AxiosResponse<any> = await axios.put(
@@ -308,10 +315,49 @@ export class UsersWSO2Service {
       }
       return UserMapper.fromWSO2ResponseToUser(res.data, rolesMap);
     } catch (err) {
-      this._logger.error(`Error actualizando usuario ${id}`, err.message);
-      throw new InternalServerErrorException(
-        'No se pudo actualizar el usuario',
+      this._logger.error(
+        `Error actualizando usuario ${id}`,
+        err.response?.data?.detail ?? err.message,
       );
+      throw new InternalServerErrorException(
+        `No se pudo actualizar el usuario por ${err.message}`,
+      );
+    }
+  }
+  /**
+   * Reemplaza **todas** las estructuras (grupos) del usuario por las nuevas.
+   * SCIM 2.0: PATCH /Users/{id}  →  replace groups
+   */
+  async updateUserStructuresByIds(
+    userId: string,
+    structuresIds: string[],
+    token: string,
+  ): Promise<void> {
+    const { userName } = await this.findById(userId, token);
+    const currentStructuresOfUser =
+      await this._structureService.getUserStructures(userId, token);
+
+    for (const g of currentStructuresOfUser) {
+      if (!structuresIds.includes(g.id)) {
+        await this._structureService.removeUserFromStructure(
+          g.id,
+          userId,
+          token,
+        );
+      }
+    }
+    for (const id of structuresIds) {
+      const exists = currentStructuresOfUser.some(
+        (g: Structure) => g.id === id,
+      );
+      if (!exists) {
+        await this._structureService.addUserToStructure(
+          id,
+          userId,
+          userName,
+          token,
+        );
+      }
     }
   }
   async updateByUsername(

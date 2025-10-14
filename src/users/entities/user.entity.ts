@@ -10,6 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Email } from '../user_mapper';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')

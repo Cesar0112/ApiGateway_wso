@@ -81,14 +81,17 @@ export class UserMapper {
       payload.name = {};
       if (dto.firstName) payload.name.givenName = dto.firstName;
       if (dto.lastName) payload.name.familyName = dto.lastName;
-
-      /*payload['urn:ietf:params:scim:schemas:extension:enterprise:2.0:User'] = {
-        givenName: dto.firstName ?? '',
-        familyName: dto.lastName ?? '',
-      };*/
     }
 
-    if (dto.email) payload.emails = [{ value: dto.email, primary: true }];
+    if (dto.email) {
+      payload.emails = [
+        {
+          type: 'work',
+          value: dto.email,
+          primary: true,
+        },
+      ];
+    }
 
     if (dto.isActive !== undefined) payload.active = dto.isActive;
 
@@ -108,7 +111,7 @@ export class UserMapper {
       id: data.id,
       userName: data.userName,
       password: '',
-      email: data.emails?.[0] ?? null,
+      email: data.emails?.[0].value ?? null,
       firstName: data.name?.givenName,
       lastName: data.name?.familyName,
       isActive: data.active,
@@ -204,12 +207,17 @@ export class UserMapper {
 export class WSO2Response {
   id: string;
   userName: string;
-  emails: string[];
+  emails: Email[];
   active: boolean;
   meta: { created: any; lastModified: any };
   displayName?: string;
   permissions?: Permission[];
   name?: { givenName: string; familyName: string };
+}
+export class Email {
+  value: string;
+  type: 'work';
+  primary?: boolean;
 }
 export class WSO2Payload {
   schemas: [

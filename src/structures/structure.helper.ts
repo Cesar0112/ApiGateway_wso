@@ -1,4 +1,5 @@
 export class StructureNameHelper {
+  private static readonly GROUP_DELIMITER: string = '-';
   static buildPath(parts: string[]): string {
     if (!parts || parts.length === 0) {
       throw new Error('Debe especificar al menos un nivel');
@@ -7,7 +8,7 @@ export class StructureNameHelper {
     if (parts.length === 1) {
       return parts[0];
     }
-    return parts.join('/');
+    return parts.join(this.GROUP_DELIMITER);
   }
 
   static parsePath(path: string): string[] {
@@ -15,7 +16,7 @@ export class StructureNameHelper {
       throw new Error('El nombre no puede estar vacío');
     }
     return path
-      .split('/')
+      .split(this.GROUP_DELIMITER)
       .map((p) => p.trim())
       .filter(Boolean);
   }
@@ -28,7 +29,7 @@ export class StructureNameHelper {
   static getParentPath(path: string): string | null {
     const parts = this.parsePath(path);
     if (parts.length <= 1) return null; // raíz no tiene padre
-    return parts.slice(0, -1).join('/');
+    return parts.slice(0, -1).join(this.GROUP_DELIMITER);
   }
 
   static ensureUnique(path: string, existing: string[]): void {
@@ -37,6 +38,6 @@ export class StructureNameHelper {
     }
   }
   static isDescendantOf(childPath: string, ancestorPath: string): boolean {
-    return childPath.startsWith(ancestorPath + '/');
+    return childPath.startsWith(ancestorPath + this.GROUP_DELIMITER);
   }
 }
