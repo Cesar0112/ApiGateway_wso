@@ -19,7 +19,7 @@ export class UserResponseDto {
   id: string;
 
   @ApiProperty({ example: 'admin' })
-  username: string;
+  userName: string;
 
   @ApiProperty({ example: 'Carlos' })
   firstName: string;

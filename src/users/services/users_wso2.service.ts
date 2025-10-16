@@ -219,7 +219,7 @@ export class UsersWSO2Service {
   async findById(id: string, token: string): Promise<User> {
     try {
       const res: AxiosResponse<any> = await axios.get(
-        `${this._baseUrl}/${id}?attributes=id,userName,emails,name,groups,active`,
+        `${this._baseUrl}/${id}?attributes=id,userName,roles,emails,name,groups,active`,
         this._getRequestOptions(token),
       );
       const userRoles = await this._rolesService.getUserRoles(
@@ -330,9 +330,9 @@ export class UsersWSO2Service {
       );
     }
   }
-  async updatePatch(id: string, dto: UpdateUsersDto, token: string) {
+  async updatePatch(id: string, dto: UpdateUsersDto, token: string): Promise<User> {
     try {
-      /* ---------- validaciones ---------- */
+      /* ---------- 0. validaciones ---------- */
       if (dto.userName)
         throw new InternalServerErrorException(
           'No se puede cambiar el userName de un usuario ya creado',
@@ -344,41 +344,60 @@ export class UsersWSO2Service {
 
       const currentUser = await this.findById(id, token);
 
-      /* ---------- 1. estructuras (grupos) ---------- */
+      /* ---------- 1. ROLES (sincronización completa) ---------- */
+      if (dto.roleIds?.length || dto.rolesNames?.length) {
+        /* 1.1 roles actuales del usuario */
+        const currentRoles = await this._rolesService.getUserRoles(id, token);
+        const currentRoleIds = currentRoles.map((r) => r.id);
+
+        /* 1.2 IDs nuevos (sin duplicados) */
+        const newRoleIds = [
+          ...(dto.roleIds ?? []),
+          ...(await Promise.all(
+            (dto.rolesNames ?? []).map((n) =>
+              this._rolesService.getRoleIdByName(n, token),
+            ),
+          )),
+        ].filter((v, i, a) => a.indexOf(v) === i); // uniq
+
+        /* 1.3 quitar roles que ya no quiere */
+        for (const rid of currentRoleIds) {
+          if (!newRoleIds.includes(rid)) {
+            await this._rolesService.removeUserFromRole(rid, id, token);
+          }
+        }
+
+        /* 1.4 añadir roles nuevos */
+        for (const rid of newRoleIds) {
+          if (!currentRoleIds.includes(rid)) {
+            await this._rolesService.addUserToRole(rid, id, token);
+          }
+        }
+      }
+
+      /* ---------- 2. estructuras (grupos) ---------- */
       if (dto.structureIds?.length) {
         await this.updateUserStructuresByIds(id, dto.structureIds, token);
       }
 
-
-      /* ---------- 2. construir objeto único con solo lo que cambia ---------- */
+      /* ---------- 3. PATCH único con el resto de campos ---------- */
       const value: any = {};
 
-      if (dto.firstName || dto.lastName) {
+      if ('firstName' in dto || 'lastName' in dto) {
         value.name = {
           givenName: dto.firstName ?? currentUser.firstName,
           familyName: dto.lastName ?? currentUser.lastName,
         };
       }
 
-      if (dto.email) {
-        value.emails = [
-          {
-            type: 'work',
-            value: dto.email,
-            primary: true,
-          },
-        ];
+      if ('email' in dto) {
+        value.emails = [dto.email];
       }
 
       if ('isActive' in dto) {
         value.active = dto.isActive;
       }
 
-      if (dto.roleIds?.length) {
-
-      }
-
-      /* ---------- 3. un solo PATCH si hay algo que cambiar ---------- */
       if (Object.keys(value).length) {
         await axios.patch(
           `${this._baseUrl}/${id}`,
@@ -390,7 +409,7 @@ export class UsersWSO2Service {
         );
       }
 
-      /* ---------- 4. devolver usuario fresco ---------- */
+      /* ---------- 4. devolver usuario actualizado ---------- */
       return await this.findById(id, token);
     } catch (err) {
       this._logger.error(

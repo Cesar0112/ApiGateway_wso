@@ -223,8 +223,7 @@ export class RoleWSO2Service {
     try {
       // 1️⃣ Obtener usuario desde el username
       const userResponse = await axios.get(
-        `${this.configService.getConfig().WSO2.HOST}:${
-          this.configService.getConfig().WSO2.PORT
+        `${this.configService.getConfig().WSO2.HOST}:${this.configService.getConfig().WSO2.PORT
         }/scim2/Users?filter=userName eq "${username}"`,
         this.getRequestOptions(token),
       );
@@ -247,12 +246,13 @@ export class RoleWSO2Service {
     }
   }
 
-  /* Asignar un usuario a un rol */
+  /* Agregarle un rol a un usuario */
   async addUserToRole(
     roleId: string,
     userId: string,
     token: string,
   ): Promise<void> {
+
     await axios.patch(
       `${this.baseUrl}/${roleId}`,
       {
@@ -262,6 +262,22 @@ export class RoleWSO2Service {
             op: 'add',
             path: 'users',
             value: [{ value: userId }],
+          },
+        ],
+      },
+      this.getRequestOptions(token),
+    );
+  }
+  /* Asignar un usuario a un rol */
+  async removeUserFromRole(roleId: string, userId: string, token: string): Promise<void> {
+    await axios.patch(
+      `${this.baseUrl}/${roleId}`,
+      {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'remove',
+            path: `users[value eq "${userId}"]`,
           },
         ],
       },

@@ -72,7 +72,7 @@ export class UserMapper {
   // ------------------------
   // FROM WSO2 RESPONSE → ENTITY
   // ------------------------
-
+  //TODO Optimizar este metodo para que no tengas que pasarle los grupos y roles por parametro sino que ya vengan por el data
   static fromWSO2ResponseToUser(
     data: WSO2Response,
     roles: Role[] = [],
@@ -102,7 +102,7 @@ export class UserMapper {
   static toResponseDto(user: User): UserResponseDto {
     return {
       id: user.id,
-      username: user.userName,
+      userName: user.userName,
       email: user.email ?? '',
       isActive: user.isActive ?? false,
       firstName: user.firstName ?? '',
@@ -182,6 +182,14 @@ export class WSO2Response {
   emails: string[];
   active: boolean;
   meta: { created: any; lastModified: any };
+  roles?: [{
+    display: string | "everyone",
+    value: string
+  }];
+  groups?: [{
+    display: string,
+    value: string,
+  }]
   displayName?: string;
   permissions?: Permission[];
   name?: { givenName: string; familyName: string };
