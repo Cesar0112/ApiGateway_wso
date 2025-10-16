@@ -32,9 +32,7 @@ export class UserMapper {
         givenName: dto.firstName ?? '',
         familyName: dto.lastName ?? '',
       },
-      emails: dto.email
-        ? [{ value: dto.email, type: 'work', primary: true }]
-        : [],
+      emails: dto.email ? [dto.email] : [],
       password: dto.plainCipherPassword,
       active: dto.isActive ?? true,
     };
@@ -49,29 +47,7 @@ export class UserMapper {
 
     return payload;
   }
-
-  /*static fromUpdateUsersDtoToWSO2Payload(dto: UpdateUsersDto): any {
-    const payload: any = {};
-
-    if (dto.userName) {
-      payload.userName = dto.userName;
-    }
-    if (dto.firstName || dto.lastName) {
-      payload.name = {
-        givenName: dto.firstName ?? '',
-        familyName: dto.lastName ?? '',
-      };
-    }
-    if (dto.email) {
-      payload.emails = [{ value: dto.email, primary: true }];
-    }
-    if (dto.isActive !== undefined) {
-      payload.active = dto.isActive;
-    }
-
-    return payload;
-  }*/
-  static fromUpdateUsersDtoToWSO2Payload(dto: UpdateUsersDto): any {
+  static fromUpdateUsersDtoToWSO2Payload(dto: UpdateUsersDto): WSO2Payload {
     const payload: any = {
       schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
     };
@@ -85,13 +61,7 @@ export class UserMapper {
     }
 
     if (dto.email) {
-      payload.emails = [
-        {
-          type: 'work',
-          value: dto.email,
-          primary: true,
-        },
-      ];
+      payload.emails = [dto.email];
     }
 
     if (dto.isActive !== undefined) payload.active = dto.isActive;
@@ -113,7 +83,7 @@ export class UserMapper {
       id: data.id,
       userName: data.userName,
       password: '',
-      email: data.emails?.[0].value ?? null,
+      email: data.emails?.[0] ?? null,
       firstName: data.name?.givenName,
       lastName: data.name?.familyName,
       isActive: data.active,
@@ -134,7 +104,7 @@ export class UserMapper {
       id: user.id,
       username: user.userName,
       email: user.email ?? '',
-      isActive: user.isActive,
+      isActive: user.isActive ?? false,
       firstName: user.firstName ?? '',
       lastName: user.lastName ?? '',
       roles:
@@ -209,33 +179,22 @@ export class UserMapper {
 export class WSO2Response {
   id: string;
   userName: string;
-  emails: Email[];
+  emails: string[];
   active: boolean;
   meta: { created: any; lastModified: any };
   displayName?: string;
   permissions?: Permission[];
   name?: { givenName: string; familyName: string };
 }
-export class Email {
-  value: string;
-  type: 'work';
-  primary?: boolean;
-}
+
 export class WSO2Payload {
-  schemas: [
-    'urn:ietf:params:scim:schemas:core:2.0:User',
-    'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
-  ];
+  schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'];
   userName: string;
   name: {
     givenName: string;
     familyName: string;
   };
-  'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User': {
-    givenName: string;
-    familyName: string;
-  };
-  emails: [{ value: string; type: 'work' | 'personal'; primary?: boolean }];
+  emails: string[];
   password: string;
   active: boolean;
   phoneNumbers?: [{ value: string; type: 'mobile' }];

@@ -12,7 +12,7 @@ import { ConfigService } from '../../config/config.service';
 import { User } from '../entities/user.entity';
 import { CreateUsersDto } from '../dto/create-users.dto';
 import { UpdateUsersDto } from '../dto/update-users.dto';
-import { UserMapper } from '../user_mapper';
+import { UserMapper, WSO2Payload } from '../user_mapper';
 import { Role } from '../../roles/entities/role.entity';
 import { RoleWSO2Service } from '../../roles/services/role_wso2.service';
 import { EncryptionsService } from '../../encryptions/encryptions.service';
@@ -103,7 +103,8 @@ export class UsersWSO2Service {
       );
 
       /* 1. Crear usuario en SCIM2 ********************************************/
-      const payload = UserMapper.fromCreateUsersDtoToWSO2Payload(dto);
+      const payload: WSO2Payload =
+        UserMapper.fromCreateUsersDtoToWSO2Payload(dto);
       const resCreate = await axios.post(
         this._baseUrl,
         payload,
@@ -185,7 +186,7 @@ export class UsersWSO2Service {
     try {
       // 1. Traer usuarios con sus grupos
       const res: AxiosResponse<any> = await axios.get(
-        `${this._baseUrl}?count=1000&attributes=id,userName,emails,active,groups`,
+        `${this._baseUrl}?count=1000&attributes=id,userName,name,emails,active,groups`,
         this._getRequestOptions(token),
       );
       const resources = res.data?.Resources ?? [];
@@ -259,7 +260,7 @@ export class UsersWSO2Service {
       throw new InternalServerErrorException('No se pudo obtener el usuario');
     }
   }
-
+  //TODO Actualizar este codigo de update para que por cada dato que venga de este se haga un patch replace del dato en especifico del usuario
   async update(id: string, dto: UpdateUsersDto, token: string): Promise<User> {
     try {
       if (dto.userName)
@@ -279,29 +280,33 @@ export class UsersWSO2Service {
         /* quitarlo del payload PUT para que no choque */
         delete dto.structureIds;
       }
+      if ('isActive' in dto) {
+        await this.disableOrEnableUser(id, dto.isActive, token);
+        /* quitarlo del payload PUT para que no choque */
+        delete dto.isActive;
+      }
 
-      let payload = UserMapper.fromUpdateUsersDtoToWSO2Payload(dto);
+      let payload: WSO2Payload =
+        UserMapper.fromUpdateUsersDtoToWSO2Payload(dto);
       //payload = this.preserveMissingFields(payload, currentUser);
       if (payload.name) {
         if (!payload.name.givenName) {
-          payload.name.givenName = currentUser.firstName;
+          payload.name.givenName = currentUser.firstName ?? '';
         }
         if (!payload.name.familyName) {
-          payload.name.familyName = currentUser.lastName;
+          payload.name.familyName = currentUser.lastName ?? '';
         }
       } else {
         payload.name = {
-          givenName: currentUser.firstName,
-          familyName: currentUser.lastName,
+          givenName: currentUser.firstName ?? '',
+          familyName: currentUser.lastName ?? '',
         };
       }
       if (!payload.emails || payload.emails.length === 0) {
-        payload.emails = currentUser.email
-          ? [{ type: 'work', value: currentUser.email, primary: true }]
-          : [];
+        payload.emails = currentUser.email ? [currentUser.email] : [];
       }
       const res: AxiosResponse<any> = await axios.put(
-        `${this._baseUrl}/${id}?attributes=id,userName,emails,name,groups,active`,
+        `${this._baseUrl}/${id}?attributes=id,userName,name,emails,active,groups`,
         payload,
         this._getRequestOptions(token),
       );
@@ -325,6 +330,79 @@ export class UsersWSO2Service {
       );
     }
   }
+  async updatePatch(id: string, dto: UpdateUsersDto, token: string) {
+    try {
+      /* ---------- validaciones ---------- */
+      if (dto.userName)
+        throw new InternalServerErrorException(
+          'No se puede cambiar el userName de un usuario ya creado',
+        );
+      if (dto.id)
+        throw new InternalServerErrorException(
+          'No se puede cambiar el identificador de un usuario',
+        );
+
+      const currentUser = await this.findById(id, token);
+
+      /* ---------- 1. estructuras (grupos) ---------- */
+      if (dto.structureIds?.length) {
+        await this.updateUserStructuresByIds(id, dto.structureIds, token);
+      }
+
+
+      /* ---------- 2. construir objeto único con solo lo que cambia ---------- */
+      const value: any = {};
+
+      if (dto.firstName || dto.lastName) {
+        value.name = {
+          givenName: dto.firstName ?? currentUser.firstName,
+          familyName: dto.lastName ?? currentUser.lastName,
+        };
+      }
+
+      if (dto.email) {
+        value.emails = [
+          {
+            type: 'work',
+            value: dto.email,
+            primary: true,
+          },
+        ];
+      }
+
+      if ('isActive' in dto) {
+        value.active = dto.isActive;
+      }
+
+      if (dto.roleIds?.length) {
+
+      }
+
+      /* ---------- 3. un solo PATCH si hay algo que cambiar ---------- */
+      if (Object.keys(value).length) {
+        await axios.patch(
+          `${this._baseUrl}/${id}`,
+          {
+            schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+            Operations: [{ op: 'replace', value }],
+          },
+          this._getRequestOptions(token),
+        );
+      }
+
+      /* ---------- 4. devolver usuario fresco ---------- */
+      return await this.findById(id, token);
+    } catch (err) {
+      this._logger.error(
+        `Error actualizando usuario ${id}`,
+        err.response?.data?.detail ?? err.message,
+      );
+      throw new InternalServerErrorException(
+        `No se pudo actualizar el usuario por ${err.message}`,
+      );
+    }
+  }
+
   /**
    * Reemplaza **todas** las estructuras (grupos) del usuario por las nuevas.
    * SCIM 2.0: PATCH /Users/{id}  →  replace groups
@@ -456,5 +534,33 @@ export class UsersWSO2Service {
       }
     }
     return result;
+  }
+  /**
+   *
+   * @param userId
+   * @param active by desault false
+   * @param token
+   */
+  async disableOrEnableUser(
+    userId: string,
+    active: boolean = false,
+    token: string,
+  ): Promise<void> {
+    const payload = {
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+      Operations: [
+        {
+          op: 'replace',
+          value: { active },
+        },
+      ],
+    };
+
+    const res: AxiosResponse<any> = await axios.patch(
+      `${this._baseUrl}/${userId}`,
+      payload,
+      this._getRequestOptions(token),
+    );
+    console.log(res.data)
   }
 }

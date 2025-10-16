@@ -29,7 +29,7 @@ export class UsersController {
     private readonly _usersService: UsersWSO2Service,
     @Inject(AUTH_SERVICE_TOKEN)
     private readonly _authenticateService: IAuthenticationService,
-  ) {}
+  ) { }
 
   @Post()
   @ApiBody({ type: CreateUsersDto })
@@ -63,7 +63,7 @@ export class UsersController {
     @Req() req: Request,
   ): Promise<UserResponseDto> {
     const token = await this.getTokenFromSession(req);
-    const user = await this._usersService.update(id, updateUsersDto, token);
+    const user = await this._usersService.updatePatch(id, updateUsersDto, token);
     return UserMapper.toResponseDto(user);
   }
 

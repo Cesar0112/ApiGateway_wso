@@ -35,9 +35,8 @@ export class StructuresWSO2Service {
     };
   }
   async getUserStructures(userId: string, token: string): Promise<Structure[]> {
-    const url = `${this.configService.getConfig().WSO2.HOST}:${
-      this.configService.getConfig().WSO2.PORT
-    }/scim2/Users/${userId}?attributes=groups`;
+    const url = `${this.configService.getConfig().WSO2.HOST}:${this.configService.getConfig().WSO2.PORT
+      }/scim2/Users/${userId}?attributes=groups`;
 
     try {
       const res = await axios.get(url, this._getRequestOptions(token));
@@ -150,7 +149,7 @@ export class StructuresWSO2Service {
   async findOneByName(name: string, token: string): Promise<Structure> {
     try {
       const res: AxiosResponse<any> = await axios.get(
-        `${this._baseUrl}?filter=displayName eq "${name}"`,
+        `${this._baseUrl}?filter=displayName ew "${name}"`,
         this._getRequestOptions(token),
       );
       const found = res.data?.Resources?.[0];
