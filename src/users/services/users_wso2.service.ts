@@ -213,7 +213,7 @@ export class UsersWSO2Service {
       );
     } catch (err) {
       this._logger.error('Error obteniendo usuarios en WSO2', err);
-      throw new InternalServerErrorException('No se pudieron obtener usuarios');
+      throw new InternalServerErrorException('No se pudieron obtener usuarios', (err.response?.data?.status === 401) ? `${err.response?.data?.detail ?? "401"}` : "");
     }
   }
   async findById(id: string, token: string): Promise<User> {
