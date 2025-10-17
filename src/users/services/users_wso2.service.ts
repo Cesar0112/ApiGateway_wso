@@ -330,6 +330,7 @@ export class UsersWSO2Service {
       );
     }
   }
+
   async updatePatch(id: string, dto: UpdateUsersDto, token: string): Promise<User> {
     try {
       /* ---------- 0. validaciones ---------- */
@@ -417,7 +418,7 @@ export class UsersWSO2Service {
         err.response?.data?.detail ?? err.message,
       );
       throw new InternalServerErrorException(
-        `No se pudo actualizar el usuario por ${err.message}`,
+        `No se pudo actualizar el usuario por ${err.message ?? err.response?.data?.detail}`,
       );
     }
   }
@@ -435,7 +436,21 @@ export class UsersWSO2Service {
     const currentStructuresOfUser =
       await this._structureService.getUserStructures(userId, token);
 
-    for (const g of currentStructuresOfUser) {
+
+    await Promise.all(
+      currentStructuresOfUser.map((g) => {
+        if (!structuresIds.includes(g.id)) {
+          this._structureService.removeUserFromStructure(
+            g.id,
+            userId,
+            token,
+          );
+        }
+      })
+    )
+
+
+    /*for (const g of currentStructuresOfUser) {
       if (!structuresIds.includes(g.id)) {
         await this._structureService.removeUserFromStructure(
           g.id,
@@ -443,8 +458,23 @@ export class UsersWSO2Service {
           token,
         );
       }
-    }
-    for (const id of structuresIds) {
+    }*/
+    await Promise.all(
+      structuresIds.map((id) => {
+        const exists = currentStructuresOfUser.some(
+          (g: Structure) => g.id === id,
+        );
+        if (!exists) {
+          this._structureService.addUserToStructure(
+            id,
+            userId,
+            userName,
+            token,
+          );
+        }
+      })
+    )
+    /*for (const id of structuresIds) {
       const exists = currentStructuresOfUser.some(
         (g: Structure) => g.id === id,
       );
@@ -456,7 +486,7 @@ export class UsersWSO2Service {
           token,
         );
       }
-    }
+    }*/
   }
   async updateByUsername(
     username: string,

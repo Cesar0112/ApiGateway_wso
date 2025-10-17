@@ -4,32 +4,32 @@ import * as CryptoJS from 'crypto-js';
 import { ConfigService } from '../config/config.service';
 @Injectable()
 export class EncryptionsService {
-  private readonly parsedKey: CryptoJS.lib.WordArray;
-  private readonly parsedIV: CryptoJS.lib.WordArray;
 
+  private password: string;
   constructor(private readonly cfg: ConfigService) {
-    const password: string =
+    this.password =
       this.cfg.getConfig().API_GATEWAY?.ENCRYPTION_PASSWORD.trim() ??
       'IkIopwlWorpqUj';
-    this.parsedKey = CryptoJS.SHA256(password);
-    this.parsedIV = CryptoJS.MD5(password);
+
   }
   encrypt(plainText: string): string {
-    const safe = String(plainText ?? '').trim();
-    const messageUtf8 = CryptoJS.enc.Utf8.parse(safe);
-    const encrypted = CryptoJS.AES.encrypt(messageUtf8, this.parsedKey, {
-      iv: this.parsedIV,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
-    });
+    const parsedKey = CryptoJS.SHA256(this.password);
+    const parsedIV = CryptoJS.MD5(this.password);
+    const messageUtf8 = CryptoJS.enc.Utf8.parse(plainText);
 
-    return encrypted.ciphertext.toString(CryptoJS.enc.Base64);
+    const encrypted = CryptoJS.AES.encrypt(messageUtf8, parsedKey, {
+      iv: parsedIV,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
+    });
+    return encrypted?.ciphertext?.toString(CryptoJS.enc.Base64);
   }
 
   decrypt(encryptedText: string): string {
-    if (!encryptedText?.trim()) return '';
-    const decrypted = CryptoJS.AES.decrypt(encryptedText, this.parsedKey, {
-      iv: this.parsedIV,
+    const parsedKey = CryptoJS.SHA256(this.password);
+    const parsedIV = CryptoJS.MD5(this.password);
+    const decrypted = CryptoJS.AES.decrypt(encryptedText, parsedKey, {
+      iv: parsedIV,
       mode: CryptoJS.mode.CBC,
       padding: CryptoJS.pad.Pkcs7,
     });

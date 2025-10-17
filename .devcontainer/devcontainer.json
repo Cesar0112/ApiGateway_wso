@@ -1,7 +1,7 @@
 {
   "name": "api-gateway - Node.js Dev Container",
   "build": {
-    "dockerfile": "../Dockerfile",
+    "dockerfile": "Dockerfile",
     "context": "..",
     "args": {
       "NODE_ENV": "development"
@@ -26,9 +26,9 @@
       }
     }
   },
-  "forwardPorts": [3000],
-  "postCreateCommand": "npm install && npm run build --if-present",
-  "postStartCommand": "npm run start:dev --silent",
+  "forwardPorts": [3000, 10410],
+  "postCreateCommand": "yarn install && yarn build --if-present",
+  "postStartCommand": "yarn start:dev --silent",
   "remoteEnv": {
     "NODE_ENV": "development"
   }

@@ -43,16 +43,16 @@ export class AuthenticateController {
   constructor(
     @Inject(AUTH_SERVICE_TOKEN)
     private readonly authenticateService: IAuthenticationService,
-  ) {}
+  ) { }
   @ApiTags('Autenticación')
   @UsePipes(new JoiValidationPipe(UserPasswordSchema))
-  @UseGuards(ThrottlerGuard)
+  //@UseGuards(ThrottlerGuard)
   @ApiBody({ schema: { example: { user: 'usuario', password: 'contraseña' } } })
   @ApiOkResponse({ description: 'Authentication successful' })
   @Post()
   @HttpCode(200)
   //TODO Cambiar los limites por configuracion de Throttle
-  @Throttle({ default: { limit: 5, ttl: 15 * 60 * 1000 } }) //Límite: 5 intentos por IP cada 15 minutos
+  //@Throttle({ default: { limit: 5, ttl: 15 * 60 * 1000 } }) //Límite: 5 intentos por IP cada 15 minutos
   async login(
     @Session() session: Record<string, any>,
     @Body() body: { user: string; password: string },
@@ -62,13 +62,14 @@ export class AuthenticateController {
     //console.log('pass', password);
     const result = await this.authenticateService.login(user, password, req.ip);
     //    session.username = user;
-    session.permissions = result?.user?.permissions;
+    session.permissions = result.permissions;
     session.token = result?.token;
 
     return {
       success: true,
       message: 'Authentication successful',
-      permissions: result?.user?.permissions,
+      user: result.user,
+      permissions: result.permissions,
     };
   }
   @ApiTags('Desautenticación')

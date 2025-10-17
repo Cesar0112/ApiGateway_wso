@@ -11,7 +11,7 @@ import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '../config/config.module';
-import { AuthLocalService } from './services/auth_local.service';
+//import { AuthLocalService } from './services/auth_local.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { UsersWSO2Service } from '../users/services/users_wso2.service';
 import { UsersModule } from '../users/users.module';
@@ -68,12 +68,12 @@ import { Permission } from '../permissions/entities/permission.entity';
         jwt: JwtService,
       ) {
         const AUTH_TYPE = cfg.getConfig().API_GATEWAY?.AUTH_TYPE;
-        const BASE_CONFIG = [cfg, enc, per, sess, cache] as const;
+        const BASE_CONFIG = [cfg, enc, per, sess, users, cache] as const;
         switch (AUTH_TYPE) {
           case 'wso2':
             return new AuthWSO2Service(...BASE_CONFIG);
           /*case 'local':
-            return new AuthLocalService(...BASE_CONFIG, users, jwt);*/
+            return new AuthLocalService(...BASE_CONFIG, jwt);*/
           default:
             return new AuthWSO2Service(...BASE_CONFIG);
         }
@@ -83,4 +83,4 @@ import { Permission } from '../permissions/entities/permission.entity';
   exports: [AUTH_SERVICE_TOKEN],
   controllers: [AuthenticateController],
 })
-export class AuthenticateModule {}
+export class AuthenticateModule { }

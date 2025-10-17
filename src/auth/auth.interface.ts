@@ -1,3 +1,5 @@
+import { User } from "src/users/entities/user.entity";
+
 export interface IWSO2TokenResponse {
   access_token: string;
   token_type: string;
@@ -25,7 +27,15 @@ export interface IDecodedToken {
 }
 
 export interface IAuthenticationService {
-  login(user: string, password: string, ip?: string): Promise<any>;
+  login(user: string, password: string, ip?: string): Promise<{
+    success: boolean;
+    decodedToken: IDecodedToken;
+    token: string;
+    source: string;
+    user: User;
+    permissions: string[],
+    message: string;
+  }>;
   logout(sessionId: string): Promise<void>;
   refresh(sessionId: string): Promise<boolean>;
   getTokenOfSessionId(sessionId: string): Promise<string | undefined>;

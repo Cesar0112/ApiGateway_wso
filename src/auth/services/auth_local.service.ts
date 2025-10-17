@@ -23,23 +23,25 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersLocalService } from '../../users/services/users_local.service';
 @Injectable()
-export class AuthLocalService extends AuthWSO2Service {
+/*export*/ class AuthLocalService /*extends AuthWSO2Service */ {
   constructor(
-    configService: ConfigService,
-    encryptionsService: EncryptionsService,
-    permissionsService: PermissionsService,
-    sessionService: SessionService,
+    private configService: ConfigService,
+    private encryptionsService: EncryptionsService,
+    private permissionsService: PermissionsService,
+    private sessionService: SessionService,
+    private usersService: UsersWSO2Service,
     @Inject(CACHE_MANAGER) cacheManager: Cache,
     private readonly _usersService: UsersLocalService,
     private readonly _jwtService: JwtService,
-  ) {
+  ) {/*
     super(
       configService,
       encryptionsService,
       permissionsService,
       sessionService,
+      usersService,
       cacheManager,
-    );
+    );*/
   }
 
   /**
@@ -48,7 +50,7 @@ export class AuthLocalService extends AuthWSO2Service {
    * @param password Cipher password
    * @returns
    */
-  override async login(username: string, password: string, ip: string) {
+  /*overrride*/ async login(username: string, password: string, ip: string) {
     // 1. Buscar usuario (con roles y estructuras si quieres)
     const user = await this._usersService.findByUsername(username, {
       relations: ['roles', 'roles.permissions'],
@@ -82,11 +84,7 @@ export class AuthLocalService extends AuthWSO2Service {
       decodedToken: this._jwtService.decode<IDecodedToken>(TOKEN),
       token: TOKEN,
       source: this.configService.getConfig().DATABASE?.TYPE ?? 'sqlite',
-      user: {
-        username: user.userName,
-        roles: ROLES,
-        permissions: PERMISSIONS,
-      },
+      user: new User(),
       message: 'Autenticación exitosa',
     };
   }

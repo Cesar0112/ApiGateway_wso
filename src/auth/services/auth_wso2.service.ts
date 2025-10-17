@@ -22,6 +22,7 @@ import { ConfigService } from '../../config/config.service';
 import { SessionService } from '../../session/session.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { UsersWSO2Service } from 'src/users/services/users_wso2.service';
 @Injectable()
 export class AuthWSO2Service implements IAuthenticationService {
   private readonly logger = new Logger(AuthWSO2Service.name);
@@ -30,8 +31,9 @@ export class AuthWSO2Service implements IAuthenticationService {
     protected readonly encryptionsService: EncryptionsService,
     protected readonly permissionsService: PermissionsService,
     protected readonly sessionService: SessionService,
+    protected readonly usersService: UsersWSO2Service,//FIXME Cambiar por una carga dinamica de servicios en dependencia de la fuente de adquisicion de los datos configurada
     @Inject(CACHE_MANAGER) protected cacheManager: Cache,
-  ) {}
+  ) { }
   test_short(sessionId: string) {
     const store = this.sessionService.getExpressSessionStore();
     store.get(sessionId, (err, sess) => {
@@ -41,9 +43,9 @@ export class AuthWSO2Service implements IAuthenticationService {
     });
   }
   async refresh(sessionId: string): Promise<boolean> {
-    const encryptedPassword =
+    /*const encryptedPassword =
       this.encryptionsService.encrypt('W7$"M^@\'ACM}hC;'); //
-    console.log(encryptedPassword);
+    console.log(encryptedPassword);*/
     const session = await this.sessionService.getSession(sessionId);
     if (!session) {
       throw new UnauthorizedException();
@@ -51,7 +53,7 @@ export class AuthWSO2Service implements IAuthenticationService {
     return await this.sessionService.refresh(sessionId, session);
   }
 
-  async login(user: string, password: string, ip: string = 'localhost') {
+  async login(user: string, password: string, ip?: string) {
     try {
       const URL: string =
         this.configService.get('WSO2')?.URL_TOKEN ??
@@ -140,13 +142,12 @@ export class AuthWSO2Service implements IAuthenticationService {
           decodedToken,
           token: TOKEN,
           source: 'wso2',
-          user: {
-            username: user,
-            roles: decodedToken.roles,
-            permissions: PERMISSIONS,
-          },
+          user: await this.usersService.findByUsername(user, TOKEN),
+          permissions: PERMISSIONS,
           message: 'Autenticación exitosa',
         };
+      } else {
+        throw new UnauthorizedException("No se hallaron los roles dentro del token devuelto por wso2");
       }
     } catch (e) {
       this.logger.error('Error autenticando', e);
