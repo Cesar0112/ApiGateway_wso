@@ -6,6 +6,8 @@ import { SessionService } from './session.service';
 import { ConfigService } from '../config/config.service';
 import { SessionGateway } from './session.gateway';
 import { SessionTimerService } from './session-timer.service';
+import { SessionController } from './session.controller';
+import { EncryptionsService } from '../encryptions/encryptions.service';
 
 @Module({
   imports: [ConfigModule],
@@ -16,8 +18,10 @@ import { SessionTimerService } from './session-timer.service';
     ConfigService,
     SessionTimerService,
     SessionGateway,
+    EncryptionsService
   ],
   exports: [SessionService, SessionTimerService],
+  controllers: [SessionController],
 })
 export class SessionModule {
   configure(consumer: MiddlewareConsumer) {

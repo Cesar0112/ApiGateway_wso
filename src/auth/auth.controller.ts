@@ -46,7 +46,7 @@ export class AuthenticateController {
   ) { }
   @ApiTags('Autenticación')
   @UsePipes(new JoiValidationPipe(UserPasswordSchema))
-  //@UseGuards(ThrottlerGuard)
+  @UseGuards(ThrottlerGuard)
   @ApiBody({ schema: { example: { user: 'usuario', password: 'contraseña' } } })
   @ApiOkResponse({ description: 'Authentication successful' })
   @Post()

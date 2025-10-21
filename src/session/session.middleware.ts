@@ -25,11 +25,13 @@ export class SessionMiddleware implements NestMiddleware {
       secret: this.cfg.secret,
       resave: false,
       saveUninitialized: false,
+      proxy: false as const,
       cookie: {
         httpOnly: true,
-        secure: this.cfg.secure ?? false,
+        secure: false,
+
         maxAge: this.cfg.ttlSeconds * 1000,
-        sameSite: 'lax',
+        sameSite: 'none',
       },
     });
   }
