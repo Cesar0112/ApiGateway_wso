@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Keyv } from 'keyv';
 import { ConfigService } from '../config/config.service';
 import * as session from 'express-session';
@@ -7,6 +7,7 @@ import { RedisStore } from 'connect-redis';
 import { createKeyv as createKeyvRedis } from '@keyv/redis';
 import { createKeyv as createKeyvSQLite } from '@keyv/sqlite';
 import { ISessionData } from './interfaces/session.interface';
+import { Request } from 'express';
 
 //import { SessionData } from './interfaces/session.interface';
 
@@ -107,5 +108,48 @@ export class SessionService {
         resolve();
       }),
     );
+  }
+
+  async getTokenOfSessionId(sessionId: string): Promise<string> {
+    try {
+      if (!sessionId) {
+        throw new HttpException(
+          'Session ID not found',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+      const session = await this.getSession(sessionId);
+      const token = session?.token;
+      if (!token) {
+        throw new BadRequestException(
+          `No session token found for sessionId: ${sessionId}`,
+        );
+      }
+      return token;
+    } catch (e: unknown) {
+      // If parsing fails, throws exception to indicate no token available
+      throw new BadRequestException(
+        typeof e === 'string'
+          ? e
+          : e instanceof Error
+            ? e.message
+            : 'Error durante la obtención del token dado un sessionId',
+      );
+    }
+  }
+  async getTokenFromSession(req: Request): Promise<string> {
+
+    const sessionId = req.sessionID || req.session?.id;
+    if (!sessionId) {
+      throw new HttpException('Session ID not found', HttpStatus.UNAUTHORIZED);
+    }
+    const token = this.getTokenOfSessionId(sessionId);
+    if (!token) {
+      throw new HttpException(
+        'Token not found for session',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    return token;
   }
 }

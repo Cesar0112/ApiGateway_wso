@@ -221,25 +221,5 @@ export class AuthWSO2Service implements IAuthenticationService {
   private _normalizeIp(ip: string): string {
     return ip.replace(/^::ffff:/, '').replace(/:/g, '-');
   }
-  async getTokenOfSessionId(sessionId: string): Promise<string> {
-    try {
-      const session = await this.sessionService.getSession(sessionId);
-      const token = session?.token;
-      if (!token) {
-        throw new BadRequestException(
-          `No session token found for sessionId: ${sessionId}`,
-        );
-      }
-      return token;
-    } catch (e: unknown) {
-      // If parsing fails, throws exception to indicate no token available
-      throw new BadRequestException(
-        typeof e === 'string'
-          ? e
-          : e instanceof Error
-            ? e.message
-            : 'Error durante la obtención del token dado un sessionId',
-      );
-    }
-  }
+
 }
