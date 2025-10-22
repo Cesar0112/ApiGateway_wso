@@ -18,39 +18,24 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { SessionTokenGuard } from '../guards/session-token.guard';
 import {
   AUTH_SERVICE_TOKEN,
-  IAuthenticationService,
 } from '../auth/auth.interface';
 import { Request } from 'express';
 import { RoleMapper } from './role.mapper';
+import { SessionService } from 'src/session/session.service';
 @Controller('roles')
 @UseGuards(SessionTokenGuard)
 export class RolesController {
   constructor(
     private readonly _rolesService: RoleWSO2Service,
     @Inject(AUTH_SERVICE_TOKEN)
-    private readonly authenticateService: IAuthenticationService,
-  ) {}
+    private readonly sessionService: SessionService,
+  ) { }
 
   @Post()
-  // Añadir "Req" a las importaciones desde '@nestjs/common'
   async create(@Body() createRoleDto: CreateRoleDto, @Req() req: Request) {
     try {
-      const sessionId = req.sessionID || req.session?.id;
-      if (!sessionId) {
-        throw new HttpException(
-          'Session ID not found',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
-
       const token =
-        await this.authenticateService.getTokenOfSessionId(sessionId);
-      if (!token) {
-        throw new HttpException(
-          'Token not found for session',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
+        await this.sessionService.getTokenFromSession(req);
 
       return await this._rolesService.createRole(
         RoleMapper.fromCreateDto(createRoleDto),
@@ -66,18 +51,7 @@ export class RolesController {
 
   @Get()
   async getRoles(@Req() req: Request) {
-    const sessionId = req.sessionID || req.session?.id;
-    if (!sessionId) {
-      throw new HttpException('Session ID not found', HttpStatus.UNAUTHORIZED);
-    }
-
-    const token = await this.authenticateService.getTokenOfSessionId(sessionId);
-    if (!token) {
-      throw new HttpException(
-        'Token not found for session',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
+    const token = await this.sessionService.getTokenFromSession(req);
     return this._rolesService.getRoles(token);
   }
 
