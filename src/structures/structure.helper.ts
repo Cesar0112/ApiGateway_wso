@@ -32,10 +32,11 @@ export class StructureNameHelper {
     return parts.slice(0, -1).join(this.GROUP_DELIMITER);
   }
 
-  static ensureUnique(path: string, existing: string[]): void {
-    if (existing.includes(path)) {
-      throw new Error(`La estructura "${path}" ya existe`);
+  static isExisting(name: string, allExistingNames: string[]) {
+    if (allExistingNames.includes(name)) {
+      return true;
     }
+    return false;
   }
   static isDescendantOf(childPath: string, ancestorPath: string): boolean {
     return childPath.startsWith(ancestorPath + this.GROUP_DELIMITER);

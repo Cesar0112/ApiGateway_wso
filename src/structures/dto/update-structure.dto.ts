@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, IsUUID, ValidateIf, ValidateNested } from 'class-validator';
 
 
 //FIXME Cambiar por export class UpdateStructureDto extends PartialType(OmitType(CreateStructureDto, [""] as const)) {

@@ -77,7 +77,9 @@ export class StructuresWSO2Service {
       // Validar unicidad contra lo que ya existe
       const allStructures = await this.findAll(token);
       const existingNames = allStructures.map((s) => s.name);
-      StructureNameHelper.ensureUnique(displayName, existingNames);
+      if (StructureNameHelper.isExisting(dto.name, existingNames)) {
+        throw new BadRequestException(`No se puede crear la estructura ${dto.name} ya que existe una con ese nombre`);
+      }
 
       // Enviar a WSO2
       const payload = {
@@ -152,179 +154,57 @@ export class StructuresWSO2Service {
     }
   }
 
-  async update(
+  /*async update(
     id: string,
     dto: UpdateStructureDto,
     token: string,
   ): Promise<Structure> {
     try {
       const dtoAny = dto as any;
-      const operations: any[] = [];
       const delimiter = StructureNameHelper.GROUP_DELIMITER;
-      const current = await this.findOne(id, token);
-
-      if (!current) {
-        throw new NotFoundException(`Structure ${id} not found`);
-      }
-
-      const oldDisplayName = current.displayName;
-      let newDisplayName = oldDisplayName;
-      let nameChanged = false;
-      let parentChanged = false;
-
-      if ('name' in dtoAny && dtoAny.name && dtoAny.name !== current.name) {
-        nameChanged = true;
-        newDisplayName = StructureNameHelper.buildPath(
-          dtoAny.parentName
-            ? [dtoAny.parentName, dtoAny.name]
-            : [dtoAny.name],
-        );
-      } else if ('parentName' in dtoAny && dtoAny.parentName !== current.displayName.split(StructureNameHelper.GROUP_DELIMITER)[0]) {
-        parentChanged = true;
-        newDisplayName = StructureNameHelper.buildPath(
-          dtoAny.parentName
-            ? [dtoAny.parentName, current.name]
-            : [current.name],
-        );
-      }
-
-      // Validar unicidad si cambia nombre o padre
-      if (nameChanged || parentChanged) {
-        const allStructures = await this.findAll(token);
-        const existingNames = allStructures
-          .filter((s) => s.id !== id)
-          .map((s) => s.displayName);
-        StructureNameHelper.ensureUnique(newDisplayName, existingNames);
-
-        operations.push({
-          op: 'replace',
-          path: 'displayName',
-          value: newDisplayName,
-        });
-      }
-
-      // 3) Si vienen children en dto -> sincronizar asignaciones (IDs o names según tu DTO)
-      //    Asumo dto.children es array de { id?, name? } o ids; adapta según tu DTO.
-      let childrenToAssign: string[] = [];
-      if (Array.isArray(dtoAny.childrenIds)) {
-        // Normalizar a ids si vienen objetos
-        childrenToAssign = dtoAny.childrenIds.map((c: any) => (typeof c === 'string' ? c : c.id)).filter(Boolean);
-      }
-
-
+      const current = await this.validateStructureExists(id, token);
+      const {
+        operations,
+        newDisplayName,
+        nameChanged,
+        parentChanged,
+        oldDisplayName,
+      } = await this.computeDisplayNameChanges(id, current, dtoAny, token);
       // 4) Aplicar PATCH al padre (si hay ops)
       if (operations.length) {
-        await axios.patch(
-          `${this._baseUrl}/${id}`,
-          {
-            schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
-            Operations: operations,
-          },
-          this._getRequestOptions(token),
-        );
+        await this.applyPatch(id, operations, token);
       }
 
       // 5) Actualizar descendientes si el displayName cambió
       if (nameChanged || parentChanged) {
-        // obtenemos todos y filtramos por prefix
-        const allStructures = await this.findAll(token);
-        const prefix = oldDisplayName + delimiter;
-        const descendants = allStructures.filter((s) => s.displayName.startsWith(prefix));
 
-        // actualizar cada descendiente: sustituir el prefijo
-        // Importante: hacemos las peticiones secuencialmente para evitar conflictos de nombres
-        for (const desc of descendants) {
-          const suffix = desc.displayName.substring(prefix.length); // lo que viene después del padre-
-          const descNewDisplayName = `${newDisplayName}${delimiter}${suffix}`;
+        await this.updateDescendants(
+          oldDisplayName,
+          newDisplayName,
+          delimiter,
+          token,
+        );
 
-          // validar unicidad posible para cada nuevo displayName (opcional, ya validamos a nivel general pero revisa)
-          // puedes verificar colisiones aquí si quieres.
-
-          await axios.patch(
-            `${this._baseUrl}/${desc.id}`,
-            {
-              schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
-              Operations: [
-                {
-                  op: 'replace',
-                  path: 'displayName',
-                  value: descNewDisplayName,
-                },
-              ],
-            },
-            this._getRequestOptions(token),
-          );
-        }
       }
       // obtener hijos actuales
       const directChildren = await this.findChildren(id, token);
       const directChildIds = directChildren.map(c => c.id);
+      const childrenToAssign = Array.isArray(dtoAny.childrenIds)
+        ? dtoAny.childrenIds.map((c: any) =>
+          typeof c === 'string' ? c : c.id,
+        )
+        : [];
       // 6) Si dto.children fue pasado, sincronizar hijos explícitos:
       if (childrenToAssign.length) {
-        // quitar los que no estén en childrenToAssign
-        const toRemove = directChildIds.filter(cid => !childrenToAssign.includes(cid));
-        for (const cid of toRemove) {
-          // desvincular: set parentName=null => recae al root
-          await axios.patch(
-            `${this._baseUrl}/${cid}`,
-            {
-              schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
-              Operations: [
-                {
-                  op: 'replace',
-                  path: 'displayName',
-                  value: (await this.findOne(cid, token)).name, // si al desvincular queda solo su name; adapta según tu formato
-                },
-              ],
-            },
-            this._getRequestOptions(token),
-          );
-        }
-
-        // asignar nuevos hijos: establecer parentName -> actualizamos displayName de esos hijos
-        for (const cid of childrenToAssign) {
-          const child = await this.findOne(cid, token);
-          if (!child) continue;
-
-          const childName = child.name;
-          const childNewDisplayName = `${newDisplayName}${delimiter}${childName}`;
-
-          await axios.patch(
-            `${this._baseUrl}/${cid}`,
-            {
-              schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
-              Operations: [
-                {
-                  op: 'replace',
-                  path: 'displayName',
-                  value: childNewDisplayName,
-                },
-              ],
-            },
-            this._getRequestOptions(token),
-          );
-        }
+        await this.syncChildrenAssignments(
+          newDisplayName,
+          directChildIds,
+          childrenToAssign,
+          delimiter,
+          token,
+        );
       } else {
-
-        // caso nuevo: dto.children viene vacío → quitar todos los hijos
-        for (const cid of directChildIds) {
-          const child = await this.findOne(cid, token);
-          const childName = child.name;
-          await axios.patch(
-            `${this._baseUrl}/${cid}`,
-            {
-              schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
-              Operations: [
-                {
-                  op: 'replace',
-                  path: 'displayName',
-                  value: childName, // se queda en raíz
-                },
-              ],
-            },
-            this._getRequestOptions(token),
-          );
-        }
+        await this.removeAllChildren(directChildIds, token);
       }
 
       // 7) Finalmente devolver la entidad actualizada (padre)
@@ -343,7 +223,222 @@ export class StructuresWSO2Service {
         `No se pudo actualizar estructura: ${err.message ?? err.response?.data?.detail}`,
       );
     }
+  }*/
+
+  async update(
+    id: string,
+    dto: UpdateStructureDto,
+    token: string,
+  ): Promise<Structure> {
+    try {
+      const current = await this.findOne(id, token);
+      if (!current) {
+        throw new NotFoundException(`Structure ${id} not found`);
+      }
+      if (dto.name && dto.parentName && (dto.name === dto.parentName)) {
+        throw new NotFoundException(`El padre no puede ser su propio hijo`);
+      }
+      const dtoAny = dto as any;
+
+      // 1️⃣ Verificar si hay cambios de nombre o padre
+      const { newDisplayName, nameChanged, parentChanged, operations } =
+        await this.computeDisplayNameChanges(id, current, dtoAny, token);
+
+      // 2️⃣ Aplicar PATCH principal
+      if (operations.length) {
+        await this.applyPatch(id, operations, token);
+      }
+
+      // 3️⃣ Si el nombre o el padre cambió, actualizar descendientes
+      if (nameChanged || parentChanged) {
+        await this.updateDescendants(id, current.displayName, newDisplayName, token);
+      }
+
+      // 4️⃣ Sincronizar hijos explícitos si fueron pasados
+      await this.syncChildrenAssignments(id, dtoAny.childrenIds, newDisplayName, token);
+
+      // 5️⃣ Devolver la entidad actualizada
+      return await this.findOne(id, token);
+
+    } catch (err: any) {
+      this._logger.error(
+        `Error actualizando estructura ${id}`,
+        err.response?.data ?? err.message,
+      );
+
+      if (err.response?.status === 404)
+        throw new NotFoundException(`Structure ${id} not found`);
+
+      throw new InternalServerErrorException(
+        `No se pudo actualizar estructura: ${err.message ?? err.response?.data?.detail}`,
+      );
+    }
   }
+
+  private async computeDisplayNameChanges(
+    id: string,
+    current: Structure,
+    dtoAny: any,
+    token: string,
+  ): Promise<{
+    newDisplayName: string;
+    nameChanged: boolean;
+    parentChanged: boolean;
+    operations: any[];
+  }> {
+    const operations: any[] = [];
+    const delimiter = StructureNameHelper.GROUP_DELIMITER;
+    let newDisplayName = current.displayName;
+    let nameChanged = false;
+    let parentChanged = false;
+
+    const allStructures = await this.findAll(token);
+
+    if ('name' in dtoAny && dtoAny.name && dtoAny.name !== current.name) {
+      nameChanged = true;
+    }
+
+    if ('parentName' in dtoAny && dtoAny.parentName !== current.displayName.split(delimiter)[0]) {
+      parentChanged = true;
+    }
+
+    if (nameChanged || parentChanged) {
+      let parentSegment: string | null = null;
+
+      if (dtoAny.parentName) {
+        // 🔍 Validar existencia del nuevo padre
+        const parent = allStructures.find(
+          (s) => s.name === dtoAny.parentName || s.displayName === dtoAny.parentName,
+        );
+        if (!parent) {
+          throw new BadRequestException(`El padre '${dtoAny.parentName}' no existe`);
+        }
+        parentSegment = parent.name;
+      }
+      if (dtoAny.name) {
+        // 🔍 Validar que no exista el nuevo nombre
+        if (StructureNameHelper.isExisting(dtoAny.name, allStructures.map((s) => s.name))) {
+          throw new BadRequestException(`El nombre '${dtoAny.name}' ya existe`);
+        }
+
+      }
+      // 🧱 Construir nuevo displayName
+      newDisplayName = StructureNameHelper.buildPath(
+        parentSegment ? [parentSegment, dtoAny.name ?? current.name] : [dtoAny.name ?? current.name],
+      );
+
+      // 🧩 Validar unicidad
+      const existingNames = allStructures
+        .filter((s) => s.id !== id)
+        .map((s) => s.displayName);
+      if (StructureNameHelper.isExisting(newDisplayName, existingNames)) {
+        throw new BadRequestException(`Error ya existe esta estructura`)
+      }
+
+      // Agregar operación PATCH
+      operations.push({
+        op: 'replace',
+        path: 'displayName',
+        value: newDisplayName,
+      });
+    }
+
+    return { newDisplayName, nameChanged, parentChanged, operations };
+  }
+
+  private async applyPatch(id: string, operations: any[], token: string): Promise<void> {
+    await axios.patch(
+      `${this._baseUrl}/${id}`,
+      {
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: operations,
+      },
+      this._getRequestOptions(token),
+    );
+  }
+  private async updateDescendants(
+    id: string,
+    oldDisplayName: string,
+    newDisplayName: string,
+    token: string,
+  ): Promise<void> {
+    const delimiter = StructureNameHelper.GROUP_DELIMITER;
+    const allStructures = await this.findAll(token);
+    const prefix = oldDisplayName + delimiter;
+
+    const descendants = allStructures.filter((s) => s.displayName.startsWith(prefix));
+
+    for (const desc of descendants) {
+      const suffix = desc.displayName.substring(prefix.length);
+      const descNewDisplayName = `${newDisplayName}${delimiter}${suffix}`;
+
+      await this.applyPatch(desc.id, [
+        {
+          op: 'replace',
+          path: 'displayName',
+          value: descNewDisplayName,
+        },
+      ], token);
+    }
+  }
+
+  private async syncChildrenAssignments(
+    parentId: string,
+    childrenIds: string[] | undefined,
+    parentDisplayName: string,
+    token: string,
+  ): Promise<void> {
+    const delimiter = StructureNameHelper.GROUP_DELIMITER;
+    const directChildren = await this.findChildren(parentId, token);
+    const directChildIds = directChildren.map(c => c.id);
+
+    const childrenToAssign = Array.isArray(childrenIds)
+      ? childrenIds.map((c: any) => (typeof c === 'string' ? c : c.id)).filter(Boolean)
+      : [];
+
+    if (childrenToAssign.length) {
+      // 🔹 Quitar hijos que ya no pertenecen
+      const toRemove = directChildIds.filter(cid => !childrenToAssign.includes(cid));
+      for (const cid of toRemove) {
+        const child = await this.findOne(cid, token);
+        await this.applyPatch(cid, [
+          {
+            op: 'replace',
+            path: 'displayName',
+            value: child.name,
+          },
+        ], token);
+      }
+
+      // 🔹 Asignar nuevos hijos
+      for (const cid of childrenToAssign) {
+        const child = await this.findOne(cid, token);
+        if (!child) continue;
+
+        const childNewDisplayName = `${parentDisplayName}${delimiter}${child.name}`;
+        await this.applyPatch(cid, [
+          {
+            op: 'replace',
+            path: 'displayName',
+            value: childNewDisplayName,
+          },
+        ], token);
+      }
+    } else {
+      // 🔹 dto.children vacío → quitar todos los hijos
+      for (const cid of directChildIds) {
+        const child = await this.findOne(cid, token);
+        await this.applyPatch(cid, [
+          {
+            op: 'replace',
+            path: 'displayName',
+            value: child.name,
+          },
+        ], token);
+      }
+    }
+  }
+
   async findChildren(id: string, token: string) {
     return (await this.findAll(token)).filter(s => s.name.split(StructureNameHelper.GROUP_DELIMITER).length > 1).filter(s => s.parent?.id == id);
   }
@@ -366,6 +461,8 @@ export class StructuresWSO2Service {
       );
     }
   }
+
+
   async addUserToStructure(
     structureId: string,
     userId: string,
