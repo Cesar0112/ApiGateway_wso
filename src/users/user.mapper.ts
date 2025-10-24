@@ -7,6 +7,7 @@ import { Structure } from '../structures/entities/structure.entity';
 import { RoleMapper } from '../roles/role.mapper';
 import { Permission } from 'src/permissions/entities/permission.entity';
 import { StructureNameHelper } from 'src/structures/structure.helper';
+import { StructureMapper } from 'src/structures/structure.mapper';
 
 export class UserMapper {
   static fromUserToCreateUserDto(user: User): CreateUsersDto {
@@ -113,11 +114,15 @@ export class UserMapper {
           name: role.name,
           permissions: role.permissions?.map((p) => p.value) ?? [],
         })) ?? [],
-      structures:
+      /*structures:
         user.structures?.map((s: Structure) => ({
           id: s.id ?? '',
           name: s.name,
-        })) ?? [],
+          parent: 
+          children: null,
+          users: null
+        })) ?? [],*/
+      structures: user.structures?.map((s: Structure) => StructureMapper.fromStructureToStructureDto(s)) ?? [],
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

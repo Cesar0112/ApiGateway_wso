@@ -12,7 +12,7 @@ import { ConfigService } from '../../config/config.service';
 import { User } from '../entities/user.entity';
 import { CreateUsersDto } from '../dto/create-users.dto';
 import { UpdateUsersDto } from '../dto/update-users.dto';
-import { UserMapper, WSO2Payload } from '../user_mapper';
+import { UserMapper, WSO2Payload } from '../user.mapper';
 import { Role } from '../../roles/entities/role.entity';
 import { RoleWSO2Service } from '../../roles/services/role_wso2.service';
 import { EncryptionsService } from '../../encryptions/encryptions.service';
@@ -260,78 +260,9 @@ export class UsersWSO2Service {
       throw new InternalServerErrorException('No se pudo obtener el usuario');
     }
   }
-  //TODO Actualizar este codigo de update para que por cada dato que venga de este se haga un patch replace del dato en especifico del usuario
+
+
   async update(id: string, dto: UpdateUsersDto, token: string): Promise<User> {
-    try {
-      if (dto.userName)
-        throw new InternalServerErrorException(
-          'No se puede cambiar el userName de un usuario ya creado',
-        );
-      if (dto.id)
-        throw new InternalServerErrorException(
-          'No se puede cambiar el identificador de un usuario',
-        );
-      //aqui agrego la propiedad userName porque scim2 requiere para actualizar un usuario ademas del id el userName
-      const currentUser = await this.findById(id, token);
-      dto.userName = currentUser.userName;
-
-      if (dto.structureIds?.length) {
-        await this.updateUserStructuresByIds(id, dto.structureIds, token);
-        /* quitarlo del payload PUT para que no choque */
-        delete dto.structureIds;
-      }
-      if ('isActive' in dto) {
-        await this.disableOrEnableUser(id, dto.isActive, token);
-        /* quitarlo del payload PUT para que no choque */
-        delete dto.isActive;
-      }
-
-      let payload: WSO2Payload =
-        UserMapper.fromUpdateUsersDtoToWSO2Payload(dto);
-      //payload = this.preserveMissingFields(payload, currentUser);
-      if (payload.name) {
-        if (!payload.name.givenName) {
-          payload.name.givenName = currentUser.firstName ?? '';
-        }
-        if (!payload.name.familyName) {
-          payload.name.familyName = currentUser.lastName ?? '';
-        }
-      } else {
-        payload.name = {
-          givenName: currentUser.firstName ?? '',
-          familyName: currentUser.lastName ?? '',
-        };
-      }
-      if (!payload.emails || payload.emails.length === 0) {
-        payload.emails = currentUser.email ? [currentUser.email] : [];
-      }
-      const res: AxiosResponse<any> = await axios.put(
-        `${this._baseUrl}/${id}?attributes=id,userName,name,emails,active,groups`,
-        payload,
-        this._getRequestOptions(token),
-      );
-      let rolesMap: Role[] = [];
-      if (dto.id) {
-        rolesMap = await this._rolesService.getUserRoles(dto.id, token);
-      } else if (dto.userName) {
-        rolesMap = await this._rolesService.getUserRolesByUsername(
-          dto.userName,
-          token,
-        );
-      }
-      return UserMapper.fromWSO2ResponseToUser(res.data, rolesMap);
-    } catch (err) {
-      this._logger.error(
-        `Error actualizando usuario ${id}`,
-        err.response?.data?.detail ?? err.message,
-      );
-      throw new InternalServerErrorException(
-        `No se pudo actualizar el usuario por ${err.message}`,
-      );
-    }
-  }
-
-  async updatePatch(id: string, dto: UpdateUsersDto, token: string): Promise<User> {
     try {
       /* ---------- 0. validaciones ---------- */
       if (dto.userName)

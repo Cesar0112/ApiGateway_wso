@@ -8,23 +8,24 @@ import {
   Delete,
   NotFoundException,
   Req,
-  HttpStatus,
-  HttpException,
 } from '@nestjs/common';
-import { StructuresService } from './services/structures.service';
 import { CreateStructureDto } from './dto/create-structure.dto';
 import { UpdateStructureDto } from './dto/update-structure.dto';
 import { CreateBulkDto } from './dto/create-bulk.dto';
 import { StructuresWSO2Service } from './services/structures_wso2.service';
-
+import { SessionService } from 'src/session/session.service';
+import { Request } from "express";
+import { StructureMapper } from './structure.mapper';
 @Controller('structures')
 export class StructuresController {
-  constructor(private readonly _structuresService: StructuresWSO2Service) {}
-
+  constructor(private readonly _structuresService: StructuresWSO2Service, private readonly sessionService: SessionService) { }
+  //FIXME Arreglar que no se mande la entidad estructura sino un dto de estructura, osea aquí hay que mapear similar a como se hace en el controller
   /* 1.  Jerarquía pequeña (≤ 20 nodos) – 1 HTTP call */
   @Post()
-  create(@Body() createStructureDto: CreateStructureDto) {
-    throw new NotFoundException();
+  async create(@Body() createStructureDto: CreateStructureDto, @Req() req: Request) {
+    const structure = await this._structuresService.create(createStructureDto, await this.sessionService.getTokenFromSession(req))
+
+    return StructureMapper.fromStructureToStructureDto(structure);
   }
 
   /* 2.  Carga masiva – 202 Accepted + jobId */
@@ -42,43 +43,34 @@ export class StructuresController {
     throw new NotFoundException();
   }
 
-  /* 4.  Nodo a nodo (edición puntual) */
-  @Post(':id/children')
-  createChild(
-    @Param('id') parentId: string,
-    @Body() createStructureDto: CreateStructureDto,
-  ) {
-    //    return this._structuresService.createChild(parentId, createStructureDto);
-    throw new NotFoundException();
-  }
-
   @Get()
-  findAll(@Req() req: Request) {
-    //const token = await this.getTokenFromSession(req);
-    //return this._structuresService.findAll();
-    throw new NotFoundException();
+  async findAll(@Req() req: Request) {
+    const token = await this.sessionService.getTokenFromSession(req);
+    return (await this._structuresService.findAll(token)).map((s) => StructureMapper.fromStructureToStructureDto(s));
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    //  return this._structuresService.findOne(id);
-    throw new NotFoundException();
+  async findOne(@Param('id') id: string, @Req() req: Request) {
+    const token = await this.sessionService.getTokenFromSession(req);
+    return StructureMapper.fromStructureToStructureDto(await this._structuresService.findOne(id, token));
+
   }
-  @Get(':name')
-  findOneByName(@Param('name') name: string) {
-    //return this._structuresService.findOneByName(name);
-    throw new NotFoundException();
+  @Get('/by_name/:name')
+  async findOneByName(@Param('name') name: string, @Req() req: Request) {
+    const token = await this.sessionService.getTokenFromSession(req);
+    return StructureMapper.fromStructureToStructureDto(await this._structuresService.findOneByName(name, token));
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
-    @Body() updateStructureDto: UpdateStructureDto,
+    @Body() updateStructureDto: UpdateStructureDto, @Req() req: Request
   ) {
-    //return this._structuresService.update(id, updateStructureDto);
-    throw new NotFoundException();
+
+    const token = await this.sessionService.getTokenFromSession(req);
+    return StructureMapper.fromStructureToStructureDto(await this._structuresService.update(id, updateStructureDto, token));
   }
-  @Patch(':currentName')
+  @Patch('/by_name/:currentName')
   updateByName(
     @Param('currentName') currentName: string,
     @Body() updateStructureDto: UpdateStructureDto,
@@ -91,24 +83,9 @@ export class StructuresController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    //    return this._structuresService.remove(id);
-    throw new NotFoundException();
-  }
-  /*private async getTokenFromSession(req: Request): Promise<string> {
-    const sessionId = req.sessionID || req.session?.id;
-    if (!sessionId) {
-      throw new HttpException('Session ID not found', HttpStatus.UNAUTHORIZED);
-    }
+  async remove(@Param('id') id: string, @Req() req: Request) {
+    const token = await this.sessionService.getTokenFromSession(req);
+    return await this._structuresService.remove(id, token);
 
-    const token =
-      await this._authenticateService.getTokenOfSessionId(sessionId);
-    if (!token) {
-      throw new HttpException(
-        'Token not found for session',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-    return token;
-  }*/
+  }
 }

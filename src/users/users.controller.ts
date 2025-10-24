@@ -20,7 +20,7 @@ import {
   AUTH_SERVICE_TOKEN
 } from '../auth/auth.interface';
 import { UserResponseDto } from './dto/user-response.dto';
-import { UserMapper } from './user_mapper';
+import { UserMapper } from './user.mapper';
 import { SessionService } from 'src/session/session.service';
 
 @Controller('users')
@@ -63,7 +63,7 @@ export class UsersController {
     @Req() req: Request,
   ): Promise<UserResponseDto> {
     const token = await this.sessionService.getTokenFromSession(req);
-    const user = await this._usersService.updatePatch(id, updateUsersDto, token);
+    const user = await this._usersService.update(id, updateUsersDto, token);
     return UserMapper.toResponseDto(user);
   }
 

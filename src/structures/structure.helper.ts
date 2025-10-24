@@ -1,5 +1,5 @@
 export class StructureNameHelper {
-  private static readonly GROUP_DELIMITER: string = '-';
+  static readonly GROUP_DELIMITER: string = '-';
   static buildPath(parts: string[]): string {
     if (!parts || parts.length === 0) {
       throw new Error('Debe especificar al menos un nivel');

@@ -76,22 +76,25 @@ export class StructuresService {
     return structure;
   }
 
-  async update(
+  /*FIXME Tengo que arreglar updateStructureDto porque cuando lo intento estandarizar entre 
+    los distintos servicios me da errores descomentar las lineas de codigo siguiente para que lo veas 
+  */
+  /*async update(
     id: string,
     updateStructureDto: UpdateStructureDto,
   ): Promise<Structure> {
     const structure = await this.findOne(id); // lanza 404 si no existe
     this._structureRepository.merge(structure, updateStructureDto); // aplica cambios
     return this._structureRepository.save(structure); // persistencia + eventos
-  }
-  async updateByCurrentName(
+  }/*
+  /*async updateByCurrentName(
     CurrentName: string,
     updateStructureDto: UpdateStructureDto,
   ): Promise<Structure> {
-    const structure = await this.findOneByName(CurrentName); // lanza 404 si no existe
+    const structure: Structure = await this.findOneByName(CurrentName); // lanza 404 si no existe
     this._structureRepository.merge(structure, updateStructureDto); // aplica cambios
     return this._structureRepository.save(structure); // persistencia + eventos
-  }
+  }*/
 
   async remove(id: string): Promise<void> {
     const structure = await this.findOne(id);

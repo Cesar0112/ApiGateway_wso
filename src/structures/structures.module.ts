@@ -7,6 +7,7 @@ import { BullModule } from '@nestjs/bull';
 import { ConfigService } from '../config/config.service';
 import { ConfigModule } from '../config/config.module';
 import { StructuresWSO2Service } from './services/structures_wso2.service';
+import { SessionModule } from 'src/session/session.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Structure]),
@@ -24,9 +25,10 @@ import { StructuresWSO2Service } from './services/structures_wso2.service';
     }),
     BullModule.registerQueue({ name: 'structure-bulk' }),
     ConfigModule,
+    SessionModule
   ],
   controllers: [StructuresController],
   providers: [StructuresService, StructuresWSO2Service],
   exports: [StructuresService, StructuresWSO2Service],
 })
-export class StructuresModule {}
+export class StructuresModule { }

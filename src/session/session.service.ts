@@ -9,8 +9,6 @@ import { createKeyv as createKeyvSQLite } from '@keyv/sqlite';
 import { ISessionData } from './interfaces/session.interface';
 import { Request } from 'express';
 
-//import { SessionData } from './interfaces/session.interface';
-
 @Injectable()
 export class SessionService {
   constructor(private readonly _cfg: ConfigService) { }
