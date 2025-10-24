@@ -206,9 +206,9 @@ export class StructuresWSO2Service {
       // 3) Si vienen children en dto -> sincronizar asignaciones (IDs o names según tu DTO)
       //    Asumo dto.children es array de { id?, name? } o ids; adapta según tu DTO.
       let childrenToAssign: string[] = [];
-      if (Array.isArray(dtoAny.children)) {
+      if (Array.isArray(dtoAny.childrenIds)) {
         // Normalizar a ids si vienen objetos
-        childrenToAssign = dtoAny.children.map((c: any) => (typeof c === 'string' ? c : c.id)).filter(Boolean);
+        childrenToAssign = dtoAny.childrenIds.map((c: any) => (typeof c === 'string' ? c : c.id)).filter(Boolean);
       }
 
 
@@ -256,13 +256,11 @@ export class StructuresWSO2Service {
           );
         }
       }
-
+      // obtener hijos actuales
+      const directChildren = await this.findChildren(id, token);
+      const directChildIds = directChildren.map(c => c.id);
       // 6) Si dto.children fue pasado, sincronizar hijos explícitos:
       if (childrenToAssign.length) {
-        // obtener children actuales directos (por parentName == newDisplayName)
-        const directChildren = await this.findChildren(id, token); // implementa para buscar hijos por parent id
-        const directChildIds = directChildren.map(c => c.id);
-
         // quitar los que no estén en childrenToAssign
         const toRemove = directChildIds.filter(cid => !childrenToAssign.includes(cid));
         for (const cid of toRemove) {
@@ -300,6 +298,27 @@ export class StructuresWSO2Service {
                   op: 'replace',
                   path: 'displayName',
                   value: childNewDisplayName,
+                },
+              ],
+            },
+            this._getRequestOptions(token),
+          );
+        }
+      } else {
+
+        // caso nuevo: dto.children viene vacío → quitar todos los hijos
+        for (const cid of directChildIds) {
+          const child = await this.findOne(cid, token);
+          const childName = child.name;
+          await axios.patch(
+            `${this._baseUrl}/${cid}`,
+            {
+              schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+              Operations: [
+                {
+                  op: 'replace',
+                  path: 'displayName',
+                  value: childName, // se queda en raíz
                 },
               ],
             },
