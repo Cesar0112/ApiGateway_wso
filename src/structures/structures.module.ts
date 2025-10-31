@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { StructuresService } from './services/structures.service';
 import { StructuresController } from './structures.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,6 +8,7 @@ import { ConfigService } from '../config/config.service';
 import { ConfigModule } from '../config/config.module';
 import { StructuresWSO2Service } from './services/structures_wso2.service';
 import { SessionModule } from 'src/session/session.module';
+import { UsersModule } from 'src/users/users.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Structure]),
@@ -25,7 +26,8 @@ import { SessionModule } from 'src/session/session.module';
     }),
     BullModule.registerQueue({ name: 'structure-bulk' }),
     ConfigModule,
-    SessionModule
+    SessionModule,
+    forwardRef(() => UsersModule)
   ],
   controllers: [StructuresController],
   providers: [StructuresService, StructuresWSO2Service],

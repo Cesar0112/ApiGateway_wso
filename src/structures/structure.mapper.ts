@@ -22,8 +22,8 @@ export class StructureMapper {
             id: struct.id,
             name,
             parent: struct.parent ? this.fromStructureToStructureDto(struct.parent) : null,
-            children: [],
-            users: [],
+            children: struct.children ?? [],
+            users: struct.users ?? [],
         } as StructureResponseDto;
     }
     static mapFromWSO2(data: any): Structure {

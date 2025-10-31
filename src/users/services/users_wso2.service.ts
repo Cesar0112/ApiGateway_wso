@@ -125,7 +125,7 @@ export class UsersWSO2Service {
         roleIds = dto.roleIds;
       }
 
-      /* 3. Resolver IDs de estructuras (nombres o IDs) ***********************/
+      /* 3.  Resolver IDs de estructuras (nombres o IDs) ***********************/
       let structureIds: string[] = [];
       if (dto.structureNames?.length) {
         // Resuelvo nombres → IDs
@@ -226,7 +226,7 @@ export class UsersWSO2Service {
         res.data.id,
         token,
       );
-      const structs = await this._structureService.getUserStructures(id, token);
+      const structs = await this._structureService.getStructuresFromUser(id, token);
       return UserMapper.fromWSO2ResponseToUser(res.data, userRoles, structs);
     } catch (err) {
       if (err.response?.status === 404) {
@@ -261,7 +261,21 @@ export class UsersWSO2Service {
     }
   }
 
-
+  async getUsersFromStructure(structId: string, token: string): Promise<User[]> {
+    const res = await axios.get(
+      `${this._baseUrl}/${structId}`,
+      this._getRequestOptions(token),
+    );
+    return res.data?.Resources?.map((u) => UserMapper.fromWSO2ResponseToUser(u)) ?? [];
+  }
+  async getUsersFromStructureName(structName: string, token: string): Promise<User[]> {
+    const { id } = await this._structureService.findOneByName(structName, token);
+    const res = await axios.get(
+      `${this._baseUrl}/${id}`,
+      this._getRequestOptions(token),
+    );
+    return res.data?.Resources?.map((u) => UserMapper.fromWSO2ResponseToUser(u)) ?? [];
+  }
   async update(id: string, dto: UpdateUsersDto, token: string): Promise<User> {
     try {
       /* ---------- 0. validaciones ---------- */
@@ -365,7 +379,7 @@ export class UsersWSO2Service {
   ): Promise<void> {
     const { userName } = await this.findById(userId, token);
     const currentStructuresOfUser =
-      await this._structureService.getUserStructures(userId, token);
+      await this._structureService.getStructuresFromUser(userId, token);
 
 
     await Promise.all(

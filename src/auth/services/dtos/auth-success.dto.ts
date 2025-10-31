@@ -20,4 +20,8 @@ export class AuthSuccessDto {
     example: 'Authentication successful',
   })
   message: string;
+
+  @ApiProperty({ example: ['monitoring', 'views'], description: "Los puntos finales a los que puede acceder el usuario" })
+  urls: string[];
+
 }

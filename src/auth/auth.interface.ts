@@ -24,6 +24,7 @@ export interface IDecodedToken {
   aud?: string | string[];
   azp?: string;
   groups?: string[];
+  urls?: string[];
 }
 
 export interface IAuthenticationService {
@@ -33,7 +34,7 @@ export interface IAuthenticationService {
     token: string;
     source: string;
     user: User;
-    permissions: string[],
+    permissions: string[];
     message: string;
   }>;
   logout(sessionId: string): Promise<void>;

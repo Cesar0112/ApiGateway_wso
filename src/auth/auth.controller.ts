@@ -44,11 +44,10 @@ export class AuthenticateController {
     @Inject(AUTH_SERVICE_TOKEN)
     private readonly authenticateService: IAuthenticationService,
   ) { }
-  @ApiTags('Autenticación')
   @UsePipes(new JoiValidationPipe(UserPasswordSchema))
-  @UseGuards(ThrottlerGuard)
+  //@UseGuards(ThrottlerGuard)
   @ApiBody({ schema: { example: { user: 'usuario', password: 'contraseña' } } })
-  @ApiOkResponse({ description: 'Authentication successful' })
+  @ApiOkResponse({ description: 'Authentication successful', type: AuthSuccessDto })
   @Post()
   @HttpCode(200)
   //TODO Cambiar los limites por configuracion de Throttle
@@ -62,17 +61,18 @@ export class AuthenticateController {
     //console.log('pass', password);
     const result = await this.authenticateService.login(user, password, req.ip);
     //    session.username = user;
-    session.permissions = result.permissions;
+    session.permissions = result.permissions.filter(p => !p.startsWith("url:"));
+    session.urls = result.permissions.filter(p => p.startsWith("url:")) ?? [];
     session.token = result?.token;
 
     return {
       success: true,
       message: 'Authentication successful',
       user: result.user,
-      permissions: result.permissions,
+      permissions: result.permissions.filter(p => !p.startsWith("url:")),
+      urls: result.permissions.filter(p => p.startsWith("url:")) ?? []
     };
   }
-  @ApiTags('Desautenticación')
   @ApiResponse({ status: 200, description: 'Logout exitoso' })
   @HttpCode(200)
   @Post('logout')
@@ -108,7 +108,7 @@ export class AuthenticateController {
     //this.authenticateService.test_short(sessionId);
   }
   @Post('refresh')
-  refresh(@Session() session: session.Session) {
-    this.authenticateService.refresh(session.id);
+  async refresh(@Session() session: session.Session) {
+    return await this.authenticateService.refresh(session.id);
   }
 }

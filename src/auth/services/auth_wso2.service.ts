@@ -136,8 +136,7 @@ export class AuthWSO2Service implements IAuthenticationService {
             }
           }
         }
-
-        return {
+        let result = {
           success: true,
           decodedToken,
           token: TOKEN,
@@ -145,7 +144,9 @@ export class AuthWSO2Service implements IAuthenticationService {
           user: await this.usersService.findByUsername(user, TOKEN),
           permissions: PERMISSIONS,
           message: 'Autenticación exitosa',
-        };
+        }
+
+        return result;
       } else {
         throw new UnauthorizedException("No se hallaron los roles dentro del token devuelto por wso2");
       }

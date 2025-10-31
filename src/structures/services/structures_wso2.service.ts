@@ -4,6 +4,8 @@ import {
   InternalServerErrorException,
   BadRequestException,
   Logger,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { CreateStructureDto } from '../dto/create-structure.dto';
@@ -14,6 +16,8 @@ import * as https from 'https';
 import { StructureNameHelper } from '../structure.helper';
 import { SessionService } from 'src/session/session.service';
 import { StructureMapper } from '../structure.mapper';
+import { UsersWSO2Service } from 'src/users/services/users_wso2.service';
+import { UserMapper } from 'src/users/user.mapper';
 
 //FIXME Arreglar que no se mapee directamente desde aquí sino desde el controller
 @Injectable()
@@ -21,7 +25,7 @@ export class StructuresWSO2Service {
 
   private readonly _baseUrl: string;
   private readonly _logger = new Logger(StructuresWSO2Service.name);
-  constructor(protected readonly configService: ConfigService, private readonly sessionService: SessionService) {
+  constructor(protected readonly configService: ConfigService, @Inject(forwardRef(() => UsersWSO2Service)) private readonly usersService: UsersWSO2Service) {
     const wso2Config = this.configService.getConfig().WSO2;
     this._baseUrl = `${wso2Config.HOST}:${wso2Config.PORT}/scim2/Groups`;
   }
@@ -39,7 +43,7 @@ export class StructuresWSO2Service {
       }),
     };
   }
-  async getUserStructures(userId: string, token: string): Promise<Structure[]> {
+  async getStructuresFromUser(userId: string, token: string): Promise<Structure[]> {
     const url = `${this.configService.getConfig().WSO2.HOST}:${this.configService.getConfig().WSO2.PORT
       }/scim2/Users/${userId}?attributes=groups`;
 
@@ -99,6 +103,12 @@ export class StructuresWSO2Service {
       );
     }
   }
+  async getParentStructure(displayName: string, token: string): Promise<Structure | null> {
+    const parts = displayName.split(StructureNameHelper.GROUP_DELIMITER);
+    if (parts.length <= 1) return null;
+    const parentName = parts[0];
+    return this.findOneByName(parentName, token);
+  }
   //FIXME Arreglar para que devuelva el padre dentro del mapFromWSO@
   async findAll(token: string): Promise<Structure[]> {
     try {
@@ -122,13 +132,30 @@ export class StructuresWSO2Service {
     return allStructures.filter((s) => ids.includes(s.id));
   }
 
-  async findOne(id: string, token: string): Promise<Structure> {
+  async findOne(id: string, token: string, include?: string): Promise<Structure> {
     try {
       const res: AxiosResponse<any> = await axios.get(
         `${this._baseUrl}/${id}`,
         this._getRequestOptions(token),
       );
-      return StructureMapper.mapFromWSO2(res.data);
+      const baseStructure = StructureMapper.mapFromWSO2(res.data);
+      if (!include?.length) return baseStructure;
+      // Fetch adicional: users
+      if (include.includes('users')) {
+        baseStructure.users = await Promise.all(res.data.members.map((u: { display: string }) => this.usersService.findByUsername(u.display, token)));
+      }
+
+      // Fetch adicional: parent
+      if (include.includes('parent')) {
+        baseStructure.parent = await this.getParentStructure(baseStructure.displayName, token);
+      }
+
+      // Fetch adicional: children
+      if (include.includes('children')) {
+        baseStructure.children = await this.findChildrenByName(baseStructure.name, token);
+      }
+
+      return baseStructure;
     } catch (err: any) {
       if (err.response?.status === 404)
         throw new NotFoundException(`Structure ${id} not found`);
@@ -138,7 +165,7 @@ export class StructuresWSO2Service {
     }
   }
 
-  async findOneByName(name: string, token: string): Promise<Structure> {
+  async findOneByName(name: string, token: string, include?: string): Promise<Structure> {
     try {
       const res: AxiosResponse<any> = await axios.get(
         `${this._baseUrl}?filter=displayName ew "${name}"`,
@@ -146,7 +173,25 @@ export class StructuresWSO2Service {
       );
       const found = res.data?.Resources?.[0];
       if (!found) throw new NotFoundException(`Structure ${name} not found`);
-      return StructureMapper.mapFromWSO2(found);
+
+      const baseStructure = StructureMapper.mapFromWSO2(found);
+      if (!include?.length) return baseStructure;
+      // Fetch adicional: users
+      if (include.includes('users')) {
+        baseStructure.users = await Promise.all(res.data.members.map((u: { display: string }) => this.usersService.findByUsername(u.display, token)));
+      }
+
+      // Fetch adicional: parent
+      if (include.includes('parent')) {
+        baseStructure.parent = await this.getParentStructure(baseStructure.name, token);
+      }
+
+      // Fetch adicional: children
+      if (include.includes('children')) {
+        baseStructure.children = await this.findChildrenByName(baseStructure.name, token);
+      }
+      return baseStructure;
+
     } catch (err: any) {
       throw new InternalServerErrorException(
         'Error buscando estructura por nombre en WSO2',
@@ -231,32 +276,66 @@ export class StructuresWSO2Service {
     token: string,
   ): Promise<Structure> {
     try {
-      const current = await this.findOne(id, token);
+      const [current, allStructures] = await Promise.all([
+        this.findOne(id, token),
+        this.findAll(token)
+      ]);
       if (!current) {
-        throw new NotFoundException(`Structure ${id} not found`);
+        throw new NotFoundException(`Estructura ${id} no encontrada`);
       }
       if (dto.name && dto.parentName && (dto.name === dto.parentName)) {
-        throw new NotFoundException(`El padre no puede ser su propio hijo`);
+        throw new BadRequestException(`El padre no puede ser su propio hijo`);
       }
       const dtoAny = dto as any;
+      // Verificar cambios de parent
+      if (dtoAny.parentName || dtoAny.name) {
+        if (dtoAny.parentName && dtoAny.parentName !== current.displayName.split(StructureNameHelper.GROUP_DELIMITER)?.[0]) {
+          // Validar que el nuevo padre exista
+          const newParent = allStructures.find((s) => s.name === dtoAny.parentName);
+          if (!newParent) {
+            throw new NotFoundException(`El nuevo padre '${dtoAny.parentName}' no existe`);
+          }
 
-      // 1️⃣ Verificar si hay cambios de nombre o padre
-      const { newDisplayName, nameChanged, parentChanged, operations } =
-        await this.computeDisplayNameChanges(id, current, dtoAny, token);
+          // 🔄 DETECCIÓN MEJORADA DE CICLOS
+          await StructureNameHelper.checkForCycles(current, dtoAny.parentName, allStructures, token);
+        }
+        /*if (dtoAny.childrenIds) {
+          await StructureNameHelper.validateChildrenAssignment(current.displayName.split(StructureNameHelper.GROUP_DELIMITER)?.[0], dtoAny.childrenIds, allStructures, token);
+        }*/
+        // 1️⃣ Verificar si hay cambios de nombre o padre
+        const { newDisplayName, nameChanged, parentChanged, operations } =
+          await this.computeDisplayNameChanges(id, current, dtoAny, token);
+        if (parentChanged) {
+          const allStructures = await this.findAll(token);
 
-      // 2️⃣ Aplicar PATCH principal
-      if (operations.length) {
-        await this.applyPatch(id, operations, token);
+          // Validar que el nuevo padre exista
+          const newParent = allStructures.find((s) => s.name === dtoAny.parentName);
+          if (!newParent && dtoAny.parentName) {
+            throw new NotFoundException(`El nuevo padre '${dtoAny.parentName}' no existe`);
+          }
+        }
+
+        // 2️⃣ Aplicar PATCH principal
+        if (operations.length) {
+          await this.applyPatch(id, operations, token);
+        }
+        if (nameChanged || parentChanged) {
+          await this.updateDescendants(id, current.displayName, newDisplayName, token);
+        }
       }
-
       // 3️⃣ Si el nombre o el padre cambió, actualizar descendientes
-      if (nameChanged || parentChanged) {
-        await this.updateDescendants(id, current.displayName, newDisplayName, token);
-      }
+
 
       // 4️⃣ Sincronizar hijos explícitos si fueron pasados
-      await this.syncChildrenAssignments(id, dtoAny.childrenIds, newDisplayName, token);
-
+      //await this.syncChildrenAssignments(id, dtoAny.childrenIds, newDisplayName, token);
+      if (dtoAny.childrenIds) {
+        await Promise.all(dtoAny.childrenIds.map((c: string) => {
+          this.update(c, {
+            "parentName": current.name
+          },
+            token)
+        }))
+      }
       // 5️⃣ Devolver la entidad actualizada
       return await this.findOne(id, token);
 
@@ -389,31 +468,52 @@ export class StructuresWSO2Service {
     token: string,
   ): Promise<void> {
     const delimiter = StructureNameHelper.GROUP_DELIMITER;
-    const directChildren = await this.findChildren(parentId, token);
-    const directChildIds = directChildren.map(c => c.id);
+    const [directChildren, allStructures, parent] = await Promise.all([
+      this.findChildren(parentId, token),
+      this.findAll(token),
+      this.findOne(parentId, token)
+    ]);
 
+
+    if (!parent) {
+      throw new NotFoundException(`Parent structure ${parentId} not found`);
+    }
+    if (!(allStructures.length > 0)) {
+      this._logger.error("No se encuentran las estructuras en wso2 verifica si existen o verifica las configuraciones de conexión");
+      throw new BadRequestException("Error contacte al administrador");
+    }
+
+    const directChildIds = directChildren.map(c => c.id);
     const childrenToAssign = Array.isArray(childrenIds)
       ? childrenIds.map((c: any) => (typeof c === 'string' ? c : c.id)).filter(Boolean)
       : [];
-
-    if (childrenToAssign.length) {
+    if (childrenToAssign.length > 0) {
+      await StructureNameHelper.validateChildrenAssignment(parent.name, childrenToAssign, allStructures, token);
+    }
+    const results = {
+      success: [] as string[],
+      errors: [] as string[]
+    };
+    if (childrenToAssign.length > 0) {
       // 🔹 Quitar hijos que ya no pertenecen
       const toRemove = directChildIds.filter(cid => !childrenToAssign.includes(cid));
       for (const cid of toRemove) {
-        const child = await this.findOne(cid, token);
+        const child = allStructures.find(s => s.id === cid);
         await this.applyPatch(cid, [
           {
             op: 'replace',
             path: 'displayName',
-            value: child.name,
+            value: child?.name,
           },
         ], token);
       }
 
       // 🔹 Asignar nuevos hijos
       for (const cid of childrenToAssign) {
-        const child = await this.findOne(cid, token);
-        if (!child) continue;
+        const child = allStructures.find(s => s.id === cid);
+        if (!child) {
+          continue;
+        }
 
         const childNewDisplayName = `${parentDisplayName}${delimiter}${child.name}`;
         await this.applyPatch(cid, [
@@ -440,10 +540,16 @@ export class StructuresWSO2Service {
   }
 
   async findChildren(id: string, token: string) {
-    return (await this.findAll(token)).filter(s => s.name.split(StructureNameHelper.GROUP_DELIMITER).length > 1).filter(s => s.parent?.id == id);
+    return (await this.findAll(token)).filter(s => s.displayName.split(StructureNameHelper.GROUP_DELIMITER).length > 1).filter(s => s.parent?.id == id);
   }
   async findChildrenByName(name: string, token: string) {
-    return (await this.findAll(token)).filter(s => s.name.split(StructureNameHelper.GROUP_DELIMITER).length > 1).filter(s => s.displayName.split(StructureNameHelper.GROUP_DELIMITER)[0] == name);
+    const allStructures = await this.findAll(token);
+    const delimiter = StructureNameHelper.GROUP_DELIMITER;
+    const prefix = name + delimiter;
+    return allStructures.filter((s) =>
+      (s.displayName.startsWith(prefix)) &&
+      s.displayName !== name
+    )
   }
 
   // Eliminar

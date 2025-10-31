@@ -18,10 +18,10 @@ import { StructuresModule } from '../structures/structures.module';
     forwardRef(() => AuthenticateModule),
     forwardRef(() => RolesModule),
     EncryptionsModule,
-    StructuresModule,
+    forwardRef(() => StructuresModule),
   ],
   controllers: [UsersController],
   providers: [UsersWSO2Service],
   exports: [UsersWSO2Service],
 })
-export class UsersModule {}
+export class UsersModule { }

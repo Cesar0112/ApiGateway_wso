@@ -8,6 +8,7 @@ import {
   Delete,
   NotFoundException,
   Req,
+  Query,
 } from '@nestjs/common';
 import { CreateStructureDto } from './dto/create-structure.dto';
 import { UpdateStructureDto } from './dto/update-structure.dto';
@@ -50,9 +51,9 @@ export class StructuresController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Req() req: Request) {
+  async findOne(@Param('id') id: string, @Req() req: Request, @Query('include') include?: string) {
     const token = await this.sessionService.getTokenFromSession(req);
-    return StructureMapper.fromStructureToStructureDto(await this._structuresService.findOne(id, token));
+    return StructureMapper.fromStructureToStructureDto(await this._structuresService.findOne(id, token, include));
 
   }
   @Get('/by_name/:name')
