@@ -12,6 +12,14 @@
     "GRANT_TYPE": "password",
     "SCOPE": "openid groups id_structure profile roles internal_session_delete internal_session_view internal_api_resource_create internal_api_resource_delete internal_api_resource_view internal_api_resource_update internal_role_mgt_create internal_role_mgt_update internal_role_mgt_delete internal_role_mgt_view internal_user_mgt_create internal_user_mgt_view internal_user_mgt_list internal_user_mgt_delete internal_user_mgt_update server:add camera:update view:select log:search structure:delete user:update monitoring:open_web_page path:create monitoring:search deploy:delete analytic:delete server:assign_servers_to_structure view:enable_disable_full_screen view:show_hide_transparent analytic:add server:manage_auto_rule monitoring:expand recording:statistics path:update_position view:create forensic:face view:add module:structures structure:add server:assign_camera_to_server module:recording event:filter deploy:info_camera autorule:delete_auto_rule_to_analytics deploy:add event:list view:enable_disable_independent_view module:camera_config deploy:view server:check_connection_of_server module:users forensic:object user:activate sector:go_to monitoring:enable_edition_mode view:remove_camera camera:delete view:update view:swap_cameras deploy:assign_camera server:update deploy:update view:rename structure:get path:delete_position forensic:plate event:see monitoring:check_connection user:filter monitoring:presentation view:search_camera monitoring:assign_to_structure user:change_password autorule:update_auto_rule_to_analytics sector:control_ptz view:enable_disable_sound_alarm module:servers monitoring:control module:deploy structure:update sector:update view:add_camera camera:add user:deactivate autorule:add_auto_rule_to_analytics monitoring:select_monitor task:programming monitoring:configure_recording view:delete module:forensic server:delete view:show_hide_date module:monitoring view:clear_cameras view:camera_reset deploy:delete_camera server:manage_subsystem forensic:motion view:show_hide_info monitoring:add_auto_rule internal_oauth_scope_update internal_oauth_scope_delete internal_oauth_scope_view internal_oauth_scope_create reading_users create_users delete_users internal_group_mgt_delete internal_group_mgt_view internal_group_mgt_update internal_group_mgt_create"
   },
+  "CASDOOR": {
+    "ENDPOINT": "http://10.12.24.33:8000",
+    "CERTIFICATE": "",
+    "ORG_NAME": "organization_winteli",
+    "APP_NAME": "application_apigateway",
+    "CLIENT_ID": "87b914c070d6b58efbb3",
+    "CLIENT_SECRET": "ad665faae66222d04c3470741ff5d1792a77cfd2"
+  },
   "DATABASE": {
     "TYPE": "sqlite",
     "HOST": "10.12.24.33",
@@ -34,7 +42,7 @@
     "PROXY_STATIC_MAP_PATH": "./routes.json",
     "CORS_ORIGIN": "http://localhost:8080",
     "HTTP_METHODS_ALLOWED": "GET,PUT,POST,HEADER,DELETE",
-    "AUTH_TYPE": "wso2",
+    "AUTH_TYPE": "casdoor",
     "THROTTLE_TTL_MS": 900000,
     "THROTTLE_LIMIT": 5
   },

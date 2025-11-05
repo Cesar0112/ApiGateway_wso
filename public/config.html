@@ -1,524 +1,511 @@
 <!-- public/config.html -->
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Configuración General</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-      }
 
-      form {
-        margin-bottom: 20px;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuración General</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
 
-      label {
-        display: block;
-        margin-bottom: 5px;
-      }
+    form {
+      margin-bottom: 20px;
+    }
 
-      input,
-      textarea {
-        width: 100%;
-        margin-bottom: 10px;
-      }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
 
-      button {
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        cursor: pointer;
-      }
+    input,
+    textarea {
+      width: 100%;
+      margin-bottom: 10px;
+    }
 
-      button:hover {
-        background-color: #0056b3;
-      }
-    </style>
-  </head>
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
 
-  <body>
-    <h1>Editar Configuración General</h1>
-    <form id="configForm">
-      <!-- Campos para la configuración general -->
-      <!-- ENTORNO -->
-      <label for="nodeEnv">Entorno (NODE_ENV):</label>
-      <input type="text" id="nodeEnv" name="nodeEnv" required readonly />
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
 
-      <!-- INICIO WSO2 -->
-      <div class="section">
-        <h2>WSO2</h2>
-        <label for="ws2Host">HOST:</label>
-        <input type="url" id="ws2Host" name="ws2Host" />
+<body>
+  <h1>Editar Configuración General</h1>
+  <form id="configForm">
+    <!-- Campos para la configuración general -->
+    <!-- ENTORNO -->
+    <label for="nodeEnv">Entorno (NODE_ENV):</label>
+    <input type="text" id="nodeEnv" name="nodeEnv" required readonly />
 
-        <label for="ws2Port">PORT:</label>
-        <input type="number" id="ws2Port" name="ws2Port" />
+    <!-- INICIO WSO2 -->
+    <div class="section">
+      <h2>WSO2</h2>
+      <label for="ws2Host">HOST:</label>
+      <input type="url" id="ws2Host" name="ws2Host" />
 
-        <label for="ws2ApiVersion">API_VERSION:</label>
-        <input type="text" id="ws2ApiVersion" name="ws2ApiVersion" />
+      <label for="ws2Port">PORT:</label>
+      <input type="number" id="ws2Port" name="ws2Port" />
 
-        <label for="ws2ClientId">CLIENT_ID:</label>
-        <input type="text" id="ws2ClientId" name="ws2ClientId" />
+      <label for="ws2ApiVersion">API_VERSION:</label>
+      <input type="text" id="ws2ApiVersion" name="ws2ApiVersion" />
 
-        <label for="ws2ClientSecret">CLIENT_SECRET:</label>
-        <input type="text" id="ws2ClientSecret" name="ws2ClientSecret" />
+      <label for="ws2ClientId">CLIENT_ID:</label>
+      <input type="text" id="ws2ClientId" name="ws2ClientId" />
 
-        <label for="wso2GrantType">TYPE:</label>
-        <select id="wso2GrantType" name="wso2GrantType">
-          <option value="password">password</option>
-          <!--<option value="client_credentials">client_credentials</option>-->
-        </select>
-        <!-- Estos son los alcances necesarios al momento de autenticarse el usuario-->
-        <label for="ws2Scopes">SCOPE:</label>
-        <input type="text" id="ws2Scopes" name="ws2Scopes" />
+      <label for="ws2ClientSecret">CLIENT_SECRET:</label>
+      <input type="text" id="ws2ClientSecret" name="ws2ClientSecret" />
 
-        <label for="ws2UrlToken">URL_TOKEN:</label>
-        <input type="url" id="ws2UrlToken" name="ws2UrlToken" />
+      <label for="wso2GrantType">TYPE:</label>
+      <select id="wso2GrantType" name="wso2GrantType">
+        <option value="password">password</option>
+        <!--<option value="client_credentials">client_credentials</option>-->
+      </select>
+      <!-- Estos son los alcances necesarios al momento de autenticarse el usuario-->
+      <label for="ws2Scopes">SCOPE:</label>
+      <input type="text" id="ws2Scopes" name="ws2Scopes" />
 
-        <label for="ws2RevokeUrl">REVOKE_URL:</label>
-        <input type="url" id="ws2RevokeUrl" name="ws2RevokeUrl" />
+      <label for="ws2UrlToken">URL_TOKEN:</label>
+      <input type="url" id="ws2UrlToken" name="ws2UrlToken" />
 
-        <label for="ws2RoleSearch">ROLE_SEARCH:</label>
-        <input type="url" id="ws2RoleSearch" name="ws2RoleSearch" />
+      <label for="ws2RevokeUrl">REVOKE_URL:</label>
+      <input type="url" id="ws2RevokeUrl" name="ws2RevokeUrl" />
 
-        <!-- FIN WSO2 -->
-      </div>
-      <!-- INICIO DATABASE -->
-      <div class="section">
-        <h2>DATABASE</h2>
-        <label for="dbType">TYPE:</label>
-        <select id="dbType" name="dbType">
-          <option value="sqlite">sqlite</option>
-          <option value="mysql">mysql</option>
-        </select>
+      <label for="ws2RoleSearch">ROLE_SEARCH:</label>
+      <input type="url" id="ws2RoleSearch" name="ws2RoleSearch" />
 
-        <label for="dbHost">HOST:</label>
-        <input type="text" id="dbHost" name="dbHost" />
+      <!-- FIN WSO2 -->
+    </div>
+    <!-- INICIO CASDOOR -->
+    <h2>CASDOOR</h2>
+    <label for="casdoorEndpoint">ENDPOINT:</label>
+    <input type="url" id="casdoorEndpoint" name="casdoorEndpoint" />
 
-        <label for="dbPort">PORT:</label>
-        <input type="text" id="dbPort" name="dbPort" />
+    <label for="casdoorClientId">CLIENT_ID:</label>
+    <input type="text" id="casdoorClientId" name="casdoorClientId" />
 
-        <label for="dbUsername">USERNAME:</label>
-        <input type="text" id="dbUsername" name="dbUsername" />
+    <label for="casdoorClientSecret">CLIENT_SECRET:</label>
+    <input type="text" id="casdoorClientSecret" name="casdoorClientSecret" />
 
-        <label for="dbPassword">PASSWORD:</label>
-        <input type="text" id="dbPassword" name="dbPassword" />
+    <label for="casdoorCertificate">CERTIFICATE:</label>
+    <textarea id="casdoorCertificate" name="casdoorCertificate"></textarea>
 
-        <label for="dbDatabaseName">DATABASE_NAME:</label>
-        <input type="text" id="dbDatabaseName" name="dbDatabaseName" />
+    <label for="casdoorOrganizationName">ORGANIZATION_NAME:</label>
+    <input type="text" id="casdoorOrganizationName" name="casdoorOrganizationName" />
 
-        <label for="dbRetryDelay">RETRY_DELAY (ms):</label>
-        <input type="number" id="dbRetryDelay" name="dbRetryDelay" />
+    <label for="casdoorAppName">APPLICATION_NAME:</label>
+    <input type="text" id="casdoorAppName" name="casdoorAppName" />
 
-        <label for="dbAutoLoadEntities">AUTO_LOAD_ENTITIES:</label>
-        <input
-          type="checkbox"
-          id="dbAutoLoadEntities"
-          name="dbAutoLoadEntities"
-        />
 
-        <label for="dbSynchronize">SYNCHRONIZE:</label>
-        <input type="checkbox" id="dbSynchronize" name="dbSynchronize" />
+    <!-- FIN CASDOOR -->
 
-        <label for="dbLogging">LOGGING:</label>
-        <input type="text" id="dbLogging" name="dbLogging" />
-      </div>
-      <!-- FIN DATABASE -->
+    <!-- INICIO DATABASE -->
+    <div class="section">
+      <h2>DATABASE</h2>
+      <label for="dbType">TYPE:</label>
+      <select id="dbType" name="dbType">
+        <option value="sqlite">sqlite</option>
+        <option value="mysql">mysql</option>
+      </select>
 
-      <!-- INICIO API_GATEWAY -->
-      <div class="section">
-        <h2>API_GATEWAY</h2>
-        <label for="apiGatewayHost">HOST:</label>
-        <input type="text" id="apiGatewayHost" name="apiGatewayHost" />
+      <label for="dbHost">HOST:</label>
+      <input type="text" id="dbHost" name="dbHost" />
 
-        <label for="apiGatewayPort">PORT:</label>
-        <input type="number" id="apiGatewayPort" name="apiGatewayPort" />
+      <label for="dbPort">PORT:</label>
+      <input type="text" id="dbPort" name="dbPort" />
 
-        <label for="apiGatewaySessionSecret">SESSION_SECRET:</label>
-        <input
-          type="text"
-          id="apiGatewaySessionSecret"
-          name="apiGatewaySessionSecret"
-        />
+      <label for="dbUsername">USERNAME:</label>
+      <input type="text" id="dbUsername" name="dbUsername" />
 
-        <label for="apiGatewayProxy">PROXY:</label>
-        <input type="checkbox" id="apiGatewayProxy" name="apiGatewayProxy" />
+      <label for="dbPassword">PASSWORD:</label>
+      <input type="text" id="dbPassword" name="dbPassword" />
 
-        <label for="apiGatewayApiUrl">API_URL:</label>
-        <input type="text" id="apiGatewayApiUrl" name="apiGatewayApiUrl" />
+      <label for="dbDatabaseName">DATABASE_NAME:</label>
+      <input type="text" id="dbDatabaseName" name="dbDatabaseName" />
 
-        <label for="apiGatewayEncryptionPassword">ENCRYPTION_PASSWORD:</label>
-        <input
-          type="text"
-          id="apiGatewayEncryptionPassword"
-          name="apiGatewayEncryptionPassword"
-        />
+      <label for="dbRetryDelay">RETRY_DELAY (ms):</label>
+      <input type="number" id="dbRetryDelay" name="dbRetryDelay" />
 
-        <label for="apiGatewayRedisUrl">REDIS_URL:</label>
-        <input type="text" id="apiGatewayRedisUrl" name="apiGatewayRedisUrl" />
+      <label for="dbAutoLoadEntities">AUTO_LOAD_ENTITIES:</label>
+      <input type="checkbox" id="dbAutoLoadEntities" name="dbAutoLoadEntities" />
 
-        <label for="apiGatewayProxyStaticMapPath">PROXY_STATIC_MAP_PATH:</label>
-        <input
-          type="text"
-          id="apiGatewayProxyStaticMapPath"
-          name="apiGatewayProxyStaticMapPath"
-          readonly
-        />
+      <label for="dbSynchronize">SYNCHRONIZE:</label>
+      <input type="checkbox" id="dbSynchronize" name="dbSynchronize" />
 
-        <label for="apiGatewayCorsOrigin">CORS_ORIGIN:</label>
-        <input
-          type="text"
-          id="apiGatewayCorsOrigin"
-          name="apiGatewayCorsOrigin"
-        />
+      <label for="dbLogging">LOGGING:</label>
+      <input type="text" id="dbLogging" name="dbLogging" />
+    </div>
+    <!-- FIN DATABASE -->
 
-        <label for="apiGatewayHttpMethodsAllowed">HTTP_METHODS_ALLOWED:</label>
-        <input
-          type="text"
-          id="apiGatewayHttpMethodsAllowed"
-          name="apiGatewayHttpMethodsAllowed"
-        />
+    <!-- INICIO API_GATEWAY -->
+    <div class="section">
+      <h2>API_GATEWAY</h2>
+      <label for="apiGatewayHost">HOST:</label>
+      <input type="text" id="apiGatewayHost" name="apiGatewayHost" />
 
-        <label for="apiGatewayAuthenticationType">AUTH_TYPE:</label>
-        <input
-          type="text"
-          id="apiGatewayAuthenticationType"
-          name="apiGatewayAuthenticationType"
-        />
+      <label for="apiGatewayPort">PORT:</label>
+      <input type="number" id="apiGatewayPort" name="apiGatewayPort" />
 
-        <label for="apiGatewayAuthenticationThrottleTtlMS"
-          >THROTTLE_TTL_MS:</label
-        >
-        <input
-          type="number"
-          min="300000"
-          id="apiGatewayAuthenticationThrottleTtlMS"
-          name="apiGatewayAuthenticationThrottleTtlMS"
-        />
+      <label for="apiGatewaySessionSecret">SESSION_SECRET:</label>
+      <input type="text" id="apiGatewaySessionSecret" name="apiGatewaySessionSecret" />
 
-        <label for="apiGatewayAuthenticationThrottleLimit"
-          >THROTTLE_LIMIT:</label
-        >
-        <input
-          type="number"
-          min="5"
-          id="apiGatewayAuthenticationThrottleLimit"
-          name="apiGatewayAuthenticationThrottleLimit"
-        />
-      </div>
-      <!-- FIN API_GATEWAY -->
+      <label for="apiGatewayProxy">PROXY:</label>
+      <input type="checkbox" id="apiGatewayProxy" name="apiGatewayProxy" />
 
-      <!-- INICIO SESSION -->
-      <div class="section">
-        <h2>SESSION</h2>
-        <label for="sessionFolder">FOLDER:</label>
-        <input type="text" id="sessionFolder" name="sessionFolder" />
+      <label for="apiGatewayApiUrl">API_URL:</label>
+      <input type="text" id="apiGatewayApiUrl" name="apiGatewayApiUrl" />
 
-        <label for="sessionSecret">SECRET:</label>
-        <input type="text" id="sessionSecret" name="sessionSecret" />
+      <label for="apiGatewayEncryptionPassword">ENCRYPTION_PASSWORD:</label>
+      <input type="text" id="apiGatewayEncryptionPassword" name="apiGatewayEncryptionPassword" />
 
-        <label for="sessionTtlSeconds">TTL_SECONDS:</label>
-        <input type="number" id="sessionTtlSeconds" name="sessionTtlSeconds" />
+      <label for="apiGatewayRedisUrl">REDIS_URL:</label>
+      <input type="text" id="apiGatewayRedisUrl" name="apiGatewayRedisUrl" />
 
-        <label for="sessionCookieName">COOKIE_NAME:</label>
-        <input type="text" id="sessionCookieName" name="sessionCookieName" />
+      <label for="apiGatewayProxyStaticMapPath">PROXY_STATIC_MAP_PATH:</label>
+      <input type="text" id="apiGatewayProxyStaticMapPath" name="apiGatewayProxyStaticMapPath" readonly />
 
-        <label for="sessionHost">HOST:</label>
-        <input type="text" id="sessionHost" name="sessionHost" />
+      <label for="apiGatewayCorsOrigin">CORS_ORIGIN:</label>
+      <input type="text" id="apiGatewayCorsOrigin" name="apiGatewayCorsOrigin" />
 
-        <label for="sessionPort">PORT:</label>
-        <input type="number" id="sessionPort" name="sessionPort" />
+      <label for="apiGatewayHttpMethodsAllowed">HTTP_METHODS_ALLOWED:</label>
+      <input type="text" id="apiGatewayHttpMethodsAllowed" name="apiGatewayHttpMethodsAllowed" />
 
-        <label>STRATEGY:</label>
-        <input
-          type="radio"
-          id="sessionStrategyRedis"
-          name="sessionStrategy"
-          value="redis"
-        />
-        <label for="sessionStrategyRedis" style="display: inline">Redis</label>
-        <input
-          type="radio"
-          id="sessionStrategySqlite"
-          name="sessionStrategy"
-          value="sqlite"
-        />
-        <label for="sessionStrategySqlite" style="display: inline"
-          >Sqlite</label
-        >
+      <label for="apiGatewayAuthenticationType">AUTH_TYPE:</label>
+      <input type="text" id="apiGatewayAuthenticationType" name="apiGatewayAuthenticationType" />
 
-        <label for="sessionTls">TLS:</label>
-        <input type="checkbox" id="sessionTls" name="sessionTls" />
+      <label for="apiGatewayAuthenticationThrottleTtlMS">THROTTLE_TTL_MS:</label>
+      <input type="number" min="300000" id="apiGatewayAuthenticationThrottleTtlMS"
+        name="apiGatewayAuthenticationThrottleTtlMS" />
 
-        <label for="sessionSecure">SECURE:</label>
-        <input type="checkbox" id="sessionSecure" name="sessionSecure" />
-      </div>
-      <!-- FIN SESSION -->
-      <!-- INICIO USERS -->
-      <div class="section">
-        <h2>USERS</h2>
-        <label for="usersUsernameMinSize">USERNAME_MIN_SIZE:</label>
-        <input
-          type="number"
-          id="usersUsernameMinSize"
-          name="usersUsernameMinSize"
-          min="4"
-        />
+      <label for="apiGatewayAuthenticationThrottleLimit">THROTTLE_LIMIT:</label>
+      <input type="number" min="5" id="apiGatewayAuthenticationThrottleLimit"
+        name="apiGatewayAuthenticationThrottleLimit" />
+    </div>
+    <!-- FIN API_GATEWAY -->
 
-        <label for="usersPasswordMinSize">PASSWORD_MIN_SIZE:</label>
-        <input
-          type="number"
-          id="usersPasswordMinSize"
-          name="usersPasswordMinSize"
-          min="8"
-        />
-      </div>
-      <!-- FIN USERS -->
-      <!-- INICIO REDIS -->
-      <div class="section">
-        <h2>REDIS</h2>
-        <label for="redisHost">HOST:</label>
-        <input type="text" id="redisHost" name="redisHost" />
+    <!-- INICIO SESSION -->
+    <div class="section">
+      <h2>SESSION</h2>
+      <label for="sessionFolder">FOLDER:</label>
+      <input type="text" id="sessionFolder" name="sessionFolder" />
 
-        <label for="redisPort">PORT:</label>
-        <input type="number" id="redisPort" name="redisPort" />
-      </div>
-      <!-- FIN REDIS -->
+      <label for="sessionSecret">SECRET:</label>
+      <input type="text" id="sessionSecret" name="sessionSecret" />
 
-      <button type="submit">Guardar Configuración</button>
-    </form>
+      <label for="sessionTtlSeconds">TTL_SECONDS:</label>
+      <input type="number" id="sessionTtlSeconds" name="sessionTtlSeconds" />
 
-    <script>
-      document
-        .getElementById('configForm')
-        .addEventListener('submit', async (event) => {
-          event.preventDefault();
+      <label for="sessionCookieName">COOKIE_NAME:</label>
+      <input type="text" id="sessionCookieName" name="sessionCookieName" />
 
-          const config = {
-            NODE_ENV: document.getElementById('nodeEnv').value,
-            WSO2: {
-              HOST: document.getElementById('ws2Host').value,
-              PORT: parseInt(document.getElementById('ws2Port').value, 10),
-              API_VERSION: document.getElementById('ws2ApiVersion').value,
-              CLIENT_ID: document.getElementById('ws2ClientId').value,
-              CLIENT_SECRET: document.getElementById('ws2ClientSecret').value,
-              URL_TOKEN: document.getElementById('ws2UrlToken').value,
-              REVOKE_URL: document.getElementById('ws2RevokeUrl').value,
-              ROLE_SEARCH: document.getElementById('ws2RoleSearch').value,
-              GRANT_TYPE: document.getElementById('wso2GrantType').value,
-              SCOPE: document.getElementById('ws2Scopes').value,
-            },
-            DATABASE: {
-              TYPE: document.getElementById('dbType').value,
-              HOST: document.getElementById('dbHost').value.trim(),
-              PORT: document.getElementById('dbPort').value.trim(),
-              USERNAME: document.getElementById('dbUsername').value.trim(),
-              PASSWORD: document.getElementById('dbPassword').value.trim(),
-              DATABASE_NAME: document
-                .getElementById('dbDatabaseName')
-                .value.trim(),
-              RETRY_DELAY: parseInt(
-                document.getElementById('dbRetryDelay').value,
-                10,
-              ),
-              AUTO_LOAD_ENTITIES:
-                document.getElementById('dbAutoLoadEntities').checked,
-              SYNCHRONIZE: document.getElementById('dbSynchronize').checked,
-              LOGGING: document.getElementById('dbLogging').value.trim(),
-            },
-            API_GATEWAY: {
-              HOST: document.getElementById('apiGatewayHost').value,
-              PORT: parseInt(
-                document.getElementById('apiGatewayPort').value,
-                10,
-              ),
-              SESSION_SECRET: document.getElementById('apiGatewaySessionSecret')
-                .value,
-              PROXY: document.getElementById('apiGatewayProxy').checked,
-              API_URL: document.getElementById('apiGatewayApiUrl').value,
-              ENCRYPTION_PASSWORD: document.getElementById(
-                'apiGatewayEncryptionPassword',
-              ).value,
-              REDIS_URL: document.getElementById('apiGatewayRedisUrl').value,
-              PROXY_STATIC_MAP_PATH: document.getElementById(
-                'apiGatewayProxyStaticMapPath',
-              ).value,
-              CORS_ORIGIN: document.getElementById('apiGatewayCorsOrigin')
-                .value,
-              HTTP_METHODS_ALLOWED: document.getElementById(
-                'apiGatewayHttpMethodsAllowed',
-              ).value,
-              AUTH_TYPE: document.getElementById('apiGatewayAuthenticationType')
-                .value,
-              THROTTLE_TTL_MS: document.getElementById(
-                'apiGatewayAuthenticationThrottleTtlMS',
-              ).value,
-              THROTTLE_LIMIT: document.getElementById(
-                'apiGatewayAuthenticationThrottleLimit',
-              ).value,
-            },
-            SESSION: {
-              FOLDER: document.getElementById('sessionFolder').value,
-              SECRET: document.getElementById('sessionSecret').value,
-              TTL_SECONDS: parseInt(
-                document.getElementById('sessionTtlSeconds').value,
-                10,
-              ),
-              COOKIE_NAME: document.getElementById('sessionCookieName').value,
-              HOST: document.getElementById('sessionHost').value,
-              PORT: parseInt(document.getElementById('sessionPort').value, 10),
-              TLS: document.getElementById('sessionTls').checked,
-              SECURE: document.getElementById('sessionSecure').checked,
-              STRATEGY: document.querySelector(
-                'input[name="sessionStrategy"]:checked',
-              )?.value,
-            },
-            USERS: {
-              USERNAME_MIN_SIZE: parseInt(
-                document.getElementById('usersUsernameMinSize').value,
-                10,
-              ),
-              PASSWORD_MIN_SIZE: parseInt(
-                document.getElementById('usersPasswordMinSize').value,
-                10,
-              ),
-            },
-            REDIS: {
-              HOST: document.getElementById('redisHost').value,
-              PORT: parseInt(document.getElementById('redisPort').value, 10),
-            },
-          };
+      <label for="sessionHost">HOST:</label>
+      <input type="text" id="sessionHost" name="sessionHost" />
 
-          try {
-            const response = await fetch('/apigateway/config', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(config),
-            });
+      <label for="sessionPort">PORT:</label>
+      <input type="number" id="sessionPort" name="sessionPort" />
 
-            alert(
-              response.ok ? 'Configuración actualizada' : 'Error al actualizar',
-            );
-          } catch (error) {
-            console.error('Error:', error);
-            alert('Error al actualizar la configuración');
-          }
-        });
+      <label>STRATEGY:</label>
+      <input type="radio" id="sessionStrategyRedis" name="sessionStrategy" value="redis" />
+      <label for="sessionStrategyRedis" style="display: inline">Redis</label>
+      <input type="radio" id="sessionStrategySqlite" name="sessionStrategy" value="sqlite" />
+      <label for="sessionStrategySqlite" style="display: inline">Sqlite</label>
 
-      // Cargar la configuración actual al cargar la página
-      window.onload = async () => {
+      <label for="sessionTls">TLS:</label>
+      <input type="checkbox" id="sessionTls" name="sessionTls" />
+
+      <label for="sessionSecure">SECURE:</label>
+      <input type="checkbox" id="sessionSecure" name="sessionSecure" />
+    </div>
+    <!-- FIN SESSION -->
+    <!-- INICIO USERS -->
+    <div class="section">
+      <h2>USERS</h2>
+      <label for="usersUsernameMinSize">USERNAME_MIN_SIZE:</label>
+      <input type="number" id="usersUsernameMinSize" name="usersUsernameMinSize" min="4" />
+
+      <label for="usersPasswordMinSize">PASSWORD_MIN_SIZE:</label>
+      <input type="number" id="usersPasswordMinSize" name="usersPasswordMinSize" min="8" />
+    </div>
+    <!-- FIN USERS -->
+    <!-- INICIO REDIS -->
+    <div class="section">
+      <h2>REDIS</h2>
+      <label for="redisHost">HOST:</label>
+      <input type="text" id="redisHost" name="redisHost" />
+
+      <label for="redisPort">PORT:</label>
+      <input type="number" id="redisPort" name="redisPort" />
+    </div>
+    <!-- FIN REDIS -->
+
+    <button type="submit">Guardar Configuración</button>
+  </form>
+
+  <script>
+    document
+      .getElementById('configForm')
+      .addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const config = {
+          NODE_ENV: document.getElementById('nodeEnv').value,
+          WSO2: {
+            HOST: document.getElementById('ws2Host').value,
+            PORT: parseInt(document.getElementById('ws2Port').value, 10),
+            API_VERSION: document.getElementById('ws2ApiVersion').value,
+            CLIENT_ID: document.getElementById('ws2ClientId').value,
+            CLIENT_SECRET: document.getElementById('ws2ClientSecret').value,
+            URL_TOKEN: document.getElementById('ws2UrlToken').value,
+            REVOKE_URL: document.getElementById('ws2RevokeUrl').value,
+            ROLE_SEARCH: document.getElementById('ws2RoleSearch').value,
+            GRANT_TYPE: document.getElementById('wso2GrantType').value,
+            SCOPE: document.getElementById('ws2Scopes').value,
+          },
+          CASDOOR: {
+            ENDPOINT: document.getElementById('casdoorEndpoint').value,
+            CLIENT_ID: document.getElementById('casdoorClientId').value,
+            CLIENT_SECRET: document.getElementById('casdoorClientSecret').value,
+            CERTIFICATE: document.getElementById('casdoorCertificate').value,
+            ORG_NAME: document.getElementById(
+              'casdoorOrganizationName',
+            ).value,
+            APP_NAME: document.getElementById(
+              'casdoorAppName',
+            ).value,
+          },
+          DATABASE: {
+            TYPE: document.getElementById('dbType').value,
+            HOST: document.getElementById('dbHost').value.trim(),
+            PORT: document.getElementById('dbPort').value.trim(),
+            USERNAME: document.getElementById('dbUsername').value.trim(),
+            PASSWORD: document.getElementById('dbPassword').value.trim(),
+            DATABASE_NAME: document
+              .getElementById('dbDatabaseName')
+              .value.trim(),
+            RETRY_DELAY: parseInt(
+              document.getElementById('dbRetryDelay').value,
+              10,
+            ),
+            AUTO_LOAD_ENTITIES:
+              document.getElementById('dbAutoLoadEntities').checked,
+            SYNCHRONIZE: document.getElementById('dbSynchronize').checked,
+            LOGGING: document.getElementById('dbLogging').value.trim(),
+          },
+          API_GATEWAY: {
+            HOST: document.getElementById('apiGatewayHost').value,
+            PORT: parseInt(
+              document.getElementById('apiGatewayPort').value,
+              10,
+            ),
+            SESSION_SECRET: document.getElementById('apiGatewaySessionSecret')
+              .value,
+            PROXY: document.getElementById('apiGatewayProxy').checked,
+            API_URL: document.getElementById('apiGatewayApiUrl').value,
+            ENCRYPTION_PASSWORD: document.getElementById(
+              'apiGatewayEncryptionPassword',
+            ).value,
+            REDIS_URL: document.getElementById('apiGatewayRedisUrl').value,
+            PROXY_STATIC_MAP_PATH: document.getElementById(
+              'apiGatewayProxyStaticMapPath',
+            ).value,
+            CORS_ORIGIN: document.getElementById('apiGatewayCorsOrigin')
+              .value,
+            HTTP_METHODS_ALLOWED: document.getElementById(
+              'apiGatewayHttpMethodsAllowed',
+            ).value,
+            AUTH_TYPE: document.getElementById('apiGatewayAuthenticationType')
+              .value,
+            THROTTLE_TTL_MS: document.getElementById(
+              'apiGatewayAuthenticationThrottleTtlMS',
+            ).value,
+            THROTTLE_LIMIT: document.getElementById(
+              'apiGatewayAuthenticationThrottleLimit',
+            ).value,
+          },
+          SESSION: {
+            FOLDER: document.getElementById('sessionFolder').value,
+            SECRET: document.getElementById('sessionSecret').value,
+            TTL_SECONDS: parseInt(
+              document.getElementById('sessionTtlSeconds').value,
+              10,
+            ),
+            COOKIE_NAME: document.getElementById('sessionCookieName').value,
+            HOST: document.getElementById('sessionHost').value,
+            PORT: parseInt(document.getElementById('sessionPort').value, 10),
+            TLS: document.getElementById('sessionTls').checked,
+            SECURE: document.getElementById('sessionSecure').checked,
+            STRATEGY: document.querySelector(
+              'input[name="sessionStrategy"]:checked',
+            )?.value,
+          },
+          USERS: {
+            USERNAME_MIN_SIZE: parseInt(
+              document.getElementById('usersUsernameMinSize').value,
+              10,
+            ),
+            PASSWORD_MIN_SIZE: parseInt(
+              document.getElementById('usersPasswordMinSize').value,
+              10,
+            ),
+          },
+          REDIS: {
+            HOST: document.getElementById('redisHost').value,
+            PORT: parseInt(document.getElementById('redisPort').value, 10),
+          },
+        };
+
         try {
-          const response = await fetch('/apigateway/config');
-          const config = await response.json();
+          const response = await fetch('/apigateway/config', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(config),
+          });
 
-          document.getElementById('nodeEnv').value = config.NODE_ENV;
-          // WSO2
-          document.getElementById('ws2Host').value = config.WSO2?.HOST;
-          document.getElementById('ws2Port').value = config.WSO2?.PORT;
-          document.getElementById('ws2ApiVersion').value =
-            config.WSO2?.API_VERSION;
-          document.getElementById('ws2ClientId').value = config.WSO2?.CLIENT_ID;
-          document.getElementById('ws2ClientSecret').value =
-            config.WSO2?.CLIENT_SECRET;
-          document.getElementById('ws2RevokeUrl').value =
-            config.WSO2?.REVOKE_URL;
-          document.getElementById('ws2RoleSearch').value =
-            config.WSO2?.ROLE_SEARCH;
-          document.getElementById('ws2UrlToken').value = config.WSO2?.URL_TOKEN;
-          document.getElementById('wso2GrantType').value =
-            config.WSO2?.GRANT_TYPE ?? 'password';
-          document.getElementById('ws2Scopes').value = config.WSO2?.SCOPE;
-          // DATABASE
-          document.getElementById('dbType').value =
-            config.DATABASE?.TYPE ?? 'sqlite';
-          document.getElementById('dbHost').value = config.DATABASE?.HOST ?? '';
-          document.getElementById('dbPort').value = config.DATABASE?.PORT ?? '';
-          document.getElementById('dbUsername').value =
-            config.DATABASE?.USERNAME ?? '';
-          document.getElementById('dbPassword').value =
-            config.DATABASE?.PASSWORD ?? '';
-          document.getElementById('dbDatabaseName').value =
-            config.DATABASE?.DATABASE_NAME ?? '';
-          document.getElementById('dbRetryDelay').value =
-            config.DATABASE?.RETRY_DELAY ?? 3000;
-          document.getElementById('dbAutoLoadEntities').checked =
-            config.DATABASE?.AUTO_LOAD_ENTITIES ?? true;
-          document.getElementById('dbSynchronize').checked =
-            config.DATABASE?.SYNCHRONIZE ?? true;
-          document.getElementById('dbLogging').value =
-            config.DATABASE?.LOGGING ?? 'all';
-          // API_GATEWAY
-          document.getElementById('apiGatewayHost').value =
-            config.API_GATEWAY?.HOST;
-          document.getElementById('apiGatewayPort').value =
-            config.API_GATEWAY?.PORT;
-          document.getElementById('apiGatewaySessionSecret').value =
-            config.API_GATEWAY?.SESSION_SECRET;
-          document.getElementById('apiGatewayProxy').checked =
-            config.API_GATEWAY?.PROXY;
-          document.getElementById('apiGatewayApiUrl').value =
-            config.API_GATEWAY?.API_URL;
-          document.getElementById('apiGatewayEncryptionPassword').value =
-            config.API_GATEWAY?.ENCRYPTION_PASSWORD;
-          document.getElementById('apiGatewayRedisUrl').value =
-            config.API_GATEWAY?.REDIS_URL;
-          document.getElementById('apiGatewayProxyStaticMapPath').value =
-            config.API_GATEWAY?.PROXY_STATIC_MAP_PATH;
-          document.getElementById('apiGatewayCorsOrigin').value =
-            config.API_GATEWAY?.CORS_ORIGIN;
-          document.getElementById('apiGatewayHttpMethodsAllowed').value =
-            config.API_GATEWAY?.HTTP_METHODS_ALLOWED;
-          document.getElementById('apiGatewayAuthenticationType').value =
-            config.API_GATEWAY?.AUTH_TYPE;
-          document.getElementById(
-            'apiGatewayAuthenticationThrottleTtlMS',
-          ).value = config.API_GATEWAY?.THROTTLE_TTL_MS;
-          document.getElementById(
-            'apiGatewayAuthenticationThrottleLimit',
-          ).value = config.API_GATEWAY?.THROTTLE_LIMIT;
-          // SESSION
-          document.getElementById('sessionFolder').value =
-            config.SESSION?.FOLDER;
-          document.getElementById('sessionSecret').value =
-            config.SESSION?.SECRET;
-          document.getElementById('sessionTtlSeconds').value =
-            config.SESSION?.TTL_SECONDS;
-          document.getElementById('sessionCookieName').value =
-            config.SESSION?.COOKIE_NAME;
-          document.getElementById('sessionHost').value = config.SESSION?.HOST;
-          document.getElementById('sessionPort').value = config.SESSION?.PORT;
-          document.getElementById('sessionTls').checked = config.SESSION?.TLS;
-          document.getElementById('sessionSecure').checked =
-            config.SESSION?.SECURE;
-          if (config.SESSION?.STRATEGY) {
-            const strategy = config.SESSION.STRATEGY;
-            const radio = document.querySelector(
-              `input[name="sessionStrategy"][value="${strategy}"]`,
-            );
-            if (radio) {
-              radio.checked = true;
-            }
-          }
-          // USERS
-          document.getElementById('usersUsernameMinSize').value =
-            config.USERS?.USERNAME_MIN_SIZE ?? 4;
-          document.getElementById('usersPasswordMinSize').value =
-            config.USERS?.PASSWORD_MIN_SIZE ?? 8;
-          // REDIS
-          document.getElementById('redisHost').value =
-            config.REDIS?.HOST ?? '127.0.0.1';
-          document.getElementById('redisPort').value =
-            config.REDIS?.PORT ?? 6379;
+          alert(
+            response.ok ? 'Configuración actualizada' : 'Error al actualizar',
+          );
         } catch (error) {
           console.error('Error:', error);
-          alert('Error al cargar la configuración');
+          alert('Error al actualizar la configuración');
         }
-      };
-    </script>
-  </body>
+      });
+
+    // Cargar la configuración actual al cargar la página
+    window.onload = async () => {
+      try {
+        const response = await fetch('/apigateway/config');
+        const config = await response.json();
+
+        document.getElementById('nodeEnv').value = config.NODE_ENV;
+        // WSO2
+        document.getElementById('ws2Host').value = config.WSO2?.HOST;
+        document.getElementById('ws2Port').value = config.WSO2?.PORT;
+        document.getElementById('ws2ApiVersion').value =
+          config.WSO2?.API_VERSION;
+        document.getElementById('ws2ClientId').value = config.WSO2?.CLIENT_ID;
+        document.getElementById('ws2ClientSecret').value =
+          config.WSO2?.CLIENT_SECRET;
+        document.getElementById('ws2RevokeUrl').value =
+          config.WSO2?.REVOKE_URL;
+        document.getElementById('ws2RoleSearch').value =
+          config.WSO2?.ROLE_SEARCH;
+        document.getElementById('ws2UrlToken').value = config.WSO2?.URL_TOKEN;
+        document.getElementById('wso2GrantType').value =
+          config.WSO2?.GRANT_TYPE ?? 'password';
+        document.getElementById('ws2Scopes').value = config.WSO2?.SCOPE;
+        // CASDOOR
+        document.getElementById('casdoorEndpoint').value =
+          config.CASDOOR?.ENDPOINT;
+        document.getElementById('casdoorClientId').value =
+          config.CASDOOR?.CLIENT_ID;
+        document.getElementById('casdoorClientSecret').value =
+          config.CASDOOR?.CLIENT_SECRET;
+        document.getElementById('casdoorCertificate').value =
+          config.CASDOOR?.CERTIFICATE;
+        document.getElementById('casdoorOrganizationName').value =
+          config.CASDOOR?.ORG_NAME;
+        document.getElementById('casdoorAppName').value =
+          config.CASDOOR?.APP_NAME;
+        // DATABASE
+        document.getElementById('dbType').value =
+          config.DATABASE?.TYPE ?? 'sqlite';
+        document.getElementById('dbHost').value = config.DATABASE?.HOST ?? '';
+        document.getElementById('dbPort').value = config.DATABASE?.PORT ?? '';
+        document.getElementById('dbUsername').value =
+          config.DATABASE?.USERNAME ?? '';
+        document.getElementById('dbPassword').value =
+          config.DATABASE?.PASSWORD ?? '';
+        document.getElementById('dbDatabaseName').value =
+          config.DATABASE?.DATABASE_NAME ?? '';
+        document.getElementById('dbRetryDelay').value =
+          config.DATABASE?.RETRY_DELAY ?? 3000;
+        document.getElementById('dbAutoLoadEntities').checked =
+          config.DATABASE?.AUTO_LOAD_ENTITIES ?? true;
+        document.getElementById('dbSynchronize').checked =
+          config.DATABASE?.SYNCHRONIZE ?? true;
+        document.getElementById('dbLogging').value =
+          config.DATABASE?.LOGGING ?? 'all';
+        // API_GATEWAY
+        document.getElementById('apiGatewayHost').value =
+          config.API_GATEWAY?.HOST;
+        document.getElementById('apiGatewayPort').value =
+          config.API_GATEWAY?.PORT;
+        document.getElementById('apiGatewaySessionSecret').value =
+          config.API_GATEWAY?.SESSION_SECRET;
+        document.getElementById('apiGatewayProxy').checked =
+          config.API_GATEWAY?.PROXY;
+        document.getElementById('apiGatewayApiUrl').value =
+          config.API_GATEWAY?.API_URL;
+        document.getElementById('apiGatewayEncryptionPassword').value =
+          config.API_GATEWAY?.ENCRYPTION_PASSWORD;
+        document.getElementById('apiGatewayRedisUrl').value =
+          config.API_GATEWAY?.REDIS_URL;
+        document.getElementById('apiGatewayProxyStaticMapPath').value =
+          config.API_GATEWAY?.PROXY_STATIC_MAP_PATH;
+        document.getElementById('apiGatewayCorsOrigin').value =
+          config.API_GATEWAY?.CORS_ORIGIN;
+        document.getElementById('apiGatewayHttpMethodsAllowed').value =
+          config.API_GATEWAY?.HTTP_METHODS_ALLOWED;
+        document.getElementById('apiGatewayAuthenticationType').value =
+          config.API_GATEWAY?.AUTH_TYPE;
+        document.getElementById(
+          'apiGatewayAuthenticationThrottleTtlMS',
+        ).value = config.API_GATEWAY?.THROTTLE_TTL_MS;
+        document.getElementById(
+          'apiGatewayAuthenticationThrottleLimit',
+        ).value = config.API_GATEWAY?.THROTTLE_LIMIT;
+        // SESSION
+        document.getElementById('sessionFolder').value =
+          config.SESSION?.FOLDER;
+        document.getElementById('sessionSecret').value =
+          config.SESSION?.SECRET;
+        document.getElementById('sessionTtlSeconds').value =
+          config.SESSION?.TTL_SECONDS;
+        document.getElementById('sessionCookieName').value =
+          config.SESSION?.COOKIE_NAME;
+        document.getElementById('sessionHost').value = config.SESSION?.HOST;
+        document.getElementById('sessionPort').value = config.SESSION?.PORT;
+        document.getElementById('sessionTls').checked = config.SESSION?.TLS;
+        document.getElementById('sessionSecure').checked =
+          config.SESSION?.SECURE;
+        if (config.SESSION?.STRATEGY) {
+          const strategy = config.SESSION.STRATEGY;
+          const radio = document.querySelector(
+            `input[name="sessionStrategy"][value="${strategy}"]`,
+          );
+          if (radio) {
+            radio.checked = true;
+          }
+        }
+        // USERS
+        document.getElementById('usersUsernameMinSize').value =
+          config.USERS?.USERNAME_MIN_SIZE ?? 4;
+        document.getElementById('usersPasswordMinSize').value =
+          config.USERS?.PASSWORD_MIN_SIZE ?? 8;
+        // REDIS
+        document.getElementById('redisHost').value =
+          config.REDIS?.HOST ?? '127.0.0.1';
+        document.getElementById('redisPort').value =
+          config.REDIS?.PORT ?? 6379;
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al cargar la configuración');
+      }
+    };
+  </script>
+</body>
+
 </html>

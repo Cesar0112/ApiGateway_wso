@@ -26,6 +26,7 @@ import { AUTH_SERVICE_TOKEN, IAuthenticationService } from './auth.interface';
 import { LoginThrottleGuard } from './login-throttle.guard';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { AuthSuccessDto } from './services/dtos/auth-success.dto';
+import { EncryptionsService } from 'src/encryptions/encryptions.service';
 
 interface CustomSession extends ExpressSession {
   accessToken?: string;
@@ -43,6 +44,7 @@ export class AuthenticateController {
   constructor(
     @Inject(AUTH_SERVICE_TOKEN)
     private readonly authenticateService: IAuthenticationService,
+    private readonly encryptionsService: EncryptionsService
   ) { }
   @UsePipes(new JoiValidationPipe(UserPasswordSchema))
   //@UseGuards(ThrottlerGuard)
@@ -51,13 +53,15 @@ export class AuthenticateController {
   @Post()
   @HttpCode(200)
   //TODO Cambiar los limites por configuracion de Throttle
-  //@Throttle({ default: { limit: 5, ttl: 15 * 60 * 1000 } }) //Límite: 5 intentos por IP cada 15 minutos
+  @Throttle({ default: { limit: 5, ttl: 15 * 60 * 1000 } }) //Límite: 5 intentos por IP cada 15 minutos
   async login(
     @Session() session: Record<string, any>,
     @Body() body: { user: string; password: string },
     @Req() req: Request,
   ): Promise<AuthSuccessDto> {
     const { user, password } = body;
+    console.log(this.encryptionsService.encrypt("Cesar01*"))
+
     //console.log('pass', password);
     const result = await this.authenticateService.login(user, password, req.ip);
     //    session.username = user;
@@ -103,10 +107,14 @@ export class AuthenticateController {
       message: 'Logout successful',
     };
   }
+  @Throttle({ default: { limit: 5, ttl: 15 * 60 * 1000 } }) //Límite: 5 intentos por IP cada 15 minutos
+
   @Get('test')
   shortTtl(@Body('sessionId') sessionId: string) {
+    console.log(this.encryptionsService.encrypt("Cesar01*"))
     //this.authenticateService.test_short(sessionId);
   }
+  @Throttle({ default: { limit: 5, ttl: 15 * 60 * 1000 } })
   @Post('refresh')
   async refresh(@Session() session: session.Session) {
     return await this.authenticateService.refresh(session.id);

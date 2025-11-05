@@ -15,7 +15,7 @@ import {
 import { RoleWSO2Service } from './services/role_wso2.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { SessionTokenGuard } from '../guards/session-token.guard';
+import { SessionGuard } from '../guards/session.guard';
 import {
   AUTH_SERVICE_TOKEN,
 } from '../auth/auth.interface';
@@ -23,7 +23,7 @@ import { Request } from 'express';
 import { RoleMapper } from './role.mapper';
 import { SessionService } from 'src/session/session.service';
 @Controller('roles')
-@UseGuards(SessionTokenGuard)
+@UseGuards(SessionGuard)
 export class RolesController {
   constructor(
     private readonly _rolesService: RoleWSO2Service,

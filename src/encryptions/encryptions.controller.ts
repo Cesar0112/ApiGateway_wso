@@ -1,6 +1,8 @@
-import { Controller, UseGuards } from '@nestjs/common';
-import { SessionTokenGuard } from '../guards/session-token.guard';
+import { Controller } from '@nestjs/common';
+
 
 @Controller('encryptions')
-@UseGuards(SessionTokenGuard)
-export class EncryptionsController {}
+//@UseGuards(SessionTokenGuard)
+export class EncryptionsController {
+
+}

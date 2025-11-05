@@ -9,20 +9,20 @@ import {
 import { Request } from 'express';
 import { ProxyService } from './proxy.service';
 import { Channel } from './proxy.interface';
-import { SessionTokenGuard } from '../guards/session-token.guard';
+import { SessionGuard } from '../guards/session.guard';
 import { ProxyGateway } from './proxy.gateway';
 import { AxiosResponse } from 'axios';
 import { ProxyScopeGuard } from './proxy-scope.guard';
 import { EncryptionResponseInterceptor } from '../encryption-response/encryption-response.interceptor';
 
 @Controller('*path')
-@UseGuards(SessionTokenGuard)
+@UseGuards(SessionGuard)
 @UseGuards(ProxyScopeGuard)
 export class ProxyController {
   constructor(
     private readonly _proxyService: ProxyService,
     private readonly _gatewayService: ProxyGateway,
-  ) {}
+  ) { }
 
   @UseInterceptors(EncryptionResponseInterceptor)
   @All()

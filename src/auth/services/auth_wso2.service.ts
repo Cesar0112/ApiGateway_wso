@@ -53,7 +53,7 @@ export class AuthWSO2Service implements IAuthenticationService {
     return await this.sessionService.refresh(sessionId, session);
   }
 
-  async login(user: string, password: string, ip?: string) {
+  async login(username: string, password: string, ip?: string) {
     try {
       const URL: string =
         this.configService.get('WSO2')?.URL_TOKEN ??
@@ -75,7 +75,7 @@ export class AuthWSO2Service implements IAuthenticationService {
         client_secret:
           wso2Cfg.CLIENT_SECRET ??
           this.configService.get('WSO2')?.CLIENT_SECRET,
-        username: user,
+        username: username,
         password: this.encryptionsService.decrypt(password),
         scope,
       };
@@ -141,7 +141,7 @@ export class AuthWSO2Service implements IAuthenticationService {
           decodedToken,
           token: TOKEN,
           source: 'wso2',
-          user: await this.usersService.findByUsername(user, TOKEN),
+          user: await this.usersService.findByUsername(username, TOKEN),
           permissions: PERMISSIONS,
           message: 'Autenticación exitosa',
         }

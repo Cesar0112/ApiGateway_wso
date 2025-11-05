@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: casdoor-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: casdoor
+      MYSQL_USER: casdoor
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3306:3306"
+    volumes:
+      - casdoor_data:/var/lib/mysql
+
+  casdoor:
+    image: casbin/casdoor:latest
+    container_name: casdoor
+    depends_on:
+      - mysql
+    environment:
+      - GIN_MODE= "release"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./conf:/conf
+      - ./logs:/logs
+    restart: unless-stopped
+
+volumes:
+  casdoor_data:

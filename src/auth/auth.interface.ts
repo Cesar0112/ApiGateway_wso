@@ -27,16 +27,18 @@ export interface IDecodedToken {
   urls?: string[];
 }
 
+export type LoginResponse = {
+  success: boolean;
+  decodedToken: IDecodedToken;
+  token: string;
+  source: string;
+  user: User;
+  permissions: string[];
+  message: string;
+};
+
 export interface IAuthenticationService {
-  login(user: string, password: string, ip?: string): Promise<{
-    success: boolean;
-    decodedToken: IDecodedToken;
-    token: string;
-    source: string;
-    user: User;
-    permissions: string[];
-    message: string;
-  }>;
+  login(username: string, password: string, ip?: string): Promise<LoginResponse>;
   logout(sessionId: string): Promise<void>;
   refresh(sessionId: string): Promise<boolean>;
 }

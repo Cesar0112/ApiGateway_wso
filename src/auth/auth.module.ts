@@ -17,6 +17,7 @@ import { UsersWSO2Service } from '../users/services/users_wso2.service';
 import { UsersModule } from '../users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Permission } from '../permissions/entities/permission.entity';
+import { AuthCasdoorService } from './services/auth_casdoor.service';
 
 @Module({
   imports: [
@@ -72,8 +73,8 @@ import { Permission } from '../permissions/entities/permission.entity';
         switch (AUTH_TYPE) {
           case 'wso2':
             return new AuthWSO2Service(...BASE_CONFIG);
-          /*case 'local':
-            return new AuthLocalService(...BASE_CONFIG, jwt);*/
+          case 'casdoor':
+            return new AuthCasdoorService(cfg, sess, enc, cache);
           default:
             return new AuthWSO2Service(...BASE_CONFIG);
         }

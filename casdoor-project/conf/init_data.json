@@ -1,0 +1,31 @@
+{
+    "organizations": [
+        {
+            "owner": "admin",
+            "name": "built-in",
+            "displayName": "Built-in Organization"
+        }
+    ],
+    "users": [
+        {
+            "owner": "built-in",
+            "name": "admin",
+            "password": "123",
+            "displayName": "Admin",
+            "isAdmin": true
+        }
+    ],
+    "applications": [
+        {
+            "owner": "built-in",
+            "name": "app-built-in",
+            "displayName": "Casdoor App",
+            "organization": "built-in",
+            "redirectUris": [
+                "http://localhost:8000/callback"
+            ],
+            "clientId": "123",
+            "clientSecret": "123"
+        }
+    ]
+}

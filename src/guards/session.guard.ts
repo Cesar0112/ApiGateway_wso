@@ -11,8 +11,8 @@ import { SessionService } from '../session/session.service';
  * WARNING para acceder a los datos de session que almacena express-session no usar CACHE_MANAGER
  */
 @Injectable()
-export class SessionTokenGuard implements CanActivate {
-  constructor(private readonly sessionService: SessionService) {}
+export class SessionGuard implements CanActivate {
+  constructor(private readonly sessionService: SessionService) { }
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req: Request = context.switchToHttp().getRequest();
 
@@ -23,7 +23,7 @@ export class SessionTokenGuard implements CanActivate {
 
     // Leemos la sesión desde el mismo store que usa express-session
     const session = await this.sessionService.getSession(sessionID);
-
+    //TODO Agregar función que verifique el session_id
     if (!session) {
       throw new UnauthorizedException('Invalid or expired session');
     }

@@ -63,6 +63,26 @@ export class WSO2Config {
 
 }
 
+export class CasdoorConfig {
+  @IsUrl()
+  ENDPOINT: string = "http://10.12.24.33:8000/";
+
+  @IsString()
+  CLIENT_ID: string = '87b914c070d6b58efbb3';
+
+  @IsString()
+  CLIENT_SECRET: string = 'ad665faae66222d04c3470741ff5d1792a77cfd2';
+
+  @IsString()
+  CERTIFICATE: string;
+
+  @IsString()
+  ORG_NAME: string = "organization_winteli";
+
+  @IsString()
+  @IsOptional()
+  APP_NAME?: string = "application_apigateway";
+}
 export class DatabaseConfig {
   @IsIn(['sqlite', 'mysql'])
   @IsString()
@@ -221,6 +241,10 @@ export class Config {
   @ValidateNested()
   @Type(() => WSO2Config)
   WSO2: WSO2Config;
+
+  @ValidateNested()
+  @Type(() => CasdoorConfig)
+  CASDOOR: CasdoorConfig;
 
   @ValidateNested()
   DATABASE: DatabaseConfig;
