@@ -60,7 +60,7 @@ export class AuthenticateController {
     @Req() req: Request,
   ): Promise<AuthSuccessDto> {
     const { user, password } = body;
-    console.log(this.encryptionsService.encrypt("Cesar01*"))
+    //console.log(this.encryptionsService.encrypt("Cesar01*"))
 
     //console.log('pass', password);
     const result = await this.authenticateService.login(user, password, req.ip);
