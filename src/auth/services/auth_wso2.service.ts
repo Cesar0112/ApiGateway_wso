@@ -222,5 +222,6 @@ export class AuthWSO2Service implements IAuthenticationService {
   private _normalizeIp(ip: string): string {
     return ip.replace(/^::ffff:/, '').replace(/:/g, '-');
   }
-
+  //TODO Agregar método que verificar el token para evitar riesgos de seguridad o discrepancias entre los relojes de 
+  // el sessionStorage y el authService
 }
