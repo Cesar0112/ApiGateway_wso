@@ -99,7 +99,7 @@
     <input type="text" id="casdoorClientSecret" name="casdoorClientSecret" />
 
     <label for="casdoorCertificate">CERTIFICATE:</label>
-    <textarea id="casdoorCertificate" name="casdoorCertificate"></textarea>
+    <textarea id="casdoorCertificate" rows="30" name="casdoorCertificate"></textarea>
 
     <label for="casdoorOrganizationName">ORGANIZATION_NAME:</label>
     <input type="text" id="casdoorOrganizationName" name="casdoorOrganizationName" />
@@ -276,7 +276,7 @@
             ENDPOINT: document.getElementById('casdoorEndpoint').value,
             CLIENT_ID: document.getElementById('casdoorClientId').value,
             CLIENT_SECRET: document.getElementById('casdoorClientSecret').value,
-            CERTIFICATE: document.getElementById('casdoorCertificate').value,
+            CERTIFICATE: btoa(document.getElementById('casdoorCertificate').value),
             ORG_NAME: document.getElementById(
               'casdoorOrganizationName',
             ).value,
@@ -414,7 +414,7 @@
         document.getElementById('casdoorClientSecret').value =
           config.CASDOOR?.CLIENT_SECRET;
         document.getElementById('casdoorCertificate').value =
-          config.CASDOOR?.CERTIFICATE;
+          atob(config.CASDOOR?.CERTIFICATE);
         document.getElementById('casdoorOrganizationName').value =
           config.CASDOOR?.ORG_NAME;
         document.getElementById('casdoorAppName').value =
