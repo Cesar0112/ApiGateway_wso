@@ -25,6 +25,7 @@ export interface IDecodedToken {
   azp?: string;
   groups?: string[];
   urls?: string[];
+  id: string;
 }
 
 export type LoginResponse = {

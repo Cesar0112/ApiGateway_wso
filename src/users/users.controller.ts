@@ -11,7 +11,7 @@ import {
   HttpStatus,
   Inject,
 } from '@nestjs/common';
-import { UsersWSO2Service } from './services/users_wso2.service';
+import { UsersWSO2Service } from './services/wso2/users_wso2.service';
 import { CreateUsersDto } from './dto/create-users.dto';
 import { UpdateUsersDto } from './dto/update-users.dto';
 import { ApiBody, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
@@ -20,7 +20,7 @@ import {
   AUTH_SERVICE_TOKEN
 } from '../auth/auth.interface';
 import { UserResponseDto } from './dto/user-response.dto';
-import { UserMapper } from './user.mapper';
+import { UserMapper } from './services/wso2/user.wso2.mapper';
 import { SessionService } from 'src/session/session.service';
 
 @Controller('users')
@@ -44,7 +44,7 @@ export class UsersController {
   @Get()
   async findAll(@Req() req: Request): Promise<UserResponseDto[]> {
     const token = await this.sessionService.getTokenFromSession(req);
-    const users = await this._usersService.findAll(token);
+    const users = await this._usersService.getUsers(token);
     return UserMapper.toResponseList(users);
   }
 
@@ -52,7 +52,7 @@ export class UsersController {
   @Get(':id')
   async findById(@Param('id') id: string, @Req() req: Request) {
     const token = await this.sessionService.getTokenFromSession(req);
-    const user = await this._usersService.findById(id, token);
+    const user = await this._usersService.getUserById(id, token);
     return UserMapper.toResponseDto(user);
   }
 
@@ -70,7 +70,7 @@ export class UsersController {
   @Delete(':id')
   async remove(@Param('id') id: string, @Req() req: Request) {
     const token = await this.sessionService.getTokenFromSession(req);
-    return this._usersService.remove(id, token);
+    return this._usersService.delete(id, token);
   }
 
   @Get('by-username/:username')
@@ -79,7 +79,7 @@ export class UsersController {
     @Req() req: Request,
   ) {
     const token = await this.sessionService.getTokenFromSession(req);
-    const user = await this._usersService.findByUsername(username, token);
+    const user = await this._usersService.getUserByUsername(username, token);
     return UserMapper.toResponseDto(user);
   }
 
@@ -104,7 +104,7 @@ export class UsersController {
     @Req() req: Request,
   ) {
     const token = await this.sessionService.getTokenFromSession(req);
-    return this._usersService.removeByUsername(username, token);
+    return this._usersService.deleteByUsername(username, token);
   }
 
 }

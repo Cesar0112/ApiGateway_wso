@@ -22,7 +22,7 @@ import { ConfigService } from '../../config/config.service';
 import { SessionService } from '../../session/session.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { UsersWSO2Service } from 'src/users/services/users_wso2.service';
+import { UsersWSO2Service } from 'src/users/services/wso2/users_wso2.service';
 @Injectable()
 export class AuthWSO2Service implements IAuthenticationService {
   private readonly logger = new Logger(AuthWSO2Service.name);
@@ -141,7 +141,7 @@ export class AuthWSO2Service implements IAuthenticationService {
           decodedToken,
           token: TOKEN,
           source: 'wso2',
-          user: await this.usersService.findByUsername(username, TOKEN),
+          user: await this.usersService.getUserByUsername(username, TOKEN),
           permissions: PERMISSIONS,
           message: 'Autenticación exitosa',
         }

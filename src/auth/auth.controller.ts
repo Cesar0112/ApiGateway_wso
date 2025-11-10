@@ -11,20 +11,18 @@ import {
   BadRequestException,
   InternalServerErrorException,
   Res,
-  Inject,
-  UseGuards,
+  Inject
 } from '@nestjs/common';
 
 import { JoiValidationPipe } from '../pipes/password-grant/password-grant.pipe';
 import { UserPasswordSchema } from '../pipes/validation-schemas/userpassword';
-import { ApiTags, ApiBody, ApiResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiBody, ApiResponse, ApiOkResponse } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { Session as ExpressSession, SessionData } from 'express-session';
 import { EncryptionResponseInterceptor } from '../encryption-response/encryption-response.interceptor';
 import * as session from 'express-session';
 import { AUTH_SERVICE_TOKEN, IAuthenticationService } from './auth.interface';
-import { LoginThrottleGuard } from './login-throttle.guard';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
 import { AuthSuccessDto } from './services/dtos/auth-success.dto';
 import { EncryptionsService } from 'src/encryptions/encryptions.service';
 

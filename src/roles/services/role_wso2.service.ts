@@ -11,9 +11,10 @@ import * as https from 'https';
 import { ConfigService } from '../../config/config.service';
 import { Role } from '../entities/role.entity';
 import { RoleMapper } from '../role.mapper';
+import { IRoleService } from '../interfaces/role.service.interface';
 
 @Injectable()
-export class RoleWSO2Service {
+export class RoleWSO2Service implements IRoleService {
   private readonly logger = new Logger(RoleWSO2Service.name);
   private readonly baseUrl: string;
 

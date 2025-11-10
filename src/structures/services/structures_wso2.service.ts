@@ -16,8 +16,8 @@ import * as https from 'https';
 import { StructureNameHelper } from '../structure.helper';
 import { SessionService } from 'src/session/session.service';
 import { StructureMapper } from '../structure.mapper';
-import { UsersWSO2Service } from 'src/users/services/users_wso2.service';
-import { UserMapper } from 'src/users/user.mapper';
+import { UsersWSO2Service } from 'src/users/services/wso2/users_wso2.service';
+import { UserMapper } from 'src/users/services/wso2/user.wso2.mapper';
 
 //FIXME Arreglar que no se mapee directamente desde aquí sino desde el controller
 @Injectable()
@@ -142,7 +142,7 @@ export class StructuresWSO2Service {
       if (!include?.length) return baseStructure;
       // Fetch adicional: users
       if (include.includes('users')) {
-        baseStructure.users = await Promise.all(res.data.members.map((u: { display: string }) => this.usersService.findByUsername(u.display, token)));
+        baseStructure.users = await Promise.all(res.data.members.map((u: { display: string }) => this.usersService.getUserByUsername(u.display, token)));
       }
 
       // Fetch adicional: parent
@@ -178,7 +178,7 @@ export class StructuresWSO2Service {
       if (!include?.length) return baseStructure;
       // Fetch adicional: users
       if (include.includes('users')) {
-        baseStructure.users = await Promise.all(res.data.members.map((u: { display: string }) => this.usersService.findByUsername(u.display, token)));
+        baseStructure.users = await Promise.all(res.data.members.map((u: { display: string }) => this.usersService.getUserByUsername(u.display, token)));
       }
 
       // Fetch adicional: parent

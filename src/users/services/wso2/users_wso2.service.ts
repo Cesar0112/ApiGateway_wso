@@ -8,21 +8,19 @@ import {
 } from '@nestjs/common';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as https from 'https';
-import { ConfigService } from '../../config/config.service';
-import { User } from '../entities/user.entity';
-import { CreateUsersDto } from '../dto/create-users.dto';
-import { UpdateUsersDto } from '../dto/update-users.dto';
-import { UserMapper, WSO2Payload } from '../user.mapper';
-import { Role } from '../../roles/entities/role.entity';
-import { RoleWSO2Service } from '../../roles/services/role_wso2.service';
-import { EncryptionsService } from '../../encryptions/encryptions.service';
-import { StructuresService } from '../../structures/services/structures.service';
-import { StructuresWSO2Service } from '../../structures/services/structures_wso2.service';
-import { Structure } from '../../structures/entities/structure.entity';
-import { ChangeUsernameInternalDto } from '../dto/change-username-internal.dto';
+import { ConfigService } from '../../../config/config.service';
+import { User } from '../../entities/user.entity';
+import { CreateUsersDto } from '../../dto/create-users.dto';
+import { UpdateUsersDto } from '../../dto/update-users.dto';
+import { UserMapper, WSO2Payload } from './user.wso2.mapper';
+import { RoleWSO2Service } from '../../../roles/services/role_wso2.service';
+import { EncryptionsService } from '../../../encryptions/encryptions.service';
+import { StructuresWSO2Service } from '../../../structures/services/structures_wso2.service';
+import { Structure } from '../../../structures/entities/structure.entity';
+import { IUsersService } from '../users.interface.service';
 
 @Injectable()
-export class UsersWSO2Service {
+export class UsersWSO2Service implements IUsersService {
   private readonly _logger = new Logger(UsersWSO2Service.name);
   private readonly _baseUrl: string;
 
@@ -49,53 +47,6 @@ export class UsersWSO2Service {
       }),
     };
   }
-  /*async create(dto: CreateUsersDto, token: string): Promise<User> {
-    try {
-      dto.plainCipherPassword = this._encryptionsService.decrypt(
-        dto.plainCipherPassword,
-      );
-      // 1. Crear usuario en SCIM2
-      const payload = UserMapper.fromCreateUsersDtoToWSO2Payload(dto);
-      const resCreate: AxiosResponse<any> = await axios.post(
-        this._baseUrl,
-        payload,
-        this._getRequestOptions(token),
-      );
-      const createdUser = resCreate.data;
-      
-      let roles: Role[] = [];
-      if (dto.rolesNames) {
-        roles = await this._rolesService.getUserRoles(createdUser.id, token);
-      }
-      // 2. Resolver IDs de roles (nombres o IDs) *****************************
-      let roleIds: string[] = [];
-      if (dto.rolesNames?.length) {
-        // Resuelvo nombres → IDs
-        roleIds = await Promise.all(
-          dto.rolesNames.map((name) =>
-            this._rolesService.getRoleIdByName(name, token),
-          ),
-        );
-      } else if (dto.roleIds?.length) {
-        roleIds = dto.roleIds;
-      }
-      let structures: Structure[] = [];
-      if (dto.structureIds) {
-        structures = await this._structureService.findByIds(
-          dto.structureIds,
-          token,
-        );
-      }
-      return UserMapper.fromWSO2ResponseToUser(createdUser, roles, structures);
-    } catch (err: any) {
-      this._logger.error('Error creando usuario en WSO2', err);
-      if (err.response?.status === 409) {
-        throw new ConflictException('Usuario ya existe');
-      }
-      throw new InternalServerErrorException('No se pudo crear el usuario');
-    }
-  }*/
-
   async create(dto: CreateUsersDto, token: string): Promise<User> {
     try {
       dto.plainCipherPassword = this._encryptionsService.decrypt(
@@ -182,7 +133,7 @@ export class UsersWSO2Service {
       );
     }
   }
-  async findAll(token: string): Promise<User[]> {
+  async getUsers(token: string): Promise<User[]> {
     try {
       // 1. Traer usuarios con sus grupos
       const res: AxiosResponse<any> = await axios.get(
@@ -216,7 +167,7 @@ export class UsersWSO2Service {
       throw new InternalServerErrorException('No se pudieron obtener usuarios', (err.response?.data?.status === 401) ? `${err.response?.data?.detail ?? "401"}` : "");
     }
   }
-  async findById(id: string, token: string): Promise<User> {
+  async getUserById(id: string, token: string): Promise<User> {
     try {
       const res: AxiosResponse<any> = await axios.get(
         `${this._baseUrl}/${id}?attributes=id,userName,roles,emails,name,groups,active`,
@@ -237,7 +188,7 @@ export class UsersWSO2Service {
     }
   }
 
-  async findByUsername(username: string, token: string): Promise<User> {
+  async getUserByUsername(username: string, token: string): Promise<User> {
     try {
       const res: AxiosResponse<any> = await axios.get(
         `${this._baseUrl}?filter=userName eq "${username}"`,
@@ -288,7 +239,7 @@ export class UsersWSO2Service {
           'No se puede cambiar el identificador de un usuario',
         );
 
-      const currentUser = await this.findById(id, token);
+      const currentUser = await this.getUserById(id, token);
 
       /* ---------- 1. ROLES (sincronización completa) ---------- */
       if (dto.roleIds?.length || dto.rolesNames?.length) {
@@ -356,7 +307,7 @@ export class UsersWSO2Service {
       }
 
       /* ---------- 4. devolver usuario actualizado ---------- */
-      return await this.findById(id, token);
+      return await this.getUserById(id, token);
     } catch (err) {
       this._logger.error(
         `Error actualizando usuario ${id}`,
@@ -377,7 +328,7 @@ export class UsersWSO2Service {
     structuresIds: string[],
     token: string,
   ): Promise<void> {
-    const { userName } = await this.findById(userId, token);
+    const { userName } = await this.getUserById(userId, token);
     const currentStructuresOfUser =
       await this._structureService.getStructuresFromUser(userId, token);
 
@@ -469,7 +420,7 @@ export class UsersWSO2Service {
     }
   }
 
-  async remove(id: string, token: string): Promise<void> {
+  async delete(id: string, token: string): Promise<void> {
     try {
       await axios.delete(
         `${this._baseUrl}/${id}`,
@@ -483,7 +434,7 @@ export class UsersWSO2Service {
     }
   }
 
-  async removeByUsername(username: string, token: string): Promise<void> {
+  async deleteByUsername(username: string, token: string): Promise<void> {
     try {
       const resGet: AxiosResponse<any> = await axios.get(
         `${this._baseUrl}?filter=userName eq "${username}"`,

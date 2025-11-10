@@ -7,10 +7,6 @@ import {
   ManyToMany,
   PrimaryColumn,
 } from 'typeorm';
-export abstract class BaseIdEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id?: string;
-}
 @Entity()
 export class Role {
   @PrimaryGeneratedColumn('uuid')

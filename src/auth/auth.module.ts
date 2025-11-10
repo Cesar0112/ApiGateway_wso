@@ -13,11 +13,12 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '../config/config.module';
 //import { AuthLocalService } from './services/auth_local.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { UsersWSO2Service } from '../users/services/users_wso2.service';
+import { UsersWSO2Service } from '../users/services/wso2/users_wso2.service';
 import { UsersModule } from '../users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Permission } from '../permissions/entities/permission.entity';
 import { AuthCasdoorService } from './services/auth_casdoor.service';
+import { authProvider } from './services/auth.service';
 
 @Module({
   imports: [
@@ -47,39 +48,7 @@ import { AuthCasdoorService } from './services/auth_casdoor.service';
     ConfigService,
     EncryptionsService,
     PermissionsService,
-    AuthWSO2Service,
-    {
-      provide: AUTH_SERVICE_TOKEN,
-      inject: [
-        ConfigService,
-        EncryptionsService,
-        PermissionsService,
-        SessionService,
-        CACHE_MANAGER,
-        UsersWSO2Service,
-        JwtService,
-      ],
-      useFactory(
-        cfg: ConfigService,
-        enc: EncryptionsService,
-        per: PermissionsService,
-        sess: SessionService,
-        cache: Cache,
-        users: UsersWSO2Service,
-        jwt: JwtService,
-      ) {
-        const AUTH_TYPE = cfg.getConfig().API_GATEWAY?.AUTH_TYPE;
-        const BASE_CONFIG = [cfg, enc, per, sess, users, cache] as const;
-        switch (AUTH_TYPE) {
-          case 'wso2':
-            return new AuthWSO2Service(...BASE_CONFIG);
-          case 'casdoor':
-            return new AuthCasdoorService(cfg, sess, enc, cache);
-          default:
-            return new AuthWSO2Service(...BASE_CONFIG);
-        }
-      },
-    },
+    authProvider
   ],
   exports: [AUTH_SERVICE_TOKEN],
   controllers: [AuthenticateController],

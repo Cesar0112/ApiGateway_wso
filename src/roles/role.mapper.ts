@@ -2,7 +2,7 @@ import { Role } from './entities/role.entity';
 import { Permission } from '../permissions/entities/permission.entity';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { BadRequestException } from '@nestjs/common';
-import { WSO2Response } from 'src/users/user.mapper';
+import { WSO2Response } from 'src/users/services/wso2/user.wso2.mapper';
 
 class WSORoleResponse {
   schemas?: String[] = ['urn:ietf:params:scim:schemas:extension:2.0:Role'];

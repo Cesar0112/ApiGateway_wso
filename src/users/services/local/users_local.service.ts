@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../entities/user.entity';
+import { User } from '../../entities/user.entity';
 import { In, Repository } from 'typeorm';
-import { CreateUsersDto } from '../dto/create-users.dto';
-import { UpdateUsersDto } from '../dto/update-users.dto';
+import { CreateUsersDto } from '../../dto/create-users.dto';
+import { UpdateUsersDto } from '../../dto/update-users.dto';
 import * as bcrypt from 'bcrypt';
-import { Role } from '../../roles/entities/role.entity';
-import { Structure } from '../../structures/entities/structure.entity';
+import { Role } from '../../../roles/entities/role.entity';
+import { Structure } from '../../../structures/entities/structure.entity';
 @Injectable()
 export class UsersLocalService {
   constructor(
@@ -16,7 +16,7 @@ export class UsersLocalService {
     private readonly _roleRepo: Repository<Role>,
     @InjectRepository(Structure)
     private readonly _structureRepo: Repository<Structure>,
-  ) {}
+  ) { }
 
   async findByUsername(
     username: string,

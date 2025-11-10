@@ -19,6 +19,8 @@ import { SDK } from 'casdoor-nodejs-sdk';
 import { ConfigService } from '../../config/config.service';
 import { SessionService } from '../../session/session.service';
 import { EncryptionsService } from 'src/encryptions/encryptions.service';
+import { UsersCasdoorService } from 'src/users/services/casdoor/users_casdoor.service';
+import { IUsersService, USERS_SERVICE_TOKEN } from 'src/users/services/users.interface.service';
 @Injectable()
 export class AuthCasdoorService implements IAuthenticationService {
     private readonly logger = new Logger(AuthCasdoorService.name);
@@ -27,6 +29,7 @@ export class AuthCasdoorService implements IAuthenticationService {
         protected readonly configService: ConfigService,
         protected readonly sessionService: SessionService,
         protected readonly encryptionsService: EncryptionsService,
+        protected readonly usersService: UsersCasdoorService,
         //FIXME Cambiar por una carga dinamica de servicios en dependencia de la fuente de adquisicion de los datos configurada
         @Inject(CACHE_MANAGER) protected cacheManager: Cache,
     ) {
@@ -68,14 +71,15 @@ export class AuthCasdoorService implements IAuthenticationService {
 
             const { access_token/*, refresh_token, scope, token_type, expires_in,
                 id_token*/ } = response.data;
-            const user: IDecodedToken = this.decodeJwt(access_token) as IDecodedToken;
-            /*loginResponse = {
+            const decodedToken: IDecodedToken = this.decodeJwt(access_token) as IDecodedToken;
+            loginResponse = {
                 token: access_token,
-                decodedToken: user,
+                decodedToken,
                 success: true,
                 source: 'casdoor',
                 message: 'Autenticación exitosa',
-            };*/
+                user: await this.usersService.getUserById(decodedToken.id),
+            };
             return loginResponse;
         } catch (err) {
             this.logger.warn(`Login fallido: ${username}`);

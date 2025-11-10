@@ -17,11 +17,11 @@ import { SessionService } from '../../session/session.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { AuthWSO2Service } from './auth_wso2.service';
-import { UsersWSO2Service } from '../../users/services/users_wso2.service';
+import { UsersWSO2Service } from '../../users/services/wso2/users_wso2.service';
 import { User } from '../../users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { UsersLocalService } from '../../users/services/users_local.service';
+import { UsersLocalService } from '../../users/services/local/users_local.service';
 @Injectable()
 /*export*/ class AuthLocalService /*extends AuthWSO2Service */ {
   constructor(
