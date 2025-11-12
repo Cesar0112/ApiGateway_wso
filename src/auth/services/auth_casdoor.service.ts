@@ -15,16 +15,13 @@ import * as https from 'https';
 import axios from 'axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { SDK } from 'casdoor-nodejs-sdk';
 import { ConfigService } from '../../config/config.service';
 import { SessionService } from '../../session/session.service';
 import { EncryptionsService } from 'src/encryptions/encryptions.service';
 import { UsersCasdoorService } from 'src/users/services/casdoor/users_casdoor.service';
-import { IUsersService, USERS_SERVICE_TOKEN } from 'src/users/services/users.interface.service';
 @Injectable()
 export class AuthCasdoorService implements IAuthenticationService {
     private readonly logger = new Logger(AuthCasdoorService.name);
-    private sdk: SDK;
     constructor(
         protected readonly configService: ConfigService,
         protected readonly sessionService: SessionService,
@@ -78,7 +75,7 @@ export class AuthCasdoorService implements IAuthenticationService {
                 success: true,
                 source: 'casdoor',
                 message: 'Autenticación exitosa',
-                user: await this.usersService.getUserById(decodedToken.id),
+                user: await this.usersService.getUserById(decodedToken.id, access_token),
             };
             return loginResponse;
         } catch (err) {
