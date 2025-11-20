@@ -13,7 +13,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '../config/config.module';
 //import { AuthLocalService } from './services/auth_local.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { UsersWSO2Service } from '../users/services/wso2/users_wso2.service';
+import { UsersWSO2Service } from '../users/providers/wso2/users_wso2.service';
 import { UsersModule } from '../users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Permission } from '../permissions/entities/permission.entity';

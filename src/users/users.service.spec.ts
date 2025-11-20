@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersWSO2Service } from './services/wso2/users_wso2.service';
+import { UsersWSO2Service } from './providers/wso2/users_wso2.service';
 
 describe('UsersService', () => {
   let service: UsersWSO2Service;

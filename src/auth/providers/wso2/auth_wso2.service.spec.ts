@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AuthWSO2Service } from './auth_wso2.service';
-import { EncryptionsService } from '../../encryptions/encryptions.service';
-import { ConfigService } from '../../config/config.service';
-import { PermissionsService } from '../../permissions/permissions.service';
-import { SessionModule } from '../../session/session.module';
-import { AuthenticateController } from '../auth.controller';
+import { EncryptionsService } from '../../../encryptions/encryptions.service';
+import { ConfigService } from '../../../config/config.service';
+import { PermissionsService } from '../../../permissions/permissions.service';
+import { SessionModule } from '../../../session/session.module';
+import { AuthenticateController } from '../../auth.controller';
 import { CACHE_MANAGER, CacheModule } from '@nestjs/cache-manager';
 import { ThrottlerModule } from '@nestjs/throttler';
 describe('AuthService', () => {

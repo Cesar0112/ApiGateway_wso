@@ -13,11 +13,11 @@ import { User } from '../../entities/user.entity';
 import { CreateUsersDto } from '../../dto/create-users.dto';
 import { UpdateUsersDto } from '../../dto/update-users.dto';
 import { UserMapper, WSO2Payload } from './user.wso2.mapper';
-import { RoleWSO2Service } from '../../../roles/services/role_wso2.service';
+import { RoleWSO2Service } from '../../../roles/providers/wso2/role_wso2.service';
 import { EncryptionsService } from '../../../encryptions/encryptions.service';
-import { StructuresWSO2Service } from '../../../structures/services/structures_wso2.service';
 import { Structure } from '../../../structures/entities/structure.entity';
-import { IUsersService } from '../users.interface.service';
+import { IUsersService } from '../../interfaces/users.interface.service';
+import { StructuresWSO2Service } from '../../../structures/providers/wso2/structures_wso2.service';
 
 @Injectable()
 export class UsersWSO2Service implements IUsersService {

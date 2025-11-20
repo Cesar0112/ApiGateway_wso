@@ -9,3 +9,5 @@ export interface IRoleService {
     updateRole(id: string, data: Partial<Role>, token: string): Promise<Role>;
     deleteRole(id: string, token: string): Promise<void>;
 }
+
+export const ROLE_SERVICE_PROVIDER_TOKEN = Symbol('ROLE_SERVICE_PROVIDER');

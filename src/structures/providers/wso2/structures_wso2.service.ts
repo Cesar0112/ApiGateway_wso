@@ -8,20 +8,19 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { CreateStructureDto } from '../dto/create-structure.dto';
-import { UpdateStructureDto } from '../dto/update-structure.dto';
-import { Structure } from '../entities/structure.entity';
-import { ConfigService } from '../../config/config.service';
+import { CreateStructureDto } from '../../dto/create-structure.dto';
+import { UpdateStructureDto } from '../../dto/update-structure.dto';
+import { Structure } from '../../entities/structure.entity';
+import { ConfigService } from '../../../config/config.service';
 import * as https from 'https';
-import { StructureNameHelper } from '../structure.helper';
-import { SessionService } from 'src/session/session.service';
-import { StructureMapper } from '../structure.mapper';
-import { UsersWSO2Service } from 'src/users/services/wso2/users_wso2.service';
-import { UserMapper } from 'src/users/services/wso2/user.wso2.mapper';
+import { StructureNameHelper } from '../../structure.helper';
+import { StructureMapper } from '../../structure.mapper';
+import { UsersWSO2Service } from 'src/users/providers/wso2/users_wso2.service';
+import { IStructureService } from '../../interface/structure.interface';
 
 //FIXME Arreglar que no se mapee directamente desde aquí sino desde el controller
 @Injectable()
-export class StructuresWSO2Service {
+export class StructuresWSO2Service implements IStructureService {
 
   private readonly _baseUrl: string;
   private readonly _logger = new Logger(StructuresWSO2Service.name);
@@ -198,77 +197,6 @@ export class StructuresWSO2Service {
       );
     }
   }
-
-  /*async update(
-    id: string,
-    dto: UpdateStructureDto,
-    token: string,
-  ): Promise<Structure> {
-    try {
-      const dtoAny = dto as any;
-      const delimiter = StructureNameHelper.GROUP_DELIMITER;
-      const current = await this.validateStructureExists(id, token);
-      const {
-        operations,
-        newDisplayName,
-        nameChanged,
-        parentChanged,
-        oldDisplayName,
-      } = await this.computeDisplayNameChanges(id, current, dtoAny, token);
-      // 4) Aplicar PATCH al padre (si hay ops)
-      if (operations.length) {
-        await this.applyPatch(id, operations, token);
-      }
-
-      // 5) Actualizar descendientes si el displayName cambió
-      if (nameChanged || parentChanged) {
-
-        await this.updateDescendants(
-          oldDisplayName,
-          newDisplayName,
-          delimiter,
-          token,
-        );
-
-      }
-      // obtener hijos actuales
-      const directChildren = await this.findChildren(id, token);
-      const directChildIds = directChildren.map(c => c.id);
-      const childrenToAssign = Array.isArray(dtoAny.childrenIds)
-        ? dtoAny.childrenIds.map((c: any) =>
-          typeof c === 'string' ? c : c.id,
-        )
-        : [];
-      // 6) Si dto.children fue pasado, sincronizar hijos explícitos:
-      if (childrenToAssign.length) {
-        await this.syncChildrenAssignments(
-          newDisplayName,
-          directChildIds,
-          childrenToAssign,
-          delimiter,
-          token,
-        );
-      } else {
-        await this.removeAllChildren(directChildIds, token);
-      }
-
-      // 7) Finalmente devolver la entidad actualizada (padre)
-      return await this.findOne(id, token);
-
-    } catch (err: any) {
-      this._logger.error(
-        `Error actualizando estructura ${id}`,
-        err.response?.data ?? err.message,
-      );
-
-      if (err.response?.status === 404)
-        throw new NotFoundException(`Structure ${id} not found`);
-
-      throw new InternalServerErrorException(
-        `No se pudo actualizar estructura: ${err.message ?? err.response?.data?.detail}`,
-      );
-    }
-  }*/
 
   async update(
     id: string,

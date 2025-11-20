@@ -1,6 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
-import { UsersWSO2Service } from './services/wso2/users_wso2.service';
+import { UsersWSO2Service } from './providers/wso2/users_wso2.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Structure } from '../structures/entities/structure.entity';
@@ -10,7 +10,8 @@ import { ConfigModule } from '../config/config.module';
 import { RolesModule } from '../roles/roles.module';
 import { EncryptionsModule } from '../encryptions/encryptions.module';
 import { StructuresModule } from '../structures/structures.module';
-import { UsersCasdoorService } from './services/casdoor/users_casdoor.service';
+import { UsersCasdoorService } from './providers/casdoor/users_casdoor.service';
+import { USERS_SERVICE_PROVIDER_TOKEN } from './interfaces/users.interface.service';
 @Module({
   imports: [
     ConfigModule,
@@ -22,6 +23,6 @@ import { UsersCasdoorService } from './services/casdoor/users_casdoor.service';
   ],
   controllers: [UsersController],
   providers: [UsersCasdoorService, UsersWSO2Service],
-  exports: [UsersCasdoorService, UsersWSO2Service],
+  exports: [UsersCasdoorService, UsersWSO2Service, USERS_SERVICE_PROVIDER_TOKEN],
 })
 export class UsersModule { }

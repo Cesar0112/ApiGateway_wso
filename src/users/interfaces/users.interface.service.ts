@@ -17,4 +17,4 @@ export interface IUsersService {
     updateByUsername(username: string, dto: UpdateUsersDto, token: string,): Promise<User>;
     disableOrEnableUser(userId: string, active: boolean, token: string,): Promise<void>;
 }
-export const USERS_SERVICE_TOKEN = Symbol('USERS_SERVICE');
+export const USERS_SERVICE_PROVIDER_TOKEN = Symbol('USERS_SERVICE_PROVIDER');

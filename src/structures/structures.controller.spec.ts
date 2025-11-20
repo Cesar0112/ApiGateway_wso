@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { StructuresController } from './structures.controller';
-import { StructuresService } from './services/structures.service';
+import { StructuresService } from './providers/structures.service_bulk';
 
 describe('StructuresController', () => {
   let controller: StructuresController;

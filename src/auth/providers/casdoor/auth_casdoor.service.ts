@@ -10,15 +10,15 @@ import {
     IAuthenticationService,
     IDecodedToken,
     LoginResponse,
-} from '../auth.interface';
+} from '../../auth.interface';
 import * as https from 'https';
 import axios from 'axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { ConfigService } from '../../config/config.service';
-import { SessionService } from '../../session/session.service';
+import { ConfigService } from '../../../config/config.service';
+import { SessionService } from '../../../session/session.service';
 import { EncryptionsService } from 'src/encryptions/encryptions.service';
-import { UsersCasdoorService } from 'src/users/services/casdoor/users_casdoor.service';
+import { UsersCasdoorService } from 'src/users/providers/casdoor/users_casdoor.service';
 @Injectable()
 export class AuthCasdoorService implements IAuthenticationService {
     private readonly logger = new Logger(AuthCasdoorService.name);

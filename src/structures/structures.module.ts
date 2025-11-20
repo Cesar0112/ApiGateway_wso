@@ -1,12 +1,12 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { StructuresService } from './services/structures.service';
+import { StructuresService } from './providers/structures.service_bulk';
 import { StructuresController } from './structures.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Structure } from './entities/structure.entity';
 import { BullModule } from '@nestjs/bull';
 import { ConfigService } from '../config/config.service';
 import { ConfigModule } from '../config/config.module';
-import { StructuresWSO2Service } from './services/structures_wso2.service';
+import { StructuresWSO2Service } from './providers/structures_wso2.service';
 import { SessionModule } from 'src/session/session.module';
 import { UsersModule } from 'src/users/users.module';
 @Module({

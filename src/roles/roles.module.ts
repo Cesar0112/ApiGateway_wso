@@ -1,5 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { RoleWSO2Service } from './services/role_wso2.service';
+import { RoleWSO2Service } from './providers/wso2/role_wso2.service';
 import { RolesController } from './roles.controller';
 
 import { ConfigService } from '../config/config.service';
@@ -19,4 +19,4 @@ import { AuthenticateModule } from '../auth/auth.module';
   providers: [RoleWSO2Service, ConfigService],
   exports: [RoleWSO2Service],
 })
-export class RolesModule {}
+export class RolesModule { }

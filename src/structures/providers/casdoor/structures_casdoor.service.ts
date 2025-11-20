@@ -8,21 +8,21 @@ import {
     forwardRef,
 } from '@nestjs/common';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { CreateStructureDto } from '../dto/create-structure.dto';
-import { UpdateStructureDto } from '../dto/update-structure.dto';
-import { Structure } from '../entities/structure.entity';
-import { ConfigService } from '../../config/config.service';
+import { CreateStructureDto } from '../../dto/create-structure.dto';
+import { UpdateStructureDto } from '../../dto/update-structure.dto';
+import { Structure } from '../../entities/structure.entity';
+import { ConfigService } from '../../../config/config.service';
 import * as https from 'https';
-import { StructureNameHelper } from '../structure.helper';
-import { StructureMapper } from '../structure.mapper';
-import { UsersWSO2Service } from 'src/users/services/wso2/users_wso2.service';
+import { StructureNameHelper } from '../../structure.helper';
+import { StructureMapper } from '../../structure.mapper';
+import { UsersWSO2Service } from 'src/users/providers/wso2/users_wso2.service';
 
 //FIXME Arreglar que no se mapee directamente desde aquí sino desde el controller
 @Injectable()
-export class StructuresWSO2Service {
+export class StructuresCasdoorService {
 
     private readonly _baseUrl: string;
-    private readonly _logger = new Logger(StructuresWSO2Service.name);
+    private readonly _logger = new Logger(StructuresCasdoorService.name);
     constructor(protected readonly configService: ConfigService, @Inject(forwardRef(() => UsersWSO2Service)) private readonly usersService: UsersWSO2Service) {
         const wso2Config = this.configService.getConfig().WSO2;
         this._baseUrl = `${wso2Config.HOST}:${wso2Config.PORT}/scim2/Groups`;

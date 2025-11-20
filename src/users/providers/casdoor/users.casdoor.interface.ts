@@ -221,3 +221,14 @@ export interface ICasdoorUser {
     yandex: string;
     zoom: string;
 }
+
+// src/common/interfaces/casdoor-response.interface.ts
+export interface CasdoorResponse<T = any> {
+    status: 'ok' | 'error';
+    msg: string;
+    data: T;
+    data2?: any;  // ← opcional, ignorable
+    data3?: any;  // ← opcional, ignorable
+    sub?: string;
+    name?: string;
+}

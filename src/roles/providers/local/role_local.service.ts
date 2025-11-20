@@ -3,11 +3,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateRoleDto } from '../dto/create-role.dto';
-import { UpdateRoleDto } from '../dto/update-role.dto';
-import { Role } from '../entities/role.entity';
+import { CreateRoleDto } from '../../dto/create-role.dto';
+import { UpdateRoleDto } from '../../dto/update-role.dto';
+import { Role } from '../../entities/role.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Permission } from '../../permissions/entities/permission.entity';
+import { Permission } from '../../../permissions/entities/permission.entity';
 import { In, Repository } from 'typeorm';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class RoleLocalService {
   constructor(
     @InjectRepository(Role) private _roleRepo: Repository<Role>,
     @InjectRepository(Permission) private _permRepo: Repository<Permission>,
-  ) {}
+  ) { }
 
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
     // 1. name único
@@ -29,14 +29,14 @@ export class RoleLocalService {
     if (createRoleDto.permissionDisplayableName) {
       PERMS = createRoleDto.permissionDisplayableName.length
         ? await this._permRepo.findBy({
-            displayName: In(createRoleDto.permissionDisplayableName),
-          })
+          displayName: In(createRoleDto.permissionDisplayableName),
+        })
         : [];
     } else {
       PERMS = createRoleDto.permissionValues?.length
         ? await this._permRepo.findBy({
-            displayName: In(createRoleDto.permissionValues),
-          })
+          displayName: In(createRoleDto.permissionValues),
+        })
         : [];
     }
     // 3. crea y guarda

@@ -7,31 +7,53 @@ import { Permission } from 'src/permissions/entities/permission.entity';
 import { StructureNameHelper } from 'src/structures/structure.helper';
 import { ICasdoorUser } from './users.casdoor.interface';
 
-export class UserMapper {
+export class UserCasdoorMapper {
   static fromRecordToCasdoor(user: Record<string, any>): ICasdoorUser {
     throw new Error('Method not implemented.');
   }
   static fromCreateDtoToCasdoor(dto: CreateUsersDto): ICasdoorUser {
     throw new Error('Method not implemented.');
   }
-  static fromCasdoorToUser(user: Partial<ICasdoorUser>): User | null {
-    if (!user) return null;
-    return {
-      id: user.id,
-      userName: user.name,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      isActive: !user.isForbidden,
-      createdTime: user.createdTime,
-      updatedTime: user.updatedTime,
-      owner: user.owner,
-      roles: user.roles?.map((r: any) => r.name) || [],
-      createdAt: undefined,
-      password: "",
-      structures: [],
-      updatedAt: undefined,
-    } as User;
+  static fromCasdoorToUser(casdoorUser: ICasdoorUser, existingRoles?: Role[], existingStructures?: Structure[]): User | null {
+    if (!casdoorUser) return null;
+    const user = new User();
+    user.id = casdoorUser.id;
+    user.userName = casdoorUser.name;
+    user.email = casdoorUser.email || "";
+    user.firstName = casdoorUser.firstName || "";
+    user.lastName = casdoorUser.lastName || "";
+    user.isActive = !casdoorUser.isForbidden && !casdoorUser.isDeleted;
+    user.password = casdoorUser.password || ''; // Casdoor no expone hash, se gestiona aparte
+
+    // === ROLES ===
+    // Casdoor: roles: Role[] → { name, owner }
+    // Tu dominio: roles: Role[] → entidades completas
+    if (casdoorUser.roles && existingRoles) {
+      const roleMap = new Map(existingRoles.map(r => [r.name, r]));
+
+      user.roles = casdoorUser.roles
+        .map((r) => roleMap.get(r.name))
+        .filter((role): role is Role => role !== undefined);
+    } else {
+      user.roles = [];
+    }
+    // === ESTRUCTURAS (structures) ===
+    // Casdoor: groups: string[] → nombres de grupos
+    // Tu dominio: structures: Structure[] → entidades
+    if (casdoorUser.groups && existingStructures) {
+      const structureMap = new Map(existingStructures.map(s => [s.name, s]));
+
+      user.structures = casdoorUser.groups
+        .map(groupName => structureMap.get(groupName))
+        .filter((structure): structure is Structure => structure !== undefined);
+    } else {
+      user.structures = [];
+    }
+    // Fechas (Casdoor devuelve string ISO)
+    user.createdAt = casdoorUser.createdTime ? new Date(casdoorUser.createdTime) : new Date();
+    user.updatedAt = casdoorUser.updatedTime ? new Date(casdoorUser.updatedTime) : new Date();
+
+    return user;
   }
   static fromUserToCreateUserDto(user: User): CreateUsersDto {
     const { password, roles, structures, ...rest } = user;

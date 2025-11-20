@@ -12,7 +12,7 @@ import {
   Inject,
   Req,
 } from '@nestjs/common';
-import { RoleWSO2Service } from './services/role_wso2.service';
+import { RoleWSO2Service } from './providers/wso2/role_wso2.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { SessionGuard } from '../guards/session.guard';
