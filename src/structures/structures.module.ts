@@ -1,36 +1,23 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { StructuresService } from './providers/structures.service_bulk';
 import { StructuresController } from './structures.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Structure } from './entities/structure.entity';
-import { BullModule } from '@nestjs/bull';
-import { ConfigService } from '../config/config.service';
+
 import { ConfigModule } from '../config/config.module';
-import { StructuresWSO2Service } from './providers/structures_wso2.service';
-import { SessionModule } from 'src/session/session.module';
-import { UsersModule } from 'src/users/users.module';
+import { StructuresWSO2Service } from "./providers/wso2/structures_wso2.service";
+import { SessionModule } from '../session/session.module';
+import { UsersModule } from '../users/users.module';
+import { StructuresCasdoorService } from './providers/casdoor/structures_casdoor.service';
+import { StructuresServiceProvider } from './providers/structures.service';
+import { STRUCTURE_SERVICE_PROVIDER } from './interface/structure.interface';
+import { AuthenticateModule } from '../auth/auth.module';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Structure]),
-    BullModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory(cfg: ConfigService) {
-        return {
-          redis: {
-            host: cfg.getConfig().REDIS.HOST ?? '127.0.0.1',
-            port: cfg.getConfig().REDIS.PORT ?? 6379,
-          },
-        };
-      },
-    }),
-    BullModule.registerQueue({ name: 'structure-bulk' }),
     ConfigModule,
     SessionModule,
-    forwardRef(() => UsersModule)
+    forwardRef(() => UsersModule),
+    forwardRef(() => AuthenticateModule)
   ],
   controllers: [StructuresController],
-  providers: [StructuresService, StructuresWSO2Service],
-  exports: [StructuresService, StructuresWSO2Service],
+  providers: [StructuresServiceProvider, StructuresCasdoorService, StructuresWSO2Service],
+  exports: [STRUCTURE_SERVICE_PROVIDER, StructuresCasdoorService, StructuresWSO2Service],
 })
 export class StructuresModule { }

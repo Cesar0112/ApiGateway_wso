@@ -2,8 +2,7 @@ import { CreateUsersDto } from "../dto/create-users.dto";
 import { UpdateUsersDto } from "../dto/update-users.dto";
 import { User } from "../entities/user.entity";
 
-export interface IUsersService {
-    // Define los métodos que el servicio de usuarios debe implementar
+export interface IUsersProvider {
     getUserById(id: string, token: string): Promise<User | null>;
     getUserByUsername(username: string, token: string): Promise<User | null>;
     getUsers(token: string): Promise<User[]>;
@@ -14,7 +13,7 @@ export interface IUsersService {
     getUsersFromStructure(structId: string, token: string): Promise<User[]>;
     getUsersFromStructureName(structName: string, token: string): Promise<User[]>;
     updateUserStructuresByIds(userId: string, structuresIds: string[], token: string,): Promise<void>;
-    updateByUsername(username: string, dto: UpdateUsersDto, token: string,): Promise<User>;
+    updateByUsername(username: string, dto: UpdateUsersDto, token: string,): Promise<User | null>;
     disableOrEnableUser(userId: string, active: boolean, token: string,): Promise<void>;
 }
-export const USERS_SERVICE_PROVIDER_TOKEN = Symbol('USERS_SERVICE_PROVIDER');
+export const USERS_PROVIDER_TOKEN = Symbol('USERS_PROVIDER');

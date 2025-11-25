@@ -21,9 +21,9 @@ import { Request, Response } from 'express';
 import { Session as ExpressSession, SessionData } from 'express-session';
 import { EncryptionResponseInterceptor } from '../encryption-response/encryption-response.interceptor';
 import * as session from 'express-session';
-import { AUTH_SERVICE_TOKEN, IAuthenticationService } from './auth.interface';
+import { AUTH_SERVICE_TOKEN, BaseAuthenticationService } from './auth.interface';
 import { Throttle } from '@nestjs/throttler';
-import { AuthSuccessDto } from './services/dtos/auth-success.dto';
+import { AuthSuccessDto } from './providers/dtos/auth-success.dto';
 import { EncryptionsService } from 'src/encryptions/encryptions.service';
 
 interface CustomSession extends ExpressSession {
@@ -41,7 +41,7 @@ interface RequestWithSession extends Request {
 export class AuthenticateController {
   constructor(
     @Inject(AUTH_SERVICE_TOKEN)
-    private readonly authenticateService: IAuthenticationService,
+    private readonly authenticateService: BaseAuthenticationService,
     private readonly encryptionsService: EncryptionsService
   ) { }
   @UsePipes(new JoiValidationPipe(UserPasswordSchema))

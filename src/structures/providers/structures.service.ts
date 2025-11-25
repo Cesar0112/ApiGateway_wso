@@ -1,25 +1,22 @@
 import { Provider } from "@nestjs/common";
-import { ConfigService } from "../../config/config.service";
-import { IStructureService, STRUCTURE_SERVICE } from "../interface/structure.interface";
+import { BaseStructureServiceProvider, STRUCTURE_SERVICE_PROVIDER } from "../interface/structure.interface";
 import { StructuresCasdoorService } from "./casdoor/structures_casdoor.service";
 import { StructuresWSO2Service } from "./wso2/structures_wso2.service";
-import { IUsersService, USERS_SERVICE_PROVIDER_TOKEN } from "../../users/interfaces/users.interface.service";
-
+import { ModuleRef } from '@nestjs/core';
+import { AUTH_TYPE_TOKEN } from "../../auth/auth.interface";
 export const StructuresServiceProvider: Provider = {
-    provide: STRUCTURE_SERVICE,
-    useFactory: (config: ConfigService, usersService: IUsersService): IStructureService => {
-        const authType = config.getConfig().API_GATEWAY.AUTH_TYPE.toString().toLowerCase();
+    provide: STRUCTURE_SERVICE_PROVIDER,
+    useFactory: async (type: string, moduleRef: ModuleRef): Promise<BaseStructureServiceProvider> => {
 
-        switch (authType) {
+        switch (type) {
             case 'wso2':
-                return new StructuresWSO2Service(config, usersService);
+                return await moduleRef.create(StructuresWSO2Service);
             case 'casdoor':
-                return new StructuresCasdoorService(config);
+                return await moduleRef.create(StructuresCasdoorService);
             case 'local':
             default:
-                return new StructuresWSO2Service(config);
-
+                return await moduleRef.create(StructuresWSO2Service);
         }
     },
-    inject: [ConfigService, USERS_SERVICE_PROVIDER_TOKEN],
+    inject: [AUTH_TYPE_TOKEN, ModuleRef],
 };

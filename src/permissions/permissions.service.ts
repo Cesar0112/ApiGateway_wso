@@ -26,18 +26,9 @@ import { IScope } from './scope.interface';
 export class PermissionsService {
   constructor(
     private readonly _configService: ConfigService,
-    @InjectRepository(Permission)
-    private readonly _permRepo: Repository<Permission>,
-  ) {}
+  ) { }
   async create(createPermissionDto: CreatePermissionDto): Promise<Permission> {
-    const EXISTS = await this._permRepo.exists({
-      where: { value: createPermissionDto.value },
-    });
-    if (EXISTS)
-      throw new ConflictException(
-        `Permission ${createPermissionDto.value} already exists`,
-      );
-    return this._permRepo.save(this._permRepo.create(createPermissionDto));
+    throw new Error('Method not implemented.');
   }
   /*
    TODO Falta por terminar
@@ -55,7 +46,7 @@ export class PermissionsService {
   }*/
 
   findAll(): Promise<Permission[]> {
-    return this._permRepo.find();
+    throw new Error('Method not implemented.');
   }
   async getScopesFromApiResource(
     token: string,
@@ -68,9 +59,8 @@ export class PermissionsService {
     }
 
     try {
-      const URL = `${this._configService.getConfig().WSO2.HOST}:${
-        this._configService.getConfig().WSO2.PORT
-      }/api/server/v1/api-resources/${apiResourceId}/scopes`;
+      const URL = `${this._configService.getConfig().WSO2.HOST}:${this._configService.getConfig().WSO2.PORT
+        }/api/server/v1/api-resources/${apiResourceId}/scopes`;
 
       const { data: SCOPE }: AxiosResponse<IScope[]> = await axios.get<
         IScope[]
@@ -104,23 +94,18 @@ export class PermissionsService {
   }
 
   async findOne(value: string): Promise<Permission> {
-    const perm = await this._permRepo.findOneBy({ value });
-    if (!perm) throw new NotFoundException(`Permission ${value} not found`);
-    return perm;
+    throw new Error('Method not implemented.');
   }
 
   async update(
     currentValue: string,
     updatePermissionDto: UpdatePermissionDto,
   ): Promise<Permission> {
-    const currentPermission: Permission = await this.findOne(currentValue);
-    currentPermission.value = updatePermissionDto.value;
-    return this._permRepo.save(currentPermission);
+    throw new Error('Method not implemented.');
   }
 
   async remove(value: string): Promise<void> {
-    const perm = await this.findOne(value);
-    await this._permRepo.remove(perm);
+    throw new Error('Method not implemented.');
   }
 
   hasScope(token: string, requiredScope: string): boolean {

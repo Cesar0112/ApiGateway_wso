@@ -16,13 +16,13 @@ import { UserMapper, WSO2Payload } from './user.wso2.mapper';
 import { RoleWSO2Service } from '../../../roles/providers/wso2/role_wso2.service';
 import { EncryptionsService } from '../../../encryptions/encryptions.service';
 import { Structure } from '../../../structures/entities/structure.entity';
-import { IUsersService } from '../../interfaces/users.interface.service';
+import { IUsersProvider } from '../../interfaces/users.interface.service';
 import { StructuresWSO2Service } from '../../../structures/providers/wso2/structures_wso2.service';
 
 @Injectable()
-export class UsersWSO2Service implements IUsersService {
-  private readonly _logger = new Logger(UsersWSO2Service.name);
-  private readonly _baseUrl: string;
+export class UsersWSO2Service implements IUsersProvider {
+  protected readonly _logger = new Logger(UsersWSO2Service.name);
+  protected readonly _baseUrl: string;
 
   constructor(
     private readonly _configService: ConfigService,

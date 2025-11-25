@@ -5,14 +5,15 @@ import {
   Injectable,
   HttpException,
   HttpStatus,
+  Inject,
 } from '@nestjs/common';
-import { AuthWSO2Service } from './services/auth_wso2.service';
 import { Request } from 'express';
+import { AUTH_SERVICE_TOKEN, BaseAuthenticationService } from './auth.interface';
 
 @Injectable()
 export class LoginThrottleGuard implements CanActivate {
   protected readonly skipSuccessfulRequests = true;
-  constructor(private readonly authService: AuthWSO2Service) {}
+  constructor(@Inject(AUTH_SERVICE_TOKEN) private readonly authService: BaseAuthenticationService) { }
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest<Request>();
     const username: string = req.body?.user as string;

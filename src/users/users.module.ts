@@ -11,18 +11,19 @@ import { RolesModule } from '../roles/roles.module';
 import { EncryptionsModule } from '../encryptions/encryptions.module';
 import { StructuresModule } from '../structures/structures.module';
 import { UsersCasdoorService } from './providers/casdoor/users_casdoor.service';
-import { USERS_SERVICE_PROVIDER_TOKEN } from './interfaces/users.interface.service';
+import { USERS_PROVIDER_TOKEN } from './interfaces/users.interface.service';
+import { Permission } from '../permissions/entities/permission.entity';
+import { UsersServiceProviders } from './providers/user.service.provider';
 @Module({
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([User, Role, Structure]),
     forwardRef(() => AuthenticateModule),
     forwardRef(() => RolesModule),
     EncryptionsModule,
     forwardRef(() => StructuresModule),
   ],
   controllers: [UsersController],
-  providers: [UsersCasdoorService, UsersWSO2Service],
-  exports: [UsersCasdoorService, UsersWSO2Service, USERS_SERVICE_PROVIDER_TOKEN],
+  providers: [UsersServiceProviders, UsersCasdoorService, UsersWSO2Service],
+  exports: [UsersCasdoorService, UsersWSO2Service, USERS_PROVIDER_TOKEN],
 })
 export class UsersModule { }

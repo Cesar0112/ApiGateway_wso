@@ -13,7 +13,6 @@ import { AuthenticateModule } from '../auth/auth.module';
   imports: [
     forwardRef(() => AuthenticateModule),
     SessionModule,
-    TypeOrmModule.forFeature([Role, Permission]),
   ],
   controllers: [RolesController],
   providers: [RoleWSO2Service, ConfigService],

@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 
 import {
-    IAuthenticationService,
+    BaseAuthenticationService,
     IDecodedToken,
     LoginResponse,
 } from '../../auth.interface';
@@ -20,7 +20,7 @@ import { SessionService } from '../../../session/session.service';
 import { EncryptionsService } from 'src/encryptions/encryptions.service';
 import { UsersCasdoorService } from 'src/users/providers/casdoor/users_casdoor.service';
 @Injectable()
-export class AuthCasdoorService implements IAuthenticationService {
+export class AuthCasdoorService extends BaseAuthenticationService {
     private readonly logger = new Logger(AuthCasdoorService.name);
     constructor(
         protected readonly configService: ConfigService,
@@ -30,6 +30,7 @@ export class AuthCasdoorService implements IAuthenticationService {
         //FIXME Cambiar por una carga dinamica de servicios en dependencia de la fuente de adquisicion de los datos configurada
         @Inject(CACHE_MANAGER) protected cacheManager: Cache,
     ) {
+        super(configService, cacheManager);
     }
     async refresh(sessionId: string): Promise<boolean> {
         const session = await this.sessionService.getSession(sessionId);

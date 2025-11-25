@@ -14,26 +14,28 @@ import * as jwt from 'jwt-decode';
 import {
   IWSO2TokenResponse,
   IDecodedToken,
-  IAuthenticationService,
-} from '../auth.interface';
-import { EncryptionsService } from '../../encryptions/encryptions.service';
-import { PermissionsService } from '../../permissions/permissions.service';
-import { ConfigService } from '../../config/config.service';
-import { SessionService } from '../../session/session.service';
+  BaseAuthenticationService,
+} from '../../auth.interface';
+import { EncryptionsService } from '../../../encryptions/encryptions.service';
+import { PermissionsService } from '../../../permissions/permissions.service';
+import { ConfigService } from '../../../config/config.service';
+import { SessionService } from '../../../session/session.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { UsersWSO2Service } from 'src/users/providers/wso2/users_wso2.service';
 @Injectable()
-export class AuthWSO2Service implements IAuthenticationService {
+export class AuthWSO2Service extends BaseAuthenticationService {
   private readonly logger = new Logger(AuthWSO2Service.name);
   constructor(
     protected readonly configService: ConfigService,
     protected readonly encryptionsService: EncryptionsService,
     protected readonly permissionsService: PermissionsService,
     protected readonly sessionService: SessionService,
-    protected readonly usersService: UsersWSO2Service,//FIXME Cambiar por una carga dinamica de servicios en dependencia de la fuente de adquisicion de los datos configurada
+    protected readonly usersService: UsersWSO2Service,
     @Inject(CACHE_MANAGER) protected cacheManager: Cache,
-  ) { }
+  ) {
+    super(configService, cacheManager);
+  }
   test_short(sessionId: string) {
     const store = this.sessionService.getExpressSessionStore();
     store.get(sessionId, (err, sess) => {
@@ -211,17 +213,7 @@ export class AuthWSO2Service implements IAuthenticationService {
     );
     return NEXT;
   }
-  async isBlocked(username: string, ip: string): Promise<boolean> {
-    const KEY = `login:${username}:${this._normalizeIp(ip)}`;
-    const raw = await this.cacheManager.get(KEY);
-    const COUNT = typeof raw === 'number' && raw >= 0 ? raw : 0;
-    return (
-      COUNT >= (this.configService.getConfig().API_GATEWAY?.THROTTLE_LIMIT ?? 5)
-    );
-  }
-  private _normalizeIp(ip: string): string {
-    return ip.replace(/^::ffff:/, '').replace(/:/g, '-');
-  }
+
   //TODO Agregar método que verificar el token para evitar riesgos de seguridad o discrepancias entre los relojes de 
   // el sessionStorage y el authService
 }

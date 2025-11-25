@@ -15,14 +15,13 @@ import { ConfigController } from '../config/config.controller';
 import { ConfigModule } from '../config/config.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { SessionService } from '../session/session.service';
-import { DatabaseModule } from '../database/database.module';
+
 @Module({
   imports: [
     HttpModule.register({
       global: true,
     }),
     ConfigModule,
-    DatabaseModule.forRoot(),
     SessionModule,
     CacheModule.registerAsync({
       isGlobal: true,
@@ -46,4 +45,4 @@ import { DatabaseModule } from '../database/database.module';
   controllers: [AppController, ConfigController],
   providers: [AppService, ConfigService],
 })
-export class AppModule {}
+export class AppModule { }

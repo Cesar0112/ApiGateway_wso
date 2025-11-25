@@ -8,7 +8,7 @@ import {
 import { ConfigService } from '../../../config/config.service';
 import { User } from '../../entities/user.entity';
 import { CreateUsersDto } from '../../dto/create-users.dto';
-import { IUsersService } from '../../interfaces/users.interface.service';
+import { IUsersProvider } from '../../interfaces/users.interface.service';
 import { UpdateUsersDto } from 'src/users/dto/update-users.dto';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
@@ -16,7 +16,7 @@ import { UserMapper } from 'src/users/providers/wso2/user.wso2.mapper';
 import { UserCasdoorMapper } from './user.casdoor.mapper';
 import { CasdoorResponse, ICasdoorUser } from './users.casdoor.interface';
 @Injectable()
-export class UsersCasdoorService implements IUsersService {
+export class UsersCasdoorService implements IUsersProvider {
     private readonly _logger = new Logger(UsersCasdoorService.name);
     private readonly baseUrl: string;
     private readonly owner: string;
@@ -225,15 +225,17 @@ export class UsersCasdoorService implements IUsersService {
 
     async updateByUsername(
         username: string,
-        dto: UpdateUsersDto,
+        dto: Partial<CreateUsersDto>,
         token: string,
-    ): Promise<User> {
+    ): Promise<User | null> {
+        let user: User | null;
         try {
-            const user = await this.getUserByUsername(username, token);
+            user = await this.getUserByUsername(username, token);
             if (!user) throw new NotFoundException(`User ${username} not found`);
             return this.update(user.id, dto, token);
         } catch (error) {
             this.handleError(error, `Update user by username ${username}`);
+            return null;
         }
     }
 
@@ -242,7 +244,7 @@ export class UsersCasdoorService implements IUsersService {
             const user = await this.getUserById(userId, token);
             if (!user) throw new NotFoundException(`User ${userId} not found`);
 
-            await this.update(userId, { isForbidden: !active }, token);
+            await this.update(userId, { isActive: !active }, token);
         } catch (error) {
             this.handleError(error, `Toggle user ${userId} active=${active}`);
         }

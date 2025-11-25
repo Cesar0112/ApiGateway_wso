@@ -22,13 +22,13 @@ import {
 import { UserResponseDto } from './dto/user-response.dto';
 import { UserMapper } from './providers/user.mapper';
 import { SessionService } from 'src/session/session.service';
-import { IUsersService, USERS_SERVICE_PROVIDER_TOKEN } from './interfaces/users.interface.service';
+import { IUsersProvider, USERS_PROVIDER_TOKEN } from './interfaces/users.interface.service';
 
 @Controller('users')
 export class UsersController {
   constructor(
-    @Inject(USERS_SERVICE_PROVIDER_TOKEN)
-    private readonly _usersService: IUsersService,
+    @Inject(USERS_PROVIDER_TOKEN)
+    private readonly _usersService: IUsersProvider,
     @Inject(AUTH_SERVICE_TOKEN)
     private readonly sessionService: SessionService,
   ) { }
@@ -55,7 +55,8 @@ export class UsersController {
   async findById(@Param('id') id: string, @Req() req: Request) {
     const token = await this.sessionService.getTokenFromSession(req);
     const user = await this._usersService.getUserById(id, token);
-    return UserMapper.toResponseDto(user);
+    if (user)
+      return UserMapper.toResponseDto(user);
   }
 
   @Patch(':id') //Es un patch pero por dentro hace put o patch segun convenga
@@ -82,7 +83,8 @@ export class UsersController {
   ) {
     const token = await this.sessionService.getTokenFromSession(req);
     const user = await this._usersService.getUserByUsername(username, token);
-    return UserMapper.toResponseDto(user);
+    if (user)
+      return UserMapper.toResponseDto(user);
   }
 
   @Patch('by-username/:username')
@@ -97,6 +99,9 @@ export class UsersController {
       updateUsersDto,
       token,
     );
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
     return UserMapper.toResponseDto(user);
   }
 

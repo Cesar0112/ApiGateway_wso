@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { Role } from '../entities/role.entity';
 import { AxiosResponse } from 'axios';
 
-export interface IRoleService {
+export interface IRoleServiceProvider {
     createRole(data: Partial<Role>, token: string): Promise<Role>;
     getRoles(token: string): Promise<Role[]>;
     getRoleById(id: string, token: string): Promise<Role>;

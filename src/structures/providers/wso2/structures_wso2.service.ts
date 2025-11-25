@@ -12,36 +12,23 @@ import { CreateStructureDto } from '../../dto/create-structure.dto';
 import { UpdateStructureDto } from '../../dto/update-structure.dto';
 import { Structure } from '../../entities/structure.entity';
 import { ConfigService } from '../../../config/config.service';
-import * as https from 'https';
 import { StructureNameHelper } from '../../structure.helper';
 import { StructureMapper } from '../../structure.mapper';
 import { UsersWSO2Service } from 'src/users/providers/wso2/users_wso2.service';
-import { IStructureService } from '../../interface/structure.interface';
+import { BaseStructureServiceProvider, IStructureServiceProvider } from '../../interface/structure.interface';
+
 
 //FIXME Arreglar que no se mapee directamente desde aquí sino desde el controller
 @Injectable()
-export class StructuresWSO2Service implements IStructureService {
-
-  private readonly _baseUrl: string;
-  private readonly _logger = new Logger(StructuresWSO2Service.name);
-  constructor(protected readonly configService: ConfigService, @Inject(forwardRef(() => UsersWSO2Service)) private readonly usersService: UsersWSO2Service) {
+export class StructuresWSO2Service extends BaseStructureServiceProvider {
+  readonly _baseUrl: string;
+  readonly _logger = new Logger(StructuresWSO2Service.name);
+  constructor(readonly configService: ConfigService, @Inject(forwardRef(() => UsersWSO2Service)) readonly usersService: UsersWSO2Service) {
+    super(configService, usersService);
     const wso2Config = this.configService.getConfig().WSO2;
     this._baseUrl = `${wso2Config.HOST}:${wso2Config.PORT}/scim2/Groups`;
   }
-  private _getRequestOptions(token: string): AxiosRequestConfig {
-    return {
-      //TODO Configurar proxy por configuraciones no directamente
-      proxy: false as const,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      httpsAgent: new https.Agent({
-        rejectUnauthorized:
-          this.configService.getConfig().NODE_ENV === 'production',
-      }),
-    };
-  }
+
   async getStructuresFromUser(userId: string, token: string): Promise<Structure[]> {
     const url = `${this.configService.getConfig().WSO2.HOST}:${this.configService.getConfig().WSO2.PORT
       }/scim2/Users/${userId}?attributes=groups`;
