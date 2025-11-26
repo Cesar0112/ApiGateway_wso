@@ -6,9 +6,6 @@ import {
 } from '../interfaces/users.interface.service';
 import { UsersWSO2Service } from './wso2/users_wso2.service';
 import { UsersCasdoorService } from './casdoor/users_casdoor.service';
-import { ConfigService } from '../../config/config.service';
-import { ROLE_SERVICE_PROVIDER_TOKEN } from '../../roles/interfaces/role.service.interface';
-import { EncryptionsService } from '../../encryptions/encryptions.service';
 import { ModuleRef } from '@nestjs/core';
 import { AUTH_TYPE_TOKEN } from '../../auth/auth.interface';
 

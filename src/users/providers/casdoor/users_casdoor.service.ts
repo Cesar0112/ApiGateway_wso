@@ -9,10 +9,8 @@ import { ConfigService } from '../../../config/config.service';
 import { User } from '../../entities/user.entity';
 import { CreateUsersDto } from '../../dto/create-users.dto';
 import { IUsersProvider } from '../../interfaces/users.interface.service';
-import { UpdateUsersDto } from 'src/users/dto/update-users.dto';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { UserMapper } from 'src/users/providers/wso2/user.wso2.mapper';
 import { UserCasdoorMapper } from './user.casdoor.mapper';
 import { CasdoorResponse, ICasdoorUser } from './users.casdoor.interface';
 @Injectable()
@@ -54,12 +52,12 @@ export class UsersCasdoorService implements IUsersProvider {
             const url = this.buildUrl('/api/get-user');
             const response = await firstValueFrom(
                 this.httpService.get(url, {
-                    params: { id, owner: this.owner },
+                    params: { userId: id },
                     headers: this.getAuthHeaders(token),
                 }),
             );
-            if (!response.data) return null;
-            return UserCasdoorMapper.fromCasdoorToUser(response.data);
+            if (!response.data.data) return null;
+            return UserCasdoorMapper.fromCasdoorToUser(response.data.data);
         } catch (error) {
             this.handleError(error, `Get user by ID ${id}`);
             return null;

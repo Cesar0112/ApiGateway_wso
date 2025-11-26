@@ -20,6 +20,7 @@ import { SessionService } from '../session/session.service';
   imports: [
     HttpModule.register({
       global: true,
+      proxy: false as const, //TODO Arreglar para entornos que viaje la petición a traves del proxy
     }),
     ConfigModule,
     SessionModule,

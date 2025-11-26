@@ -1,25 +1,25 @@
-interface FaceId {
+export interface FaceId {
     ImageUrl: string;
     faceIdData: number[];
     name: string;
 }
-interface ManagedAccount {
+export interface ManagedAccount {
     application: string;
     password: string;
     signinUrl: string;
     username: string;
 }
-interface MfaAccount {
+export interface MfaAccount {
     accountName: string;
     issuer: string;
     origin: string;
     secretKey: string;
 }
-interface MfaItem {
+export interface MfaItem {
     name: string;
     rule: string;
 }
-interface MfaProps {
+export interface MfaProps {
     countryCode: string;
     enabled: boolean;
     isPreferred: boolean;
@@ -29,7 +29,7 @@ interface MfaProps {
     secret: string;
     url: string;
 }
-interface Permission {
+export interface Permission {
     actions: string[];
     adapter: string;
     approveTime: string;
@@ -51,7 +51,7 @@ interface Permission {
     submitter: string;
     users: string[];
 }
-interface Role {
+export interface Role {
     createdTime: string;
     description: string;
     displayName: string;
