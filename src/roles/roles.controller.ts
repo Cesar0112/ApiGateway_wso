@@ -27,7 +27,6 @@ import { SessionService } from 'src/session/session.service';
 export class RolesController {
   constructor(
     private readonly _rolesService: RoleWSO2Service,
-    @Inject(AUTH_SERVICE_TOKEN)//FIXME esto debe estar malisimente mal arreglalo no debe ser el token de servicio de autenticacion sino el de session
     private readonly sessionService: SessionService,
   ) { }
 

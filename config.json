@@ -34,7 +34,7 @@
   },
   "API_GATEWAY": {
     "HOST": "localhost",
-    "PORT": 10412,
+    "PORT": 3000,
     "SESSION_SECRET": "s3cr3t",
     "PROXY": false,
     "API_URL": "http://10.12.24.33:10410",

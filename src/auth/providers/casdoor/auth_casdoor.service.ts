@@ -80,12 +80,12 @@ export class AuthCasdoorService extends BaseAuthenticationService {
             };
             return loginResponse;
         } catch (err) {
-            this.logger.warn(`Login fallido: ${username}`);
+            this.logger.warn(`Login fallido: ${username}, Error: ${err.response?.data || err.message}`);
             throw new UnauthorizedException('Credenciales inválidas');
         }
     }
     async logout(sessionId: string): Promise<void> {
-
+        throw new Error('Method not implemented.');
     }
 
     private decodeJwt(token: string): any {
