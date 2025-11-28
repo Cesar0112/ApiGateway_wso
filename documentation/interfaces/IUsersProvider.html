@@ -1178,7 +1178,7 @@
     <div class="tab-pane fade tab-source-code" id="source">
         <pre><code class="hljs javascript">import { CreateUsersDto } from &quot;../dto/create-users.dto&quot;;
 import { UpdateUsersDto } from &quot;../dto/update-users.dto&quot;;
-import { User } from &quot;../entities/user.entity&quot;;
+import { User } from &quot;../../entities/user.entity&quot;;
 
 export interface IUsersProvider {
     getUserById(id: string, token: string): Promise&lt;User | null&gt;;

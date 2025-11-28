@@ -10,7 +10,7 @@ import {
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { CreateStructureDto } from '../../dto/create-structure.dto';
 import { UpdateStructureDto } from '../../dto/update-structure.dto';
-import { Structure } from '../../entities/structure.entity';
+import { Structure } from '../../../entities/structure.entity';
 import { ConfigService } from '../../../config/config.service';
 import { StructureNameHelper } from '../../structure.helper';
 import { StructureMapper } from '../../structure.mapper';

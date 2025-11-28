@@ -1,4 +1,4 @@
-import { User } from "src/users/entities/user.entity";
+import { User } from "src/entities/user.entity";
 import { ConfigService } from "../config/config.service";
 import { Inject } from "@nestjs/common";
 import { CACHE_MANAGER } from '@nestjs/cache-manager';

@@ -2,6 +2,7 @@
 import { Provider } from '@nestjs/common';
 
 import {
+    IUsersProvider,
     USERS_PROVIDER_TOKEN
 } from '../interfaces/users.interface.service';
 import { UsersWSO2Service } from './wso2/users_wso2.service';
@@ -14,14 +15,13 @@ import { AUTH_TYPE_TOKEN } from '../../auth/auth.interface';
 
 export const UsersServiceProviders: Provider = {
     provide: USERS_PROVIDER_TOKEN,
-    useFactory: async (authType: string, moduleRef: ModuleRef) => {
+    useFactory: (authType: string, moduleRef: ModuleRef): IUsersProvider => {
         switch (authType) {
-            case 'wso2':
-                return await moduleRef.create(UsersWSO2Service);
             case 'casdoor':
-                return await moduleRef.create(UsersCasdoorService);
+                return moduleRef.get(UsersCasdoorService, { strict: false });
+            case 'wso2':
             default:
-                return await moduleRef.create(UsersWSO2Service);
+                return moduleRef.get(UsersWSO2Service, { strict: false });
         }
     },
     inject: [AUTH_TYPE_TOKEN, ModuleRef],

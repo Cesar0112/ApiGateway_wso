@@ -1,6 +1,6 @@
 import { CreateUsersDto } from "../dto/create-users.dto";
 import { UpdateUsersDto } from "../dto/update-users.dto";
-import { User } from "../entities/user.entity";
+import { User } from "../../entities/user.entity";
 
 export interface IUsersProvider {
     getUserById(id: string, token: string): Promise<User | null>;

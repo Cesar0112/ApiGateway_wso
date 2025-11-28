@@ -1,9 +1,10 @@
-import { Role } from "src/roles/entities/role.entity";
+
 import { UserResponseDto } from "../dto/user-response.dto";
-import { User } from "../entities/user.entity";
-import { Structure } from "src/structures/entities/structure.entity";
-import { StructureMapper } from "src/structures/structure.mapper";
+import { User } from "../../entities/user.entity";
+import { Structure } from "../../entities/structure.entity";
+import { StructureMapper } from "../../structures/structure.mapper";
 import { CreateUsersDto } from "../dto/create-users.dto";
+import { Role } from "../../entities/role.entity";
 
 export class UserMapper {
     static toResponseDto(user: User): UserResponseDto {

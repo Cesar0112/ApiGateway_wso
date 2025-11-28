@@ -11,7 +11,7 @@ import {
     IDecodedToken,
     LoginResponse,
 } from '../../auth.interface';
-import * as https from 'https';
+import * as https from 'node:https';
 import axios from 'axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';

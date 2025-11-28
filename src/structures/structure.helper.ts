@@ -1,5 +1,5 @@
 import { BadRequestException, NotFoundException } from "@nestjs/common";
-import { Structure } from "./entities/structure.entity";
+import { Structure } from "../entities/structure.entity";
 
 export class StructureNameHelper {
   static readonly GROUP_DELIMITER: string = '-';

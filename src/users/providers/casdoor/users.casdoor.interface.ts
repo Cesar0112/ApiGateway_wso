@@ -1,3 +1,6 @@
+import { IPermissionCasdoor } from "../../../permissions/providers/casdoor/permission.casdoor.interface";
+import { IRoleCasdoor } from "../../../roles/providers/casdoor/role.casdoor.interface";
+
 export interface FaceId {
     ImageUrl: string;
     faceIdData: number[];
@@ -29,40 +32,7 @@ export interface MfaProps {
     secret: string;
     url: string;
 }
-export interface Permission {
-    actions: string[];
-    adapter: string;
-    approveTime: string;
-    approver: string;
-    createdTime: string;
-    description: string;
-    displayName: string;
-    domains: string[];
-    effect: string;
-    groups: string[];
-    isEnabled: boolean;
-    model: string;
-    name: string;
-    owner: string;
-    resourceType: string;
-    resources: string[];
-    roles: string[];
-    state: string;
-    submitter: string;
-    users: string[];
-}
-export interface Role {
-    createdTime: string;
-    description: string;
-    displayName: string;
-    domains: string[];
-    groups: string[];
-    isEnabled: boolean;
-    name: string;
-    owner: string;
-    roles: string[];
-    users: string[];
-}
+
 export interface ICasdoorUser {
     accessKey: string;
     accessSecret: string;
@@ -176,7 +146,7 @@ export interface ICasdoorUser {
     patreon: string;
     paypal: string;
     permanentAvatar: string;
-    permissions: Permission[];
+    permissions: IPermissionCasdoor[];
     phone: string;
     preHash: string;
     preferredMfaType: string;
@@ -185,7 +155,7 @@ export interface ICasdoorUser {
     ranking: number;
     recoveryCodes: string[];
     region: string;
-    roles: Role[];
+    roles: IRoleCasdoor[];
     salesforce: string;
     score: number;
     shopify: string;

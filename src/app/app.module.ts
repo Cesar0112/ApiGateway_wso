@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { HttpModule, HttpService } from '@nestjs/axios';
+import { HttpModule } from '@nestjs/axios';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthenticateModule } from '../auth/auth.module';
@@ -15,6 +15,13 @@ import { ConfigController } from '../config/config.controller';
 import { ConfigModule } from '../config/config.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { SessionService } from '../session/session.service';
+import { EntitiesModule } from '../entities/entities.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from '../entities/user.entity';
+import { Structure } from '../entities/structure.entity';
+import { Role } from '../entities/role.entity';
+import { Permission } from '../entities/permission.entity';
+import { CommonModule } from '../common/common.module';
 
 @Module({
   imports: [
@@ -22,7 +29,16 @@ import { SessionService } from '../session/session.service';
       global: true,
       proxy: false as const, //TODO Arreglar para entornos que viaje la petición a traves del proxy
     }),
+    CommonModule,
     ConfigModule,
+    TypeOrmModule.forRoot({
+      type: 'sqlite',
+      database: 'dev.sqlite',           // ← archivo creado automáticamente
+      entities: [User, Structure, Role, Permission], // ← todas tus entidades
+      synchronize: true,                // ← ¡CREA TABLAS AUTOMÁTICO! (solo dev)
+      logging: false,
+    }),
+    EntitiesModule,
     SessionModule,
     CacheModule.registerAsync({
       isGlobal: true,
@@ -42,8 +58,9 @@ import { SessionService } from '../session/session.service';
     ProxyModule,
     UsersModule,
     StructuresModule,
+
   ],
   controllers: [AppController, ConfigController],
-  providers: [AppService, ConfigService],
+  providers: [AppService, ConfigService],//FIXME Ver si ConfigService sobra aquí
 })
 export class AppModule { }

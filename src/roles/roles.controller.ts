@@ -8,17 +8,12 @@ import {
   Delete,
   UseGuards,
   HttpStatus,
-  HttpException,
-  Inject,
-  Req,
+  HttpException, Req
 } from '@nestjs/common';
 import { RoleWSO2Service } from './providers/wso2/role_wso2.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { SessionGuard } from '../guards/session.guard';
-import {
-  AUTH_SERVICE_TOKEN,
-} from '../auth/auth.interface';
 import { Request } from 'express';
 import { RoleMapper } from './role.mapper';
 import { SessionService } from 'src/session/session.service';
@@ -56,16 +51,16 @@ export class RolesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    // return this._rolesService.findOne(id);
+    throw new HttpException('Not implemented', HttpStatus.NOT_IMPLEMENTED);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    //return this._rolesService.update(id, updateRoleDto);
+    throw new HttpException('Not implemented', HttpStatus.NOT_IMPLEMENTED);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    //return this._rolesService.remove(id);
+    throw new HttpException('Not implemented', HttpStatus.NOT_IMPLEMENTED);
   }
 }

@@ -884,7 +884,7 @@
                         <tbody>
                             <tr>
                                 <td class="col-md-4">
-                                    <code>constructor(configService: <a href="../injectables/ConfigService.html" >ConfigService</a>)</code>
+                                    <code>constructor(configService: <a href="../injectables/ConfigService.html" >ConfigService</a>, roleRepository: Repository<Role>)</code>
                                 </td>
                             </tr>
             
@@ -1372,16 +1372,18 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
 import * as https from &#x27;https&#x27;;
 import { ConfigService } from &#x27;../../../config/config.service&#x27;;
-import { Role } from &#x27;../../entities/role.entity&#x27;;
 import { RoleMapper } from &#x27;../../role.mapper&#x27;;
 import { IRoleServiceProvider } from &#x27;../../interfaces/role.service.interface&#x27;;
+import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
+import { Role } from &#x27;../../../entities/role.entity&#x27;;
+import { Repository } from &#x27;typeorm&#x27;;
 
 @Injectable()
 export class RoleWSO2Service implements IRoleServiceProvider {
   private readonly logger &#x3D; new Logger(RoleWSO2Service.name);
   private readonly baseUrl: string;
 
-  constructor(protected readonly configService: ConfigService) {
+  constructor(protected readonly configService: ConfigService, @InjectRepository(Role) private readonly roleRepository: Repository&lt;Role&gt;) {
     const wso2Config &#x3D; this.configService.getConfig().WSO2;
     this.baseUrl &#x3D;
       &#x60;${wso2Config.HOST}:${wso2Config.PORT}/scim2/v2/Roles&#x60;.trim();

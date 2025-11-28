@@ -1,11 +1,11 @@
 import { CreateUsersDto } from '../../dto/create-users.dto';
 import { UpdateUsersDto } from '../../dto/update-users.dto';
-import { User } from '../../entities/user.entity';
-import { Role } from '../../../roles/entities/role.entity';
-import { Structure } from '../../../structures/entities/structure.entity';
-import { Permission } from 'src/permissions/entities/permission.entity';
+import { User } from '../../../entities/user.entity';
+import { Structure } from '../../../entities/structure.entity';
+import { Permission } from 'src/entities/permission.entity';
 import { StructureNameHelper } from 'src/structures/structure.helper';
-import { ICasdoorUser, Permission as CasdoorPermission } from './users.casdoor.interface';
+import { ICasdoorUser } from './users.casdoor.interface';
+import { Role } from '../../../entities/role.entity';
 
 export class UserCasdoorMapper {
   static fromRecordToCasdoor(user: Record<string, any>): ICasdoorUser {

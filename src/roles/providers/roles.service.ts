@@ -1,20 +1,23 @@
 // ...existing code...
 import { Provider } from '@nestjs/common';
-import { ConfigService } from 'src/config/config.service';
 import { IRoleServiceProvider, ROLE_SERVICE_PROVIDER_TOKEN } from '../interfaces/role.service.interface';
 import { RoleWSO2Service } from './wso2/role_wso2.service';
+import { AUTH_TYPE_TOKEN } from '../../auth/auth.interface';
+import { ModuleRef } from '@nestjs/core';
+import { RoleCasdoorService } from './casdoor/role_casdoor.service';
 
 
 export const RolesServiceProvider: Provider = {
     provide: ROLE_SERVICE_PROVIDER_TOKEN,
-    useFactory: (config: ConfigService): IRoleServiceProvider => {
-        const authType = config.getConfig().API_GATEWAY.AUTH_TYPE.toString().toLowerCase();
+    useFactory: (authType: string, moduleRef: ModuleRef): IRoleServiceProvider => {
         switch (authType) {
+            case 'casdoor':
+                return moduleRef.get(RoleCasdoorService, { strict: false });
             case 'wso2':
-                return new RoleWSO2Service(config);
             default:
-                return new RoleWSO2Service(config);
+                return moduleRef.get(RoleWSO2Service, { strict: false });
         }
+
     },
-    inject: [ConfigService],
+    inject: [AUTH_TYPE_TOKEN, ModuleRef],
 };

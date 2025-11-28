@@ -1,5 +1,5 @@
 import { StructureResponseDto } from "./dto/structure-response.dto";
-import { Structure } from "./entities/structure.entity";
+import { Structure } from "../entities/structure.entity";
 import { StructureNameHelper } from "./structure.helper";
 /**
  * Esta clase mapeadora convierte:

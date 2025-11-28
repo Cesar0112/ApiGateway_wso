@@ -1,12 +1,56 @@
-import { Role } from "../../entities/role.entity";
-import { IRoleServiceProvider } from "../../interfaces/role.service.interface";
 
-export class RoleCasdoorService implements IRoleServiceProvider {
+import { InjectRepository } from "@nestjs/typeorm";
+import { IRoleServiceProvider } from "../../interfaces/role.service.interface";
+import { Role } from "../../../entities/role.entity";
+import { Repository } from "typeorm";
+import { Logger } from "@nestjs/common";
+import { HttpService } from "@nestjs/axios";
+import { ConfigService } from "../../../config/config.service";
+import { firstValueFrom } from "rxjs";
+import { RoleCasdoorMapper } from "./role.casdoor.mapper";
+import { IRoleCasdoor } from "./role.casdoor.interface";
+import { PermissionCasdoorService } from "../../../permissions/providers/casdoor/permission.casdoor.service";
+import { ICasdoorBaseInterfaceService } from "../../../common/casdoorbase.interface.service";
+import { CasdoorBaseService } from "../../../common/casdoorbase.service";
+
+export class RoleCasdoorService implements IRoleServiceProvider, ICasdoorBaseInterfaceService {
+
+    readonly _logger = new Logger(RoleCasdoorService.name);
+    readonly baseUrl: string;
+    readonly owner: string;
+    casdoorBaseObject: CasdoorBaseService;
+
+
+    constructor(readonly configService: ConfigService, readonly httpService: HttpService,
+        @InjectRepository(Role)
+        private readonly roleRepository: Repository<Role>,
+        private readonly permissionService: PermissionCasdoorService
+    ) {
+        const cfg = this.configService.getConfig().CASDOOR;
+        this.baseUrl = cfg.ENDPOINT;
+        this.owner = cfg.ORG_NAME || 'built-in';
+        this.casdoorBaseObject = new CasdoorBaseService(this.configService);
+
+    }
+
     createRole(data: Partial<Role>, token: string): Promise<Role> {
         throw new Error("Method not implemented.");
     }
-    getRoles(token: string): Promise<Role[]> {
-        throw new Error("Method not implemented.");
+    async getRoles(token: string): Promise<Role[]> {
+        try {
+            const url = this.buildApiUrl('/api/get-roles');
+            const response = await firstValueFrom(
+                this.httpService.get(url, {
+                    headers: this.getAuthHeaders(token),
+                }),
+            );
+            if (!response.data.data) return [];
+
+            return Promise.all(response.data.data.map(async (u: IRoleCasdoor) => RoleCasdoorMapper.fromCasdoorToRole(u, await this.permissionService.getPermissionsByRoleId(`${u.owner}/${u.name}`, token))));
+        } catch (error) {
+            this.handleError(error, 'Get all users');
+            return [];
+        }
     }
     getRoleById(id: string, token: string): Promise<Role> {
         throw new Error("Method not implemented.");
@@ -17,5 +61,19 @@ export class RoleCasdoorService implements IRoleServiceProvider {
     deleteRole(id: string, token: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
+    public get headers() {
+        return this.casdoorBaseObject.headers;
+    }
 
+    public getAuthHeaders(token: string) {
+        return this.casdoorBaseObject.getAuthHeaders(token);
+    }
+    // === HELPERS ===
+    public buildApiUrl(path: string): string {
+        return this.casdoorBaseObject.buildApiUrl(path);
+    }
+
+    public handleError(error: any, context: string) {
+        this.casdoorBaseObject.handleError(error, context);
+    }
 }

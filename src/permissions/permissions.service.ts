@@ -1,18 +1,16 @@
 import {
-  Injectable,
-  ConflictException,
-  NotFoundException,
+  Injectable
 } from '@nestjs/common';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import axios, { AxiosResponse } from 'axios';
 
-import * as https from 'https';
+import * as https from 'node:https';
 import { jwtDecode } from 'jwt-decode';
 import { IDecodedToken } from '../auth/auth.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Permission } from './entities/permission.entity';
+import { Permission } from '../entities/permission.entity';
 
 import {
   IPermission,
@@ -26,6 +24,8 @@ import { IScope } from './scope.interface';
 export class PermissionsService {
   constructor(
     private readonly _configService: ConfigService,
+    @InjectRepository(Permission)
+    private readonly _permRepo: Repository<Permission>,
   ) { }
   async create(createPermissionDto: CreatePermissionDto): Promise<Permission> {
     throw new Error('Method not implemented.');

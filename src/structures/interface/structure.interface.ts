@@ -1,4 +1,4 @@
-import { Structure } from '../entities/structure.entity';
+import { Structure } from '../../entities/structure.entity';
 import { CreateStructureDto } from '../dto/create-structure.dto';
 import { UpdateStructureDto } from '../dto/update-structure.dto';
 import { AxiosRequestConfig } from 'axios';

@@ -9,14 +9,18 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '../config/config.module';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from '../users/users.module';
-import { Permission } from '../permissions/entities/permission.entity';
-import { FactoryAuthProvider } from './providers/auth.service';
+import { Permission } from '../entities/permission.entity';
+import { AuthServiceProvider } from './providers/auth.service';
 import { authTypeValueProvider } from './providers/auth.type.provider';
+import { AuthCasdoorService } from './providers/casdoor/auth_casdoor.service';
+import { AuthWSO2Service } from './providers/wso2/auth_wso2.service';
+import { EntitiesModule } from '../entities/entities.module';
 
 @Module({
   imports: [
     SessionModule,
     forwardRef(() => UsersModule),
+    EntitiesModule,
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -41,7 +45,9 @@ import { authTypeValueProvider } from './providers/auth.type.provider';
     EncryptionsService,
     PermissionsService,
     authTypeValueProvider,
-    FactoryAuthProvider
+    AuthServiceProvider,
+    AuthCasdoorService,
+    AuthWSO2Service
   ],
   exports: [AUTH_SERVICE_TOKEN, AUTH_TYPE_TOKEN],
   controllers: [AuthenticateController],

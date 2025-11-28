@@ -5,21 +5,19 @@ import { AuthWSO2Service } from './wso2/auth_wso2.service';
 import { AuthCasdoorService } from './casdoor/auth_casdoor.service';
 import { ModuleRef } from '@nestjs/core';
 
-export const FactoryAuthProvider: Provider =
+export const AuthServiceProvider: Provider =
 {
     provide: AUTH_SERVICE_TOKEN,
-    useFactory: async (
+    useFactory: (
         type: string,
         moduleRef: ModuleRef,
     ) => {
-
         switch (type) {
-            case 'wso2':
-                return await moduleRef.create(AuthWSO2Service);
             case 'casdoor':
-                return await moduleRef.create(AuthCasdoorService);
+                return moduleRef.get(AuthCasdoorService, { strict: false });
+            case 'wso2':
             default:
-                return await moduleRef.create(AuthWSO2Service);
+                return moduleRef.get(AuthWSO2Service, { strict: false });
         }
     },
     inject: [AUTH_TYPE_TOKEN, ModuleRef],

@@ -1,4 +1,4 @@
-import { User } from '../../users/entities/user.entity';
+import { User } from './user.entity';
 import {
   Column,
   Entity,
@@ -36,7 +36,11 @@ export class Structure {
   displayName: string; // ← cache del path que viene de WSO2
 
   // usuarios que pertenecen a esta estructura
-  @ManyToMany(() => User, (user) => user.structures, { eager: true })
-  @JoinTable()
+  @ManyToMany(() => User)
+  @JoinTable({
+    name: 'structure_users', // opcional: nombre personalizado
+    joinColumn: { name: 'structureId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'userId', referencedColumnName: 'id' },
+  })
   users: User[];
 }

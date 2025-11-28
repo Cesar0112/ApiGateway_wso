@@ -924,7 +924,7 @@
                             </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <code>schemas:     <code>String[]</code>
+                                    <code>schemas:     <code>string[]</code>
             </bcode>
                                 </td>
                             </tr>
@@ -934,12 +934,12 @@
                         <tbody>
                             <tr>
                                 <td class="col-md-4">
-                                    <b> String</b>
+                                    <b> string</b>
                                 </td>
                             </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <code>String:     <code>any</code>
+                                    <code>string:     <code>any</code>
             </bcode>
                                 </td>
                             </tr>
@@ -948,15 +948,15 @@
             </section>
     </div>
     <div class="tab-pane fade tab-source-code" id="source">
-        <pre><code class="hljs javascript">import { Role } from &#x27;./entities/role.entity&#x27;;
-import { Permission } from &#x27;../permissions/entities/permission.entity&#x27;;
+        <pre><code class="hljs javascript">import { Permission } from &#x27;../entities/permission.entity&#x27;;
+import { Role } from &#x27;../entities/role.entity&#x27;;
 import { CreateRoleDto } from &#x27;./dto/create-role.dto&#x27;;
 import { BadRequestException } from &#x27;@nestjs/common&#x27;;
 import { WSO2Response } from &#x27;src/users/providers/wso2/user.wso2.mapper&#x27;;
 
 class WSORoleResponse {
-  schemas?: String[] &#x3D; [&#x27;urn:ietf:params:scim:schemas:extension:2.0:Role&#x27;];
-  displayName!: String;
+  schemas?: string[] &#x3D; [&#x27;urn:ietf:params:scim:schemas:extension:2.0:Role&#x27;];
+  displayName!: string;
   permissions?: Permission[] &#x3D; [];
 }
 export class RoleMapper {

@@ -1,55 +1,54 @@
 // ../users/services/users.wso2.service.ts
 import {
     BadRequestException,
+    forwardRef,
+    Inject,
     Injectable, Logger,
     NotFoundException,
     UnauthorizedException
 } from '@nestjs/common';
 import { ConfigService } from '../../../config/config.service';
-import { User } from '../../entities/user.entity';
+import { User } from '../../../entities/user.entity';
 import { CreateUsersDto } from '../../dto/create-users.dto';
 import { IUsersProvider } from '../../interfaces/users.interface.service';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { UserCasdoorMapper } from './user.casdoor.mapper';
 import { CasdoorResponse, ICasdoorUser } from './users.casdoor.interface';
+import { StructuresCasdoorService } from '../../../structures/providers/casdoor/structures_casdoor.service';
+import { RoleCasdoorService } from '../../../roles/providers/casdoor/role_casdoor.service';
+import { ICasdoorBaseInterfaceService } from '../../../common/casdoorbase.interface.service';
+import { CasdoorBaseService } from '../../../common/casdoorbase.service';
 @Injectable()
-export class UsersCasdoorService implements IUsersProvider {
+export class UsersCasdoorService implements IUsersProvider, ICasdoorBaseInterfaceService {
     private readonly _logger = new Logger(UsersCasdoorService.name);
     private readonly baseUrl: string;
     private readonly owner: string;
-    constructor(private readonly configService: ConfigService, private readonly httpService: HttpService) {
+    casdoorBaseObject: CasdoorBaseService;
+    constructor(private readonly configService: ConfigService, private readonly httpService: HttpService, @Inject(forwardRef(() => StructuresCasdoorService)) private readonly structuresService: StructuresCasdoorService, @Inject(forwardRef(() => RoleCasdoorService)) private readonly rolesService: RoleCasdoorService) {
         const cfg = this.configService.getConfig().CASDOOR;
         this.baseUrl = cfg.ENDPOINT;
         this.owner = cfg.ORG_NAME || 'built-in';
+        this.casdoorBaseObject = new CasdoorBaseService(this.configService);
     }
-    private get headers() {
-        return {
-            'Content-Type': 'application/json',
-        };
-    }
-
-    private getAuthHeaders(token: string) {
-        return {
-            ...this.headers,
-            Authorization: `Bearer ${token}`,
-        };
-    }
-    // === HELPERS ===
-    private buildUrl(path: string): string {
-        return `${this.baseUrl}${path}`;
+    public get headers() {
+        return this.casdoorBaseObject.headers;
     }
 
-    private handleError(error: any, context: string) {
-        this._logger.error(`${context} failed:`, error.response?.data || error.message);
-        if (error.response?.status === 401) throw new UnauthorizedException('Invalid token');
-        if (error.response?.status === 404) throw new NotFoundException(`${context} not found`);
-        throw new BadRequestException(`${context} failed`);
+    public getAuthHeaders(token: string) {
+        return this.casdoorBaseObject.getAuthHeaders(token);
+    }
+    public buildApiUrl(path: string): string {
+        return this.casdoorBaseObject.buildApiUrl(path);
+    }
+
+    public handleError(error: any, context: string) {
+        this.casdoorBaseObject.handleError(error, context);
     }
 
     async getUserById(id: string, token: string): Promise<User | null> {
         try {
-            const url = this.buildUrl('/api/get-user');
+            const url = this.buildApiUrl('get-user');
             const response = await firstValueFrom(
                 this.httpService.get(url, {
                     params: { userId: id },
@@ -57,7 +56,9 @@ export class UsersCasdoorService implements IUsersProvider {
                 }),
             );
             if (!response.data.data) return null;
-            return UserCasdoorMapper.fromCasdoorToUser(response.data.data);
+            const structures = await this.structuresService.findAll(token);
+            const roles = await this.rolesService.getRoles(token);
+            return UserCasdoorMapper.fromCasdoorToUser(response.data.data, roles, structures);
         } catch (error) {
             this.handleError(error, `Get user by ID ${id}`);
             return null;
@@ -66,7 +67,7 @@ export class UsersCasdoorService implements IUsersProvider {
 
     async getUserByUsername(username: string, token: string): Promise<User | null> {
         try {
-            const url = this.buildUrl('/api/get-user-by-name');
+            const url = this.buildApiUrl('get-user-by-name');
             const response = await firstValueFrom(
                 this.httpService.get(url, {
                     params: { name: username, owner: this.owner },
@@ -83,7 +84,7 @@ export class UsersCasdoorService implements IUsersProvider {
 
     async getUsers(token: string): Promise<User[]> {
         try {
-            const url = this.buildUrl('/api/get-users');
+            const url = this.buildApiUrl('get-users');
             const response = await firstValueFrom(
                 this.httpService.get(url, {
                     params: { owner: this.owner, pageSize: 100 },
@@ -100,7 +101,7 @@ export class UsersCasdoorService implements IUsersProvider {
 
     async create(userData: CreateUsersDto, token: string): Promise<User> {
         try {
-            const url = this.buildUrl('/api/add-user');
+            const url = this.buildApiUrl('add-user');
             const payload = {
                 ...userData,
                 owner: this.owner,
@@ -125,7 +126,7 @@ export class UsersCasdoorService implements IUsersProvider {
 
     async update(id: string, updateData: Partial<CreateUsersDto>, token: string): Promise<User> {
         try {
-            const url = this.buildUrl('/api/update-user');
+            const url = this.buildApiUrl('update-user');
             const payload = {
                 ...updateData,
                 id,
@@ -153,7 +154,7 @@ export class UsersCasdoorService implements IUsersProvider {
             const user = await this.getUserById(id, token);
             if (!user) throw new NotFoundException(`User ${id} not found`);
 
-            const url = this.buildUrl('/api/delete-user');
+            const url = this.buildApiUrl('delete-user');
             await firstValueFrom(
                 this.httpService.post(
                     url,
@@ -187,7 +188,7 @@ export class UsersCasdoorService implements IUsersProvider {
 
     private async getUsersByGroup(group: string, token: string): Promise<User[]> {
         try {
-            const url = this.buildUrl('/api/get-users');
+            const url = this.buildApiUrl('get-users');
             const response = await firstValueFrom(
                 this.httpService.get(url, {
                     params: { owner: this.owner, pageSize: 100 },

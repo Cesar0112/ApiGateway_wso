@@ -1,6 +1,5 @@
-import { Observable } from 'rxjs';
-import { Role } from '../entities/role.entity';
-import { AxiosResponse } from 'axios';
+import { Role } from "../../entities/role.entity";
+
 
 export interface IRoleServiceProvider {
     createRole(data: Partial<Role>, token: string): Promise<Role>;

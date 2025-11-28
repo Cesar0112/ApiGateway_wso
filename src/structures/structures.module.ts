@@ -18,6 +18,6 @@ import { AuthenticateModule } from '../auth/auth.module';
   ],
   controllers: [StructuresController],
   providers: [StructuresServiceProvider, StructuresCasdoorService, StructuresWSO2Service],
-  exports: [STRUCTURE_SERVICE_PROVIDER, StructuresCasdoorService, StructuresWSO2Service],
+  exports: [StructuresCasdoorService, StructuresWSO2Service, STRUCTURE_SERVICE_PROVIDER],
 })
 export class StructuresModule { }

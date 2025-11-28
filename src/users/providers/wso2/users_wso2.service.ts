@@ -9,13 +9,13 @@ import {
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as https from 'https';
 import { ConfigService } from '../../../config/config.service';
-import { User } from '../../entities/user.entity';
+import { User } from '../../../entities/user.entity';
 import { CreateUsersDto } from '../../dto/create-users.dto';
 import { UpdateUsersDto } from '../../dto/update-users.dto';
 import { UserMapper, WSO2Payload } from './user.wso2.mapper';
 import { RoleWSO2Service } from '../../../roles/providers/wso2/role_wso2.service';
 import { EncryptionsService } from '../../../encryptions/encryptions.service';
-import { Structure } from '../../../structures/entities/structure.entity';
+import { Structure } from '../../../entities/structure.entity';
 import { IUsersProvider } from '../../interfaces/users.interface.service';
 import { StructuresWSO2Service } from '../../../structures/providers/wso2/structures_wso2.service';
 

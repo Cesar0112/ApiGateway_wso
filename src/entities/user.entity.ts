@@ -1,14 +1,13 @@
-import { Role } from '../../roles/entities/role.entity';
-import { Structure } from '../../structures/entities/structure.entity';
+
+import { Role } from './role.entity';
+import { Structure } from './structure.entity';
 import {
   Column,
   CreateDateColumn,
-  Entity,
-  JoinColumn,
-  JoinTable,
+  Entity, JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
 @Entity()
 export class User {
@@ -33,11 +32,10 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
-  @ManyToMany(() => Structure, (structure) => structure.users, {
+  @ManyToMany(() => Structure, {
     onDelete: 'SET NULL',
     nullable: true,
   })
-  @JoinColumn()
   structures: Structure[];
 
   @ManyToMany(() => Role, { eager: true })

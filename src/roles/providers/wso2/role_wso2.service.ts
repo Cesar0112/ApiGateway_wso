@@ -9,16 +9,18 @@ import {
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as https from 'https';
 import { ConfigService } from '../../../config/config.service';
-import { Role } from '../../entities/role.entity';
 import { RoleMapper } from '../../role.mapper';
 import { IRoleServiceProvider } from '../../interfaces/role.service.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Role } from '../../../entities/role.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class RoleWSO2Service implements IRoleServiceProvider {
   private readonly logger = new Logger(RoleWSO2Service.name);
   private readonly baseUrl: string;
 
-  constructor(protected readonly configService: ConfigService) {
+  constructor(protected readonly configService: ConfigService, @InjectRepository(Role) private readonly roleRepository: Repository<Role>) {
     const wso2Config = this.configService.getConfig().WSO2;
     this.baseUrl =
       `${wso2Config.HOST}:${wso2Config.PORT}/scim2/v2/Roles`.trim();

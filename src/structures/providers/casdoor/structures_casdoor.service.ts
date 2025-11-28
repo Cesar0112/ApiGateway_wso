@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateStructureDto } from '../../dto/create-structure.dto';
 import { UpdateStructureDto } from '../../dto/update-structure.dto';
-import { Structure } from '../../entities/structure.entity';
+import { Structure } from '../../../entities/structure.entity';
 import { ConfigService } from '../../../config/config.service';
 import { BaseStructureServiceProvider } from '../../interface/structure.interface';
 import { UsersCasdoorService } from '../../../users/providers/casdoor/users_casdoor.service';
