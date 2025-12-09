@@ -11,14 +11,10 @@ import {
   HttpStatus,
   Inject,
 } from '@nestjs/common';
-import { UsersWSO2Service } from './providers/wso2/users_wso2.service';
 import { CreateUsersDto } from './dto/create-users.dto';
 import { UpdateUsersDto } from './dto/update-users.dto';
 import { ApiBody, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
-import {
-  AUTH_SERVICE_TOKEN
-} from '../auth/auth.interface';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UserMapper } from './providers/user.mapper';
 import { SessionService } from 'src/session/session.service';
@@ -29,7 +25,6 @@ export class UsersController {
   constructor(
     @Inject(USERS_PROVIDER_TOKEN)
     private readonly _usersService: IUsersProvider,
-    @Inject(AUTH_SERVICE_TOKEN)
     private readonly sessionService: SessionService,
   ) { }
 

@@ -9,6 +9,7 @@ import { StructuresModule } from '../structures/structures.module';
 import { UsersCasdoorService } from './providers/casdoor/users_casdoor.service';
 import { USERS_PROVIDER_TOKEN } from './interfaces/users.interface.service';
 import { UsersServiceProviders } from './providers/user.service.provider';
+import { SessionModule } from '../session/session.module';
 @Module({
   imports: [
     ConfigModule,
@@ -16,6 +17,7 @@ import { UsersServiceProviders } from './providers/user.service.provider';
     forwardRef(() => RolesModule),
     EncryptionsModule,
     forwardRef(() => StructuresModule),
+    SessionModule
   ],
   controllers: [UsersController],
   providers: [UsersServiceProviders, UsersCasdoorService, UsersWSO2Service],

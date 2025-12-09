@@ -4,7 +4,7 @@ import { EncryptionsService } from '../encryptions/encryptions.service';
 import { PermissionsService } from '../permissions/permissions.service';
 import { SessionModule } from '../session/session.module';
 import { ConfigService } from '../config/config.service';
-import { AUTH_SERVICE_TOKEN, AUTH_TYPE_TOKEN } from './auth.interface';
+import { AUTH_SERVICE_TOKEN, AUTH_TYPE_TOKEN, BaseAuthenticationService } from './auth.interface';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '../config/config.module';
 import { JwtModule } from '@nestjs/jwt';
@@ -16,8 +16,10 @@ import { AuthCasdoorService } from './providers/casdoor/auth_casdoor.service';
 import { AuthWSO2Service } from './providers/wso2/auth_wso2.service';
 import { EntitiesModule } from '../entities/entities.module';
 
+
 @Module({
   imports: [
+    ConfigModule,
     SessionModule,
     forwardRef(() => UsersModule),
     EntitiesModule,
@@ -41,15 +43,14 @@ import { EntitiesModule } from '../entities/entities.module';
     }),
   ],
   providers: [
-    ConfigService,
     EncryptionsService,
     PermissionsService,
     authTypeValueProvider,
     AuthServiceProvider,
     AuthCasdoorService,
-    AuthWSO2Service
+    AuthWSO2Service,
   ],
-  exports: [AUTH_SERVICE_TOKEN, AUTH_TYPE_TOKEN],
+  exports: [AUTH_TYPE_TOKEN, AUTH_SERVICE_TOKEN],
   controllers: [AuthenticateController],
 })
 export class AuthenticateModule { }

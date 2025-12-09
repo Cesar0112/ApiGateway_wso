@@ -8,20 +8,21 @@ import {
   Delete,
   UseGuards,
   HttpStatus,
-  HttpException, Req
+  HttpException, Req,
+  Inject
 } from '@nestjs/common';
-import { RoleWSO2Service } from './providers/wso2/role_wso2.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { SessionGuard } from '../guards/session.guard';
 import { Request } from 'express';
 import { RoleMapper } from './role.mapper';
-import { SessionService } from 'src/session/session.service';
+import { SessionService } from '../session/session.service';
+import { IRoleServiceProvider, ROLE_SERVICE_PROVIDER_TOKEN } from './interfaces/role.service.interface';
 @Controller('roles')
 @UseGuards(SessionGuard)
 export class RolesController {
   constructor(
-    private readonly _rolesService: RoleWSO2Service,
+    @Inject(ROLE_SERVICE_PROVIDER_TOKEN) private readonly _rolesService: IRoleServiceProvider,
     private readonly sessionService: SessionService,
   ) { }
 

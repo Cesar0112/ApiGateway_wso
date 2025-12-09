@@ -1,8 +1,9 @@
 import { User } from "src/entities/user.entity";
 import { ConfigService } from "../config/config.service";
-import { Inject } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { AuthProvider } from "../auth-provider/auth-provider.decorator";
 export interface IWSO2TokenResponse {
   access_token: string;
   token_type: string;
@@ -49,9 +50,11 @@ interface IAuthenticationService {
   record?(username: string, ip: string): Promise<number>;
 }
 
+@AuthProvider(BaseAuthenticationService.toString())
+@Injectable()
 export abstract class BaseAuthenticationService implements IAuthenticationService {
-  constructor(protected readonly configService: ConfigService,
-    @Inject(CACHE_MANAGER) protected cacheManager: Cache,) { }
+  protected readonly configService: ConfigService;
+  protected cacheManager: Cache;
   abstract login(
     username: string,
     password: string,
@@ -69,8 +72,9 @@ export abstract class BaseAuthenticationService implements IAuthenticationServic
     );
   }
   protected _normalizeIp(ip: string): string {
-    return ip.replace(/^::ffff:/, '').replace(/:/g, '-');
+    return ip.replace(/^::ffff:/, '').replaceAll(':', '-');
   }
+  abstract toString(): string;
 }
 
 export const AUTH_SERVICE_TOKEN = Symbol('AUTH_SERVICE');

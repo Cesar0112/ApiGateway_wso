@@ -1,15 +1,14 @@
 // ../auth/auth.service.ts
 import {
-  BadRequestException,
   Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
 import axios from 'axios';
-import * as qs from 'querystring';
-import * as https from 'https';
+import * as qs from 'node:querystring';
+import * as https from 'node:https';
 import * as jwt from 'jwt-decode';
 import {
   IWSO2TokenResponse,
@@ -25,6 +24,9 @@ import { Cache } from 'cache-manager';
 import { UsersWSO2Service } from 'src/users/providers/wso2/users_wso2.service';
 @Injectable()
 export class AuthWSO2Service extends BaseAuthenticationService {
+  toString(): string {
+    return 'wso2';//Extremadamente importante que este valor coincida con el mapeo en auth.provider.ts y con la configuración traída del config.json o el archivo de configuración que sea
+  }
   private readonly logger = new Logger(AuthWSO2Service.name);
   constructor(
     protected readonly configService: ConfigService,
@@ -34,7 +36,7 @@ export class AuthWSO2Service extends BaseAuthenticationService {
     protected readonly usersService: UsersWSO2Service,
     @Inject(CACHE_MANAGER) protected cacheManager: Cache,
   ) {
-    super(configService, cacheManager);
+    super();
   }
   test_short(sessionId: string) {
     const store = this.sessionService.getExpressSessionStore();
@@ -86,16 +88,7 @@ export class AuthWSO2Service extends BaseAuthenticationService {
       const headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
       };
-      /*const proxyEnv =
-        this.configService.get('HTTPS_PROXY') ||
-        this.configService.get('https_proxy') ||
-        this.configService.get('HTTP_PROXY') ||
-        this.configService.get('http_proxy');
 
-      const httpsAgent = proxyEnv
-        ? new HttpsProxyAgent(proxyEnv)
-        : new HttpsAgent({ rejectUnauthorized: false }); // o true en producción
-*/
       const response = await axios.post<IWSO2TokenResponse>(URL, DATA, {
         proxy: false as const, //TODO Arreglar para entornos que viaje la petición a traves del proxy
         headers,

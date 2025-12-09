@@ -64,7 +64,7 @@ export class AuthenticateController {
     const result = await this.authenticateService.login(user, password, req.ip);
     //    session.username = user;
     //session.permissions = result.permissions.filter(p => !p.startsWith("url:"));
-    //session.urls = result.permissions.filter(p => p.startsWith("url:")) ?? [];
+    //session.urls = result.permissions.filter(p => p.startsWith("url:")) ?? [];FIXME Terminar de almacenar los permisos y las urls en redis
     session.token = result?.token;
 
     return {

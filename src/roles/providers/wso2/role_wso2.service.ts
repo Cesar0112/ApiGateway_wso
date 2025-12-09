@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import * as https from 'https';
+import * as https from 'node:https';
 import { ConfigService } from '../../../config/config.service';
 import { RoleMapper } from '../../role.mapper';
 import { IRoleServiceProvider } from '../../interfaces/role.service.interface';
