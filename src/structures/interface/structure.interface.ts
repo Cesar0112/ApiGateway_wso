@@ -3,7 +3,7 @@ import { CreateStructureDto } from '../dto/create-structure.dto';
 import { UpdateStructureDto } from '../dto/update-structure.dto';
 import { AxiosRequestConfig } from 'axios';
 import { ConfigService } from '../../config/config.service';
-import * as https from 'https';
+import * as https from 'node:https';
 import { IUsersProvider } from '../../users/interfaces/users.interface.service';
 import { Logger } from '@nestjs/common';
 
@@ -18,7 +18,7 @@ export interface IStructureServiceProvider {
     // CRUD básico
     findAll(token: string): Promise<Structure[]>;
     findOne(id: string, token: string, include?: string): Promise<Structure>;
-    findOneByName(name: string, token: string, include?: string): Promise<Structure>;
+    findOneByName(name: string, token: string, include?: string): Promise<Structure | null>;
     findByIds(ids: string[], token: string): Promise<Structure[]>;
     create(dto: CreateStructureDto, token: string): Promise<Structure>;
     update(id: string, dto: UpdateStructureDto, token: string): Promise<Structure>;
@@ -52,8 +52,8 @@ export abstract class BaseStructureServiceProvider implements IStructureServiceP
     constructor(protected readonly configService: ConfigService, protected readonly usersService: IUsersProvider) {
     }
     abstract findAll(token: string): Promise<Structure[]>;
-    abstract findOne(id: string, token: string, include?: string);
-    abstract findOneByName(name: string, token: string, include?: string);
+    abstract findOne(id: string, token: string, include?: string): Promise<Structure>;
+    abstract findOneByName(name: string, token: string, include?: string): Promise<Structure | null>;
     abstract findByIds(ids: string[], token: string): Promise<Structure[]>;
     abstract create(dto: CreateStructureDto, token: string): Promise<Structure>;
     abstract update(id: string, dto: UpdateStructureDto, token: string): Promise<Structure>;

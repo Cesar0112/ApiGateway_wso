@@ -51,7 +51,7 @@ export class AuthenticateController {
   @Post()
   @HttpCode(200)
   //TODO Cambiar los limites por configuracion de Throttle
-  @Throttle({ default: { limit: 5, ttl: 15 * 60 * 1000 } }) //Límite: 5 intentos por IP cada 15 minutos
+  @Throttle({ default: { limit: 5, ttl: 15 * 60 * 1000 } }) //Límite: 5 intentos cada 15 minutos
   async login(
     @Session() session: Record<string, any>,
     @Body() body: { user: string; password: string },

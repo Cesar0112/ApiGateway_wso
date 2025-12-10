@@ -25,9 +25,17 @@ import { CommonModule } from '../common/common.module';
 
 @Module({
   imports: [
-    HttpModule.register({
-      global: true,
-      proxy: false as const, //TODO Arreglar para entornos que viaje la petición a traves del proxy
+    HttpModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        proxy: false as const, //TODO Arreglar para entornos que viaje la petición a traves del proxy
+        headers: { 'Content-Type': 'application/json' },
+        httpsAgent: new (require('node:https').Agent)({
+          rejectUnauthorized: configService.getConfig().NODE_ENV === 'production',
+        }),
+        global: true,
+      }),
+      inject: [ConfigService],
     }),
     CommonModule,
     ConfigModule,

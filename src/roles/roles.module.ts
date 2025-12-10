@@ -10,9 +10,23 @@ import { PermissionsModule } from '../permissions/permissions.module';
 import { ROLE_SERVICE_PROVIDER_TOKEN } from './interfaces/role.service.interface';
 import { RolesServiceProvider } from './providers/roles.service';
 import { AuthenticateModule } from '../auth/auth.module';
+import { HttpModule } from '@nestjs/axios';
+import { ConfigModule } from '../config/config.module';
 
 @Module({
   imports: [
+    HttpModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        proxy: false as const, //TODO Arreglar para entornos que viaje la petición a traves del proxy
+        headers: { 'Content-Type': 'application/json' },
+        httpsAgent: new (require('node:https').Agent)({
+          rejectUnauthorized: configService.getConfig().NODE_ENV === 'production',
+        }),
+        global: true,
+      }),
+      inject: [ConfigService],
+    }),
     SessionModule,
     EntitiesModule,
     PermissionsModule,

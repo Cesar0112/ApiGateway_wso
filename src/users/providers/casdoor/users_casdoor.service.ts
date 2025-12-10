@@ -4,8 +4,7 @@ import {
     forwardRef,
     Inject,
     Injectable, Logger,
-    NotFoundException,
-    UnauthorizedException
+    NotFoundException
 } from '@nestjs/common';
 import { ConfigService } from '../../../config/config.service';
 import { User } from '../../../entities/user.entity';
@@ -23,7 +22,7 @@ import { CasdoorBaseService } from '../../../common/casdoorbase.service';
 export class UsersCasdoorService implements IUsersProvider, ICasdoorBaseInterfaceService {
     private readonly _logger = new Logger(UsersCasdoorService.name);
     private readonly baseUrl: string;
-    private readonly owner: string;
+    readonly owner: string;
     casdoorBaseObject: CasdoorBaseService;
     constructor(private readonly configService: ConfigService, private readonly httpService: HttpService, @Inject(forwardRef(() => StructuresCasdoorService)) private readonly structuresService: StructuresCasdoorService, @Inject(forwardRef(() => RoleCasdoorService)) private readonly rolesService: RoleCasdoorService) {
         const cfg = this.configService.getConfig().CASDOOR;

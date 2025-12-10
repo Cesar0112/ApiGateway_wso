@@ -53,7 +53,7 @@ export class AuthCasdoorService extends BaseAuthenticationService {
                 "client_id": cfg.CLIENT_ID,
                 "client_secret": cfg.CLIENT_SECRET,
                 "username": username,
-                "password": this.encryptionsService.decrypt(password)
+                "password": this.encryptionsService.decrypt(password)//FIXME No se puede mandar la contraseña en texto plano a casdoor ni a nadie
             });
             let config = {
                 method: 'post',

@@ -9,9 +9,23 @@ import { StructuresCasdoorService } from './providers/casdoor/structures_casdoor
 import { StructuresServiceProvider } from './providers/structures.service';
 import { STRUCTURE_SERVICE_PROVIDER } from './interface/structure.interface';
 import { AuthenticateModule } from '../auth/auth.module';
+import { HttpModule } from '@nestjs/axios';
+import { ConfigService } from '../config/config.service';
 @Module({
   imports: [
     ConfigModule,
+    HttpModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        proxy: false as const, //TODO Arreglar para entornos que viaje la petición a traves del proxy
+        headers: { 'Content-Type': 'application/json' },
+        httpsAgent: new (require('node:https').Agent)({
+          rejectUnauthorized: configService.getConfig().NODE_ENV === 'production',
+        }),
+        global: true,
+      }),
+      inject: [ConfigService],
+    }),
     SessionModule,
     forwardRef(() => UsersModule),
     forwardRef(() => AuthenticateModule)
