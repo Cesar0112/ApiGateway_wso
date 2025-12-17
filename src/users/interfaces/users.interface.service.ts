@@ -3,7 +3,7 @@ import { UpdateUsersDto } from "../dto/update-users.dto";
 import { User } from "../../entities/user.entity";
 
 export interface IUsersProvider {
-    getUserById(id: string, token: string): Promise<User | null>;
+    getUserByUserId(id: string, token: string): Promise<User | null>;
     getUserByUsername(username: string, token: string): Promise<User | null>;
     getUsers(token: string): Promise<User[]>;
     create(userData: CreateUsersDto, token: string): Promise<User>;

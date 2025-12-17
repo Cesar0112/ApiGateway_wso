@@ -45,35 +45,40 @@ export class UsersCasdoorService implements IUsersProvider, ICasdoorBaseInterfac
         this.casdoorBaseObject.handleError(error, context);
     }
 
-    async getUserById(id: string, token: string): Promise<User | null> {
+    async getUserByUserId(userId: string, token: string): Promise<User | null> {
         try {
+
             const url = this.buildApiUrl('get-user');
             const response = await firstValueFrom(
                 this.httpService.get(url, {
-                    params: { userId: id },
+                    params: { userId },
                     headers: this.getAuthHeaders(token),
                 }),
             );
             if (!response.data.data) return null;
-            const structures = await this.structuresService.findAll(token);
+            const structures = await this.structuresService.getStructuresFromUser(userId, token);
             const roles = await this.rolesService.getRoles(token);
             return UserCasdoorMapper.fromCasdoorToUser(response.data.data, roles, structures);
         } catch (error) {
-            this.handleError(error, `Get user by ID ${id}`);
+            this.handleError(error, `Get user by ID ${userId}`);
             return null;
         }
     }
 
     async getUserByUsername(username: string, token: string): Promise<User | null> {
         try {
-            const url = this.buildApiUrl('get-user-by-name');
+            if (username.includes('/')) {//si esto pasa significa que es un id de la forma owner/username
+                return this.getUserByUserId(username, token);
+            }
+            const url = this.buildApiUrl('get-user');
             const response = await firstValueFrom(
                 this.httpService.get(url, {
-                    params: { name: username, owner: this.owner },
+                    params: { id: this.owner + "/" + username, owner: this.owner },
                     headers: this.getAuthHeaders(token),
                 }),
             );
-            return UserCasdoorMapper.fromCasdoorToUser(response.data);
+            if (response.data.data == null) return null;
+            return UserCasdoorMapper.fromCasdoorToUser(response.data.data);
         } catch (error) {
             if (error.response?.status === 404) return null;
             this.handleError(error, `Get user by username ${username}`);
@@ -150,7 +155,7 @@ export class UsersCasdoorService implements IUsersProvider, ICasdoorBaseInterfac
 
     async delete(id: string, token: string): Promise<void> {
         try {
-            const user = await this.getUserById(id, token);
+            const user = await this.getUserByUserId(id, token);
             if (!user) throw new NotFoundException(`User ${id} not found`);
 
             const url = this.buildApiUrl('delete-user');
@@ -211,7 +216,7 @@ export class UsersCasdoorService implements IUsersProvider, ICasdoorBaseInterfac
         token: string,
     ): Promise<void> {
         try {
-            const user = await this.getUserById(userId, token);
+            const user = await this.getUserByUserId(userId, token);
             if (!user) throw new NotFoundException(`User ${userId} not found`);
 
             const updated = { ...user, groups: structuresIds };
@@ -239,7 +244,7 @@ export class UsersCasdoorService implements IUsersProvider, ICasdoorBaseInterfac
 
     async disableOrEnableUser(userId: string, active: boolean, token: string): Promise<void> {
         try {
-            const user = await this.getUserById(userId, token);
+            const user = await this.getUserByUserId(userId, token);
             if (!user) throw new NotFoundException(`User ${userId} not found`);
 
             await this.update(userId, { isActive: !active }, token);

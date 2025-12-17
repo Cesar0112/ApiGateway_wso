@@ -38,7 +38,7 @@ export class RoleCasdoorService implements IRoleServiceProvider, ICasdoorBaseInt
     }
     async getRoles(token: string): Promise<Role[]> {
         try {
-            const url = this.buildApiUrl('/api/get-roles');
+            const url = this.buildApiUrl('get-roles');
             const response = await firstValueFrom(
                 this.httpService.get(url, {
                     headers: this.getAuthHeaders(token),
@@ -46,7 +46,9 @@ export class RoleCasdoorService implements IRoleServiceProvider, ICasdoorBaseInt
             );
             if (!response.data.data) return [];
 
-            return Promise.all(response.data.data.map(async (u: IRoleCasdoor) => RoleCasdoorMapper.fromCasdoorToRole(u, await this.permissionService.getPermissionsByRoleId(`${u.owner}/${u.name}`, token))));
+            return Promise.all(
+                response.data.data.map(
+                    async (u: IRoleCasdoor) => RoleCasdoorMapper.fromCasdoorToRole(u, await this.permissionService.getPermissionsByRoleId(`${u.owner}/${u.name}`, token))));
         } catch (error) {
             this.handleError(error, 'Get all users');
             return [];

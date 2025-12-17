@@ -8,6 +8,7 @@ import {
 import { CreateStructureDto } from '../../dto/create-structure.dto';
 import { UpdateStructureDto } from '../../dto/update-structure.dto';
 import { Structure } from '../../../entities/structure.entity';
+import { User } from '../../../entities/user.entity';
 import { ConfigService } from '../../../config/config.service';
 import { BaseStructureServiceProvider } from '../../interface/structure.interface';
 import { UsersCasdoorService } from '../../../users/providers/casdoor/users_casdoor.service';
@@ -35,17 +36,32 @@ export class StructuresCasdoorService extends BaseStructureServiceProvider imple
     async findAll(token: string): Promise<Structure[]> {
         try {
             const response = await firstValueFrom(
-                this.httpService.get(this.casdoorBaseObject.buildApiUrl('/api/get-groups'), {
+                this.httpService.get(this.casdoorBaseObject.buildApiUrl('get-groups'), {
                     params: { owner: this.casdoorBaseObject.owner, pageSize: 1000 },
                     headers: this.casdoorBaseObject.getAuthHeaders(token),
                 }),
             );
-
             if (response.data.status !== 'ok') {
                 throw new BadRequestException(response.data.msg || 'Failed to fetch groups');
             }
 
-            return response.data.data.map((casdoorGroup: ICasdoorStructure) => StructureCasdoorMapper.CasdoorGroupToStructure(casdoorGroup));
+            return await Promise.all(
+                response.data.data.map(async (casdoorGroup: ICasdoorStructure) => {
+                    const parent = (casdoorGroup.parentId && casdoorGroup.parentId !== this.casdoorBaseObject.owner) ? await this.findOne(casdoorGroup.parentId, token) : undefined;
+                    const children = casdoorGroup.haveChildren ? await this.findChildrenByName(casdoorGroup.name, token) : undefined;
+                    let users: User[] | undefined = undefined;
+                    if (casdoorGroup.users) {
+                        const fetchedUsers = await Promise.all(casdoorGroup.users.map(
+                            async (id: string) => await this.usersService.getUserByUsername(id.split('/')[1], token)
+                        ));
+                        // filter out potential nulls returned by getUserByUsername
+                        users = fetchedUsers.filter(u => u !== null);
+                    }
+                    return StructureCasdoorMapper.CasdoorGroupToStructure(casdoorGroup, parent, children, users);
+                }
+                )
+            );
+
         } catch (error) {
             this._logger.error('findAll failed', error);
             throw error;
@@ -53,6 +69,10 @@ export class StructuresCasdoorService extends BaseStructureServiceProvider imple
     }
     async findOne(id: string, token: string, include?: string): Promise<Structure> {
         try {
+
+            if (!id.startsWith(this.casdoorBaseObject.owner + "/")) {
+                id = this.casdoorBaseObject.owner + "/" + id;
+            }
             const response = await firstValueFrom(
                 this.httpService.get(this.casdoorBaseObject.buildApiUrl('get-group'), {
                     params: { id },
@@ -64,7 +84,13 @@ export class StructuresCasdoorService extends BaseStructureServiceProvider imple
                 throw new NotFoundException(`Structure ${id} not found`);
             }
 
-            return StructureCasdoorMapper.CasdoorGroupToStructure(response.data.data);
+            return StructureCasdoorMapper.CasdoorGroupToStructure(response.data.data,
+                await (response.data.data.parentId && response.data.data.parentId !== this.casdoorBaseObject.owner ? this.findOne(response.data.data.parentId, token) : undefined),
+                await (response.data.data.haveChildren ? this.findChildrenByName(response.data.data.name, token) : undefined),
+                await (response.data.data.users ? Promise.all(response.data.data.users.map((username: string) => this.usersService.getUserByUsername(username, token))).then(fetchedUsers => fetchedUsers.filter(u => u !== null)) : undefined)
+            );
+
+
         } catch (error) {
             if (error instanceof NotFoundException) throw error;
             this._logger.error(`findOne(${id}) failed`, error);
@@ -73,16 +99,40 @@ export class StructuresCasdoorService extends BaseStructureServiceProvider imple
     }
     async findOneByName(name: string, token: string, include?: string): Promise<Structure | null> {
         try {
-            const all = await this.findAll(token);
-            return all.find(s => s.name === name) || null;
+            const response = await firstValueFrom(
+                this.httpService.get(this.casdoorBaseObject.buildApiUrl('get-group'), {
+                    params: { id: this.casdoorBaseObject.owner + "/" + name },
+                    headers: this.casdoorBaseObject.getAuthHeaders(token),
+                }),
+            );
+
+            if (response.data.status !== 'ok') {
+                throw new NotFoundException(`Structure ${name} not found`);
+            }
+            return StructureCasdoorMapper.CasdoorGroupToStructure(response.data.data,
+                await (response.data.data.parentId && response.data.data.parentId !== this.casdoorBaseObject.owner ? this.findOne(response.data.data.parentId, token) : undefined),
+                await (response.data.data.haveChildren ? this.findChildrenByName(response.data.data.name, token) : undefined),
+                await (response.data.data.users ? Promise.all(response.data.data.users.map((username: string) => this.usersService.getUserByUsername(username, token))).then(fetchedUsers => fetchedUsers.filter(u => u !== null)) : undefined)
+            );
         } catch (error) {
             this._logger.warn(`findOneByName(${name}) failed`, error);
             return null;
         }
     }
     async findByIds(ids: string[], token: string): Promise<Structure[]> {
-        const all = await this.findAll(token);
-        return all.filter(s => ids.includes(s.id));
+        try {
+            const response = await Promise.all(ids.map(async id => await this.findOne(id, token)));
+
+            if (response.length === 0) {
+                throw new BadRequestException('Failed to fetch groups');
+            }
+
+            return response;
+
+        } catch (error) {
+            this._logger.error('findAll failed', error);
+            throw error;
+        }
     }
     async create(dto: CreateStructureDto, token: string): Promise<Structure> {
         try {
@@ -110,7 +160,11 @@ export class StructuresCasdoorService extends BaseStructureServiceProvider imple
                 throw new BadRequestException(response.data.msg || 'Failed to create structure');
             }
 
-            return StructureCasdoorMapper.CasdoorGroupToStructure(response.data.data);
+            return StructureCasdoorMapper.CasdoorGroupToStructure(response.data.data,
+                await (response.data.data.parentId && response.data.data.parentId !== this.casdoorBaseObject.owner ? this.findOne(response.data.data.parentId, token) : undefined),
+                await (response.data.data.haveChildren ? this.findChildrenByName(response.data.data.name, token) : undefined),
+                await (response.data.data.users ? Promise.all(response.data.data.users.map((username: string) => this.usersService.getUserByUsername(username, token))).then(fetchedUsers => fetchedUsers.filter(u => u !== null)) : undefined)
+            );
         } catch (error) {
             this._logger.error('create structure failed', error);
             throw error;
@@ -144,8 +198,11 @@ export class StructuresCasdoorService extends BaseStructureServiceProvider imple
             if (response.data.status !== 'ok') {
                 throw new BadRequestException(response.data.msg);
             }
-
-            return StructureCasdoorMapper.CasdoorGroupToStructure(response.data.data);
+            return StructureCasdoorMapper.CasdoorGroupToStructure(response.data.data,
+                await (response.data.data.parentId && response.data.data.parentId !== this.casdoorBaseObject.owner ? this.findOne(response.data.data.parentId, token) : undefined),
+                await (response.data.data.haveChildren ? this.findChildrenByName(response.data.data.name, token) : undefined),
+                await (response.data.data.users ? Promise.all(response.data.data.users.map((username: string) => this.usersService.getUserByUsername(username, token))).then(fetchedUsers => fetchedUsers.filter(u => u !== null)) : undefined)
+            );
         } catch (error) {
             this._logger.error(`update structure ${id} failed`, error);
             throw error;
@@ -182,11 +239,11 @@ export class StructuresCasdoorService extends BaseStructureServiceProvider imple
         }
     }
     async getStructuresFromUser(userId: string, token: string): Promise<Structure[]> {
-        const user = await this.usersService.getUserById(userId, token);
-        if (!user?.structures?.length) return [];
+        /*const user = await this.usersService.getUserById(userId, token);
+        if (!user?.structures?.length) return [];*///FIXME Esto crea un bucle infinito arreglar
 
         const allStructures = await this.findAll(token);
-        return allStructures.filter(s => s.users.some(u => u.id === userId));
+        return allStructures.filter(s => s.users?.some(u => u.id === userId));
     }
     async getParentStructure(displayName: string, token: string): Promise<Structure | null> {
         const all = await this.findAll(token);

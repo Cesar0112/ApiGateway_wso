@@ -1,4 +1,5 @@
 import { Structure } from "../../../entities/structure.entity";
+import { User } from "../../../entities/user.entity";
 import { CreateStructureDto } from "../../dto/create-structure.dto";
 import { ICasdoorStructure } from "./structure.casdoor.interface";
 
@@ -10,19 +11,21 @@ export class StructureCasdoorMapper {
         } as ICasdoorStructure;
         return data;
     }
-    static CasdoorGroupToStructure(casdoorGroup: ICasdoorStructure, parent?: Structure, children?: Structure[]): Structure {
+    static CasdoorGroupToStructure(casdoorGroup: ICasdoorStructure, parent?: Structure, children?: Structure[], users?: User[]): Structure {
         let data: Structure;
         data = {
             id: casdoorGroup.owner + "/" + casdoorGroup.name,
             name: casdoorGroup.name,
             displayName: casdoorGroup.displayName,
         } as Structure;
-        if (parent) {
-            data.parent = parent;
-            data.parentId = parent.id;
+        if (casdoorGroup.parentId) {
+            data.parentId = casdoorGroup.parentId;
         }
-        if (children) {
+        if (casdoorGroup.haveChildren && children) {
             data.children = children;
+        }
+        if (users && users.length > 0) {
+            data.users = users;
         }
         return data;
     }

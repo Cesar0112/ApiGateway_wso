@@ -167,7 +167,7 @@ export class UsersWSO2Service implements IUsersProvider {
       throw new InternalServerErrorException('No se pudieron obtener usuarios', (err.response?.data?.status === 401) ? `${err.response?.data?.detail ?? "401"}` : "");
     }
   }
-  async getUserById(id: string, token: string): Promise<User> {
+  async getUserByUserId(id: string, token: string): Promise<User> {
     try {
       const res: AxiosResponse<any> = await axios.get(
         `${this._baseUrl}/${id}?attributes=id,userName,roles,emails,name,groups,active`,
@@ -239,7 +239,7 @@ export class UsersWSO2Service implements IUsersProvider {
           'No se puede cambiar el identificador de un usuario',
         );
 
-      const currentUser = await this.getUserById(id, token);
+      const currentUser = await this.getUserByUserId(id, token);
 
       /* ---------- 1. ROLES (sincronización completa) ---------- */
       if (dto.roleIds?.length || dto.rolesNames?.length) {
@@ -307,7 +307,7 @@ export class UsersWSO2Service implements IUsersProvider {
       }
 
       /* ---------- 4. devolver usuario actualizado ---------- */
-      return await this.getUserById(id, token);
+      return await this.getUserByUserId(id, token);
     } catch (err) {
       this._logger.error(
         `Error actualizando usuario ${id}`,
@@ -328,7 +328,7 @@ export class UsersWSO2Service implements IUsersProvider {
     structuresIds: string[],
     token: string,
   ): Promise<void> {
-    const { userName } = await this.getUserById(userId, token);
+    const { userName } = await this.getUserByUserId(userId, token);
     const currentStructuresOfUser =
       await this._structureService.getStructuresFromUser(userId, token);
 

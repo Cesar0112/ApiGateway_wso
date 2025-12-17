@@ -28,7 +28,7 @@ export class UserCasdoorMapper {
     // === ROLES ===
     // Casdoor: roles: Role[] → { name, owner }
     // Tu dominio: roles: Role[] → entidades completas
-    if (casdoorUser.roles && existingRoles) {
+    if (casdoorUser.roles && existingRoles && existingRoles.length > 0) {
       const roleMap = new Map(existingRoles.map(r => [r.name, r]));
 
       user.roles = casdoorUser.roles

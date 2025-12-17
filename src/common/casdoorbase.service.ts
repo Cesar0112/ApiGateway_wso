@@ -10,6 +10,7 @@ export class CasdoorBaseService {
     constructor(protected readonly configService: ConfigService) {
         this.logger = new Logger(CasdoorBaseService.name);
         this.owner = this.configService.getConfig().CASDOOR.ORG_NAME || 'built-in';
+        this.baseUrl = this.configService.getConfig().CASDOOR.ENDPOINT;
     }
 
 

@@ -80,7 +80,7 @@ export class AuthCasdoorService extends BaseAuthenticationService {
                 success: true,
                 source: 'casdoor',
                 message: 'Autenticación exitosa',
-                user: await this.usersService.getUserById(decodedToken.id, access_token),
+                user: await this.usersService.getUserByUserId(decodedToken.id, access_token),
             };
             return loginResponse;
         } catch (err) {

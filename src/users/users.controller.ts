@@ -49,7 +49,7 @@ export class UsersController {
   @Get(':id')
   async findById(@Param('id') id: string, @Req() req: Request) {
     const token = await this.sessionService.getTokenFromSession(req);
-    const user = await this._usersService.getUserById(id, token);
+    const user = await this._usersService.getUserByUserId(id, token);
     if (user)
       return UserMapper.toResponseDto(user);
   }
