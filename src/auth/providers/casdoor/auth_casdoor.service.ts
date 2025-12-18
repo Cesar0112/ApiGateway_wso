@@ -19,6 +19,7 @@ import { ConfigService } from '../../../config/config.service';
 import { SessionService } from '../../../session/session.service';
 import { EncryptionsService } from 'src/encryptions/encryptions.service';
 import { UsersCasdoorService } from 'src/users/providers/casdoor/users_casdoor.service';
+import { PermissionCasdoorService } from '../../../permissions/providers/casdoor/permission.casdoor.service';
 
 
 @Injectable()
@@ -33,6 +34,7 @@ export class AuthCasdoorService extends BaseAuthenticationService {
         readonly encryptionsService: EncryptionsService,
         readonly usersService: UsersCasdoorService,
         @Inject(CACHE_MANAGER) cacheManager: Cache,
+        readonly permissionsService: PermissionCasdoorService,
     ) {
         super();
     }
@@ -46,7 +48,7 @@ export class AuthCasdoorService extends BaseAuthenticationService {
 
     async login(username: string, password: string, ip?: string): Promise<LoginResponse> {
         try {
-            let loginResponse: any;
+            let loginResponse: LoginResponse;
             const cfg = this.configService.getConfig().CASDOOR;
             let data = JSON.stringify({
                 "grant_type": "password",
@@ -74,13 +76,21 @@ export class AuthCasdoorService extends BaseAuthenticationService {
             const { access_token/*, refresh_token, scope, token_type, expires_in,
                 id_token*/ } = response.data;
             const decodedToken: IDecodedToken = this.decodeJwt(access_token) as IDecodedToken;
+            const user = await this.usersService.getUserByUserId(decodedToken.id, access_token);
+            if (!user) {
+                throw new UnauthorizedException('Usuario no encontrado');
+            }
+            //concatena cada uno de los value de los permisos de los roles del usuario
+            const permissions = user.roles.flatMap(role => role.permissions).map(perm => (perm?.value) ? perm.value : '').filter((value, index, self) => value && self.indexOf(value) === index);
+
             loginResponse = {
                 token: access_token,
                 decodedToken,
                 success: true,
                 source: 'casdoor',
                 message: 'Autenticación exitosa',
-                user: await this.usersService.getUserByUserId(decodedToken.id, access_token),
+                user,
+                permissions
             };
             return loginResponse;
         } catch (err) {

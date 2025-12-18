@@ -25,27 +25,15 @@ export class UserCasdoorMapper {
     user.isActive = !casdoorUser.isForbidden && !casdoorUser.isDeleted;
     user.password = casdoorUser.password || ''; // Casdoor no expone hash, se gestiona aparte
 
-    // === ROLES ===
-    // Casdoor: roles: Role[] → { name, owner }
-    // Tu dominio: roles: Role[] → entidades completas
     if (casdoorUser.roles && existingRoles && existingRoles.length > 0) {
-      const roleMap = new Map(existingRoles.map(r => [r.name, r]));
-
-      user.roles = casdoorUser.roles
-        .map((r) => roleMap.get(r.name))
-        .filter((role): role is Role => role !== undefined);
+      user.roles = existingRoles;
     } else {
       user.roles = [];
     }
-    // === ESTRUCTURAS (structures) ===
-    // Casdoor: groups: string[] → nombres de grupos
-    // Tu dominio: structures: Structure[] → entidades
-    if (casdoorUser.groups && existingStructures) {
-      const structureMap = new Map(existingStructures.map(s => [s.name, s]));
 
-      user.structures = casdoorUser.groups
-        .map(groupName => structureMap.get(groupName))
-        .filter((structure): structure is Structure => structure !== undefined);
+    if (casdoorUser.groups && existingStructures && existingStructures.length > 0) {
+
+      user.structures = existingStructures;
     } else {
       user.structures = [];
     }

@@ -15,6 +15,7 @@ import { AuthCasdoorService } from './providers/casdoor/auth_casdoor.service';
 import { AuthWSO2Service } from './providers/wso2/auth_wso2.service';
 import { EntitiesModule } from '../entities/entities.module';
 import { HttpModule } from '@nestjs/axios';
+import { PermissionsModule } from '../permissions/permissions.module';
 
 
 @Module({
@@ -53,6 +54,7 @@ import { HttpModule } from '@nestjs/axios';
         signOptions: { expiresIn: cfg.getConfig().SESSION?.TTL_SECONDS },
       }),
     }),
+    PermissionsModule
   ],
   providers: [
     EncryptionsService,

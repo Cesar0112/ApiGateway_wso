@@ -16,6 +16,7 @@ import {
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { PermissionsService } from '../../permissions/permissions.service';
 import { UsersWSO2Service } from '../../users/providers/wso2/users_wso2.service';
+import { PermissionCasdoorService } from '../../permissions/providers/casdoor/permission.casdoor.service';
 export const AuthServiceProvider: Provider =
 {
     provide: AUTH_SERVICE_TOKEN,
@@ -28,17 +29,18 @@ export const AuthServiceProvider: Provider =
         usersService: UsersCasdoorService,
         cacheManager: Cache,
         permissionsService: PermissionsService,
-        usersWSO2Service: UsersWSO2Service
+        usersWSO2Service: UsersWSO2Service,
+        permissionsCasdoorService: PermissionCasdoorService,
     ) => {
         switch (type) {
             case 'casdoor': {
-                return new AuthCasdoorService(configService, sessionService, encryptionsService, usersService, cacheManager);
+                return new AuthCasdoorService(configService, sessionService, encryptionsService, usersService, cacheManager, permissionsCasdoorService);
             }
             case 'wso2':
             default:
                 return new AuthWSO2Service(configService, encryptionsService, permissionsService, sessionService, usersWSO2Service, cacheManager);
         }
     },
-    inject: [AUTH_TYPE_TOKEN, ModuleRef, ConfigService, SessionService, EncryptionsService, UsersCasdoorService, CACHE_MANAGER, PermissionsService, UsersWSO2Service],
+    inject: [AUTH_TYPE_TOKEN, ModuleRef, ConfigService, SessionService, EncryptionsService, UsersCasdoorService, CACHE_MANAGER, PermissionsService, UsersWSO2Service, PermissionCasdoorService],
 
 };

@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { IRoleServiceProvider } from "../../interfaces/role.service.interface";
 import { Role } from "../../../entities/role.entity";
 import { Repository } from "typeorm";
-import { Logger } from "@nestjs/common";
+import { BadRequestException, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { ConfigService } from "../../../config/config.service";
 import { firstValueFrom } from "rxjs";
@@ -41,16 +41,19 @@ export class RoleCasdoorService implements IRoleServiceProvider, ICasdoorBaseInt
             const url = this.buildApiUrl('get-roles');
             const response = await firstValueFrom(
                 this.httpService.get(url, {
+                    params: { owner: this.owner },
                     headers: this.getAuthHeaders(token),
                 }),
             );
-            if (!response.data.data) return [];
+            if (response.data.status !== 'ok') {
+                throw new BadRequestException(response.data.msg);
+            }
 
             return Promise.all(
                 response.data.data.map(
-                    async (u: IRoleCasdoor) => RoleCasdoorMapper.fromCasdoorToRole(u, await this.permissionService.getPermissionsByRoleId(`${u.owner}/${u.name}`, token))));
+                    async (role: IRoleCasdoor) => RoleCasdoorMapper.fromCasdoorToRole(role, await this.permissionService.getPermissionsByRoleId(`${role.owner}/${role.name}`, token))));
         } catch (error) {
-            this.handleError(error, 'Get all users');
+            this.handleError(error, `Get all roles failed ${error.msg}`);
             return [];
         }
     }

@@ -57,8 +57,24 @@ export class UsersCasdoorService implements IUsersProvider, ICasdoorBaseInterfac
             );
             if (!response.data.data) return null;
             const structures = await this.structuresService.getStructuresFromUser(userId, token);
-            const roles = await this.rolesService.getRoles(token);
-            return UserCasdoorMapper.fromCasdoorToUser(response.data.data, roles, structures);
+            //Quiero modificar los permisos de cada rol para que donde aparezca en su value el caracter '_' en primera instancia
+            //lo sustituya por un espacio ':'
+            let roles = (await this.rolesService.getRoles(token));
+
+            roles = roles.map(r => {
+                const newRole = { ...r };
+                if (newRole.permissions) {
+                    newRole.permissions = newRole.permissions.map(perm => {
+                        if (perm.value.includes('_')) {
+                            perm.value = perm.value.replace(/_/g, ':');
+                        }
+                        return perm;
+                    });
+                }
+                return newRole;
+            });
+
+            return UserCasdoorMapper.fromCasdoorToUser(response.data.data as ICasdoorUser, roles, structures);
         } catch (error) {
             this.handleError(error, `Get user by ID ${userId}`);
             return null;

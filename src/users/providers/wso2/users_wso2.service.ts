@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import * as https from 'https';
+import * as https from 'node:https';
 import { ConfigService } from '../../../config/config.service';
 import { User } from '../../../entities/user.entity';
 import { CreateUsersDto } from '../../dto/create-users.dto';
@@ -334,9 +334,9 @@ export class UsersWSO2Service implements IUsersProvider {
 
 
     await Promise.all(
-      currentStructuresOfUser.map((g) => {
+      currentStructuresOfUser.map(async (g) => {
         if (!structuresIds.includes(g.id)) {
-          this._structureService.removeUserFromStructure(
+          return await this._structureService.removeUserFromStructure(
             g.id,
             userId,
             token,
@@ -345,16 +345,6 @@ export class UsersWSO2Service implements IUsersProvider {
       })
     )
 
-
-    /*for (const g of currentStructuresOfUser) {
-      if (!structuresIds.includes(g.id)) {
-        await this._structureService.removeUserFromStructure(
-          g.id,
-          userId,
-          token,
-        );
-      }
-    }*/
     await Promise.all(
       structuresIds.map((id) => {
         const exists = currentStructuresOfUser.some(

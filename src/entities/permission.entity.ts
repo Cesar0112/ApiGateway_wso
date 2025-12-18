@@ -13,4 +13,8 @@ export class Permission {
 
   @Column({ nullable: true })
   description?: string;
+
+  toString() {
+    return this.value;
+  }
 }
