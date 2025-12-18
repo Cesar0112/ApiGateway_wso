@@ -9,6 +9,7 @@ import { CasdoorBaseService } from "../../../common/casdoorbase.service";
 import { ICasdoorBaseInterfaceService } from "../../../common/casdoorbase.interface.service";
 import { PermissionCasdoorMapper } from "./permission.mapper";
 import { IPermissionCasdoor } from "./permission.casdoor.interface";
+import { CreatePermissionDto } from "../../dto/create-permission.dto";
 @Injectable()
 export class PermissionCasdoorService implements ICasdoorBaseInterfaceService {
     private readonly logger = new Logger(PermissionCasdoorService.name);
@@ -80,21 +81,43 @@ export class PermissionCasdoorService implements ICasdoorBaseInterfaceService {
         }
     }
 
-    async create(data: Omit<IPermissionCasdoor, 'id'>, token: string): Promise<Permission> {
+    async create(data: CreatePermissionDto, token: string): Promise<Permission> {
         try {
-            if (await this.findOneByName(data.name, token)) {
-                throw new Error(`Permission with name ${data.name} already exists`);
+            if (await this.findOneByName(data.value, token)) {
+                throw new Error(`Permission with name ${data.value} already exists`);
             }
             const url = this.casdoorBaseObject.buildApiUrl('add-permission');
+            const body: Omit<IPermissionCasdoor, 'id'> = {
+                name: data.value,
+                owner: this.configService.getConfig().CASDOOR.ORG_NAME,
+                displayName: data.displayName,
+                description: '',
+                users: [`${this.configService.getConfig().CASDOOR.ORG_NAME}/administrador_winteli`],//FIXME agregar el que pertenece el permiso por parámetros actualizando por el servicio controller de usuarios no por aquí
+                isEnabled: true,
+                actions: ["Read", "Write", "Admin"],
+                adapter: "",
+                approveTime: this.getCurrentIsoWithOffset(),
+                approver: "",
+                createdTime: this.getCurrentIsoWithOffset(),
+                domains: [],
+                effect: "Allow",
+                groups: [],
+                model: "model_ifyc4e",
+                resourceType: "Application",
+                resources: ["app-built-in"],
+                roles: ["organization_winteli/administrador"],
+                state: "Approved",
+                submitter: "admin"
+            }
             const response = await firstValueFrom(
-                this.httpService.post(url, data, {
+                this.httpService.post(url, body, {
                     headers: this.casdoorBaseObject.getAuthHeaders(token),
                 }),
             );
 
             return PermissionCasdoorMapper.toPermissionEntity(response.data.data);
         } catch (error) {
-            this.casdoorBaseObject.handleError(error, 'Create permission');
+            this.casdoorBaseObject.handleError(error, `Create permission ${data.value}` + (error.msg || ''));
             throw error;
         }
     }
@@ -150,4 +173,13 @@ export class PermissionCasdoorService implements ICasdoorBaseInterfaceService {
             return null;
         }
     }
+    getCurrentIsoWithOffset(): string {
+        const now = new Date();
+        const offset = -now.getTimezoneOffset(); // minutos de diferencia con UTC
+        const sign = offset >= 0 ? '+' : '-';
+        const hours = String(Math.floor(Math.abs(offset) / 60)).padStart(2, '0');
+        const minutes = String(Math.abs(offset) % 60).padStart(2, '0');
+
+        return now.toISOString().slice(0, 19) + sign + hours + ':' + minutes;
+    };
 }

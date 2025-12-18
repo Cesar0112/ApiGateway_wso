@@ -5,5 +5,11 @@ export class CreatePermissionDto {
   @MinLength(2)
   @IsNotEmpty()
   @ApiProperty({ example: 'camera:read' })
-  value!: string; // será la PK y debe ser única
+  value!: string;
+
+  @IsString()
+  @MinLength(2)
+  @IsNotEmpty()
+  @ApiProperty({ example: 'Leer cámaras' })
+  displayName: string;
 }
