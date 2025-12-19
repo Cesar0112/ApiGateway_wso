@@ -66,7 +66,8 @@ export class UsersCasdoorService implements IUsersProvider, ICasdoorBaseInterfac
                 if (newRole.permissions) {
                     newRole.permissions = newRole.permissions.map(perm => {
                         if (perm.value.includes('_')) {
-                            perm.value = perm.value.replace(/_/g, ':');
+                            let position = perm.value.indexOf("_");
+                            perm.value = perm.value.substring(0, position) + ":" + perm.value.substring(position + 1);
                         }
                         return perm;
                     });
