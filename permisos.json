@@ -170,5 +170,37 @@
   {
     "value": "role_delete",
     "displayName": "Eliminar rol"
+  },
+  {
+    "value": "url_monitoring",
+    "displayName": "Acceso a Monitoreo por URL"
+  },
+  {
+    "value": "url_recording",
+    "displayName": "Acceso a Visor grabaciones por URL"
+  },
+  {
+    "value": "url_forensic",
+    "displayName": "Acceso a Búsqueda forense por URL"
+  },
+  {
+    "value": "url_deployment",
+    "displayName": "Acceso a Despliegue por URL"
+  },
+  {
+    "value": "url_servers",
+    "displayName": "Acceso a Configurar servidores por URL"
+  },
+  {
+    "value": "url_camera_config",
+    "displayName": "Acceso a Configurar cámaras por URL"
+  },
+  {
+    "value": "url_structures_config",
+    "displayName": "Acceso a Gestionar estructuras por URL"
+  },
+  {
+    "value": "url_users_config",
+    "displayName": "Acceso a Gestionar usuarios por URL"
   }
 ]
