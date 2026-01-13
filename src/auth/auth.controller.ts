@@ -95,7 +95,7 @@ export class AuthenticateController {
         if (err)
           return reject(new InternalServerErrorException('Logout failed'));
 
-        res.clearCookie('apigateway_sid');
+        res.clearCookie('apigateway_sid');//FIXME Cambiar por el nombre de la cookie de sesión que se tiene en la configuración (HARDCODED)
         resolve();
       });
     });

@@ -1,0 +1,206 @@
+[
+  {
+    "value": "log_search",
+    "displayName": "Buscar log"
+  },
+  {
+    "value": "camera_add",
+    "displayName": "Agregar cámara"
+  },
+  {
+    "value": "camera_delete",
+    "displayName": "Eliminar cámara"
+  },
+  {
+    "value": "camera_update",
+    "displayName": "Actualizar cámara"
+  },
+  {
+    "value": "server_assign_camera_to_server",
+    "displayName": "Asignar cámara a un servidor"
+  },
+  {
+    "value": "sector_control_ptz",
+    "displayName": "Controlar PTZ"
+  },
+  {
+    "value": "server_add",
+    "displayName": "Agregar servidor"
+  },
+  {
+    "value": "server_update",
+    "displayName": "Actualizar servidor"
+  },
+  {
+    "value": "server_delete",
+    "displayName": "Eliminar servidor"
+  },
+  {
+    "value": "server_check_connection_of_server",
+    "displayName": "Verificar conexión del servidor"
+  },
+  {
+    "value": "view_create",
+    "displayName": "Crear vista"
+  },
+  {
+    "value": "view_update",
+    "displayName": "Actualizar vista"
+  },
+  {
+    "value": "view_select",
+    "displayName": "Seleccionar vista"
+  },
+  {
+    "value": "view_delete",
+    "displayName": "Eliminar vista"
+  },
+  {
+    "value": "deploy_info_camera",
+    "displayName": "Información de cámara"
+  },
+  {
+    "value": "deploy_add",
+    "displayName": "Agregar despliegue"
+  },
+  {
+    "value": "deploy_update",
+    "displayName": "Actualizar despliegue"
+  },
+  {
+    "value": "deploy_view",
+    "displayName": "Ver despliegue"
+  },
+  {
+    "value": "deploy_delete_camera",
+    "displayName": "Eliminar cámara del despliegue"
+  },
+  {
+    "value": "deploy_assign_camera",
+    "displayName": "Asignar cámara al despliegue"
+  },
+  {
+    "value": "deploy_delete",
+    "displayName": "Eliminar despliegue"
+  },
+  {
+    "value": "onvif_read",
+    "displayName": "Leer ONVIF"
+  },
+  {
+    "value": "analytic_add",
+    "displayName": "Agregar analítico"
+  },
+  {
+    "value": "analytic_update",
+    "displayName": "Actualizar analítico"
+  },
+  {
+    "value": "analytic_delete",
+    "displayName": "Eliminar analítico"
+  },
+  {
+    "value": "recording_statistics",
+    "displayName": "Estadísticas de grabación"
+  },
+  {
+    "value": "vehicle_read",
+    "displayName": "Leer vehículo"
+  },
+  {
+    "value": "task_read",
+    "displayName": "Leer tarea"
+  },
+  {
+    "value": "access_read",
+    "displayName": "Leer acceso"
+  },
+  {
+    "value": "forensic_search",
+    "displayName": "Buscar forense"
+  },
+  {
+    "value": "forensic_face",
+    "displayName": "Buscar rostro"
+  },
+  {
+    "value": "forensic_plate",
+    "displayName": "Buscar placa"
+  },
+  {
+    "value": "forensic_motion",
+    "displayName": "Buscar movimiento"
+  },
+  {
+    "value": "media_read",
+    "displayName": "Leer medio"
+  },
+  {
+    "value": "structure_add",
+    "displayName": "Agregar estructura"
+  },
+  {
+    "value": "structure_update",
+    "displayName": "Actualizar estructura"
+  },
+  {
+    "value": "structure_delete",
+    "displayName": "Eliminar estructura"
+  },
+  {
+    "value": "structure_get",
+    "displayName": "Obtener estructura"
+  },
+  {
+    "value": "user_update",
+    "displayName": "Actualizar usuario"
+  },
+  {
+    "value": "user_delete",
+    "displayName": "Eliminar usuario"
+  },
+  {
+    "value": "role_create",
+    "displayName": "Crear rol"
+  },
+  {
+    "value": "role_update",
+    "displayName": "Actualizar rol"
+  },
+  {
+    "value": "role_delete",
+    "displayName": "Eliminar rol"
+  },
+  {
+    "value": "url_monitoring",
+    "displayName": "Acceso a Monitoreo por URL"
+  },
+  {
+    "value": "url_recording",
+    "displayName": "Acceso a Visor grabaciones por URL"
+  },
+  {
+    "value": "url_forensic",
+    "displayName": "Acceso a Búsqueda forense por URL"
+  },
+  {
+    "value": "url_deployment",
+    "displayName": "Acceso a Despliegue por URL"
+  },
+  {
+    "value": "url_servers",
+    "displayName": "Acceso a Configurar servidores por URL"
+  },
+  {
+    "value": "url_camera_config",
+    "displayName": "Acceso a Configurar cámaras por URL"
+  },
+  {
+    "value": "url_structures_config",
+    "displayName": "Acceso a Gestionar estructuras por URL"
+  },
+  {
+    "value": "url_users_config",
+    "displayName": "Acceso a Gestionar usuarios por URL"
+  }
+]

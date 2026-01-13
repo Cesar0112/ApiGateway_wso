@@ -5,14 +5,7 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "assets": [
-      {
-        "include": "./config.json",
-        "outDir": "./dist"
-      },
-      {
-        "include": "./routes.json",
-        "outDir": "./dist"
-      }
+      "./assets/*.json"
     ]
   }
 }

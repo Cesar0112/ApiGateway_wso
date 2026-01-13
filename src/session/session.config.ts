@@ -21,7 +21,7 @@ export class SessionConfig {
     this.secure = this.cfg.get('SESSION')?.SECURE ?? false;
     this.session = {
       host: this.cfg.get('SESSION')?.HOST ?? 'localhost',
-      port: this.cfg.get('SESSION')?.PORT ?? 6379,
+      port: this.cfg.get('SESSION')?.PORT ?? 7000,
       tls: this.cfg.get('SESSION')?.TLS ?? false,
     };
   }

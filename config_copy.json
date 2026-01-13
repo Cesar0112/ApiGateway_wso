@@ -43,7 +43,7 @@
     "SECRET": "T9PjTVNCvvONGAof4RecIkIopwlWorpqUj",
     "TTL_SECONDS": 86400,
     "COOKIE_NAME": "apigateway_sid",
-    "URL": "redis://127.0.0.1:6379",
+    "URL": "redis://127.0.0.1:7000",
     "SECURE": true,
     "STRATEGY": "redis"
   },
@@ -53,6 +53,6 @@
   },
   "REDIS": {
     "HOST": "127.0.0.1",
-    "PORT": 6379
+    "PORT": 7000
   }
 }

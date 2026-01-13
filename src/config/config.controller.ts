@@ -5,7 +5,7 @@ import { ConfigService } from './config.service';
 
 @Controller('config')
 export class ConfigController {
-  constructor(private _configService: ConfigService) {}
+  constructor(private _configService: ConfigService) { }
 
   @Get()
   getConfig() {

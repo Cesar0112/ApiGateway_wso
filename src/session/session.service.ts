@@ -14,17 +14,21 @@ export class SessionService {
   constructor(private readonly _cfg: ConfigService) { }
 
   getStore(): Keyv {
-    const { STRATEGY, URL } = this._cfg.getConfig().SESSION ?? {
-      STRATEGY: 'redis',
-      URL: 'redis://localhost:6379',
+    let { STRATEGY, HOST } = this._cfg.getConfig().SESSION
+    if (!HOST) {
+      HOST = 'redis://127.0.0.1:7000'
     };
+    if (!STRATEGY) {
+      STRATEGY = "redis"
+    }
     switch (STRATEGY) {
       case 'redis': {
-        const store = createKeyvRedis(URL);
+        console.log("HOST: ", HOST)
+        const store = createKeyvRedis(HOST);//FIXME Arreglar que HOST llega aquí null
         return store;
       }
       case 'sqlite': {
-        const store = createKeyvSQLite({ uri: URL });
+        const store = createKeyvSQLite({ uri: HOST });
         return store;
       }
       default:
@@ -48,14 +52,18 @@ export class SessionService {
     });
   }
   getExpressSessionStore(): session.Store {
-    const { STRATEGY, URL } = this._cfg.getConfig().SESSION ?? {
-      STRATEGY: 'redis',
-      URL: 'redis://localhost:6379',
-    };
+    let { STRATEGY, HOST } = this._cfg.getConfig().SESSION
 
+    if (!HOST) {//FIXME por alguna razón aquí llega URL undefined ver porqué no coge la configuración
+      HOST = 'redis://127.0.0.1:7000'
+    };
+    if (!STRATEGY) {
+      STRATEGY = "redis"
+    }
     switch (STRATEGY) {
       case 'redis': {
-        const redisClient = createClient({ url: URL });
+
+        const redisClient = createClient({ url: HOST });
         redisClient.connect().catch(console.error);
 
         // Initialize store.

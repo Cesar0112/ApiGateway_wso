@@ -12,14 +12,6 @@
     "GRANT_TYPE": "password",
     "SCOPE": "openid groups id_structure profile roles internal_session_delete internal_session_view internal_api_resource_create internal_api_resource_delete internal_api_resource_view internal_api_resource_update internal_role_mgt_create internal_role_mgt_update internal_role_mgt_delete internal_role_mgt_view internal_user_mgt_create internal_user_mgt_view internal_user_mgt_list internal_user_mgt_delete internal_user_mgt_update server:add camera:update view:select log:search structure:delete user:update monitoring:open_web_page path:create monitoring:search deploy:delete analytic:delete server:assign_servers_to_structure view:enable_disable_full_screen view:show_hide_transparent analytic:add server:manage_auto_rule monitoring:expand recording:statistics path:update_position view:create forensic:face view:add module:structures structure:add server:assign_camera_to_server module:recording event:filter deploy:info_camera autorule:delete_auto_rule_to_analytics deploy:add event:list view:enable_disable_independent_view module:camera_config deploy:view server:check_connection_of_server module:users forensic:object user:activate sector:go_to monitoring:enable_edition_mode view:remove_camera camera:delete view:update view:swap_cameras deploy:assign_camera server:update deploy:update view:rename structure:get path:delete_position forensic:plate event:see monitoring:check_connection user:filter monitoring:presentation view:search_camera monitoring:assign_to_structure user:change_password autorule:update_auto_rule_to_analytics sector:control_ptz view:enable_disable_sound_alarm module:servers monitoring:control module:deploy structure:update sector:update view:add_camera camera:add user:deactivate autorule:add_auto_rule_to_analytics monitoring:select_monitor task:programming monitoring:configure_recording view:delete module:forensic server:delete view:show_hide_date module:monitoring view:clear_cameras view:camera_reset deploy:delete_camera server:manage_subsystem forensic:motion view:show_hide_info monitoring:add_auto_rule internal_oauth_scope_update internal_oauth_scope_delete internal_oauth_scope_view internal_oauth_scope_create reading_users create_users delete_users internal_group_mgt_delete internal_group_mgt_view internal_group_mgt_update internal_group_mgt_create"
   },
-  "CASDOOR": {
-    "ENDPOINT": "http://10.12.24.33:8000",
-    "CERTIFICATE": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUUyVENDQXNHZ0F3SUJBZ0lEQWVKQU1BMEdDU3FHU0liM0RRRUJDd1VBTUNZeERqQU1CZ05WQkFvVEJXRmsKYldsdU1SUXdFZ1lEVlFRRERBdGpaWEowWDNWemFHOXdPREFlRncweU5URXhNRFF4TkRFME1qaGFGdzAwTlRFeApNRFF4TkRFME1qaGFNQ1l4RGpBTUJnTlZCQW9UQldGa2JXbHVNUlF3RWdZRFZRUUREQXRqWlhKMFgzVnphRzl3Ck9EQ0NBaUl3RFFZSktvWklodmNOQVFFQkJRQURnZ0lQQURDQ0Fnb0NnZ0lCQU1BT3dFNU1qTUNGZTY5ZFVpOTAKUmVGYXBubEs2SklDS2RQaFFSbmZmRTBrbkVVT2w1SUMrU2JuRDlNWTlMVEZUUk9CUUFkUTRwTGF1dVFkWm5yZwpLN01aT1YxL3VJSUNueG83U2dpamVzeENldFpwVzJjN0hvRkk0L3hiUXlyZWNvWlZidnEvRFRXdDZvZi9tbjczCjZvKzA5T0RnRTRQd2x1dVVEUVI1VjBLYmk0NWhQelU2cjJDRS9FaXkvL3ArNmlKUVgvNVZ3d1B0WTdWZk85L28KamNleFUyT0tUNkpnOG5yUlpMWG90NW5PUDQzS0xvNGNDQ2ZMbldBWC9YbkhETkNtQ2d6VWV4MFNPTHN1eTloMwp6aUhGZWgrWDNYbnVTZ3ZjMmQ3TkVObVNLb3kzSExScXBsQzdmRW1YZUlGWmRNVUtuREJRUWxlZ2E4cSt3NnZJCllzTnNUM3p4dlE5N1l1eFNzRVVXaGRrMmhOWUpKTnlMVTNpRXRWc0JJdVZ3SEF3NzZVakZhYmYxL2hwR3BhaWUKdm1uSXFDMVlicmpXbmRHeFdoaXY2MTF0VUtkWHU0ZGdzU2VKZzNOMXRYaFJkRXFKa2ZRR2JlNUNXaUJyakU2SQpxdHUzL2RjU0cvaVoyYW1UQWZSU3lnM2xhWVlXc0VBZCtla2dYeTVRaEFrcG8rL2FlSzE1cjd1bm9nbmhFeUNTCkMxUEFCbmJzVUlSY2lGWjI0MGM0b3MwSlFRY0tCYjJnT1I0NWxIR0xkMHE5V2JCTUZyeEVoK1N5Y2QyRXBiMlYKVVpDY0ZJSXNrV2hXSnA0eGlKOW91TDBIMWUzUVZ6TXBzN3NQOEIxUkRZVUNxN210blYzYU5FUTUrbjBBemxSMAozZkJyWER3MFZFVmIyWHc0THFYNWVIaWxBZ01CQUFHakVEQU9NQXdHQTFVZEV3RUIvd1FDTUFBd0RRWUpLb1pJCmh2Y05BUUVMQlFBRGdnSUJBQXkwNkdBVTYxWVQwak1oWnBQNStSVVhOekhWVDRtc0F5SXltLzVNditoU1dpSkgKSzl0TzgvN0FMMGUyT2FtYlZBcE1KM1V3NkFoU2h2cDluTVNDYjJNVzdFYlBreTBRTkRPci9yN0wrdDQ4c2xaNQpFRzBLZWpOejBWTWl4RjhZcU9GSEZSYTdYdFRXNzViZ1BnbklKQ2JwdWR0SWlJUGNoZzRBdFF3SEt6UFBHTVQwClBPTjZlL2NFa1NRamZMR2RZTjV2TisyRnJ5dk04c1JobXpnaXc0eFZLRmZpSnpNaTN3QUNqQ01yanhkMzhGYjgKdkdFUWNabDI1clJMMlQ2cG9PSUZFdFJ1c0JtcGdCckNMRFFnREE1c3oyaWhIOHQrQWZ3dEJ2bFEvdzBjWjEzVQpKRjAvelArSHBvci9KTDR4Y0hVaW1GamRId1VHRkZpalpjYXIza2JqZzBxQVNhbkxIVDRkdjBneWVkZnZKcmxKCkVybDBrUkxUNUIvUGdvakMrRVUzMFRuczZyR0dwb1ppSFZMYjE4YitJWmFJL1ltSVR2dkJ4aVBaQ0k0Y1lQdFAKZjU0ZlZBcFBBZXlMd0NTRWhrNXdBUU42eXIvOWRBM29xRWxCaVZRWEVsZzY0M0RZS1Q3RkpPZmZSVHVRMVh3aQo4aURmaWRxK1J1L1VOOXk1RHd0WElyZStaZ00zUVlySWpyVWxxWms0anM4WHd4Q3Jhdk1oKzhuaE1zOHNLK1BhCndldWcyQWlxL0JpRmJESEJpbWpEWlE2cjVYUWlPU0E4Qy9iOXZUMjl0a1NFVktVT2FablV4OGdHajJTVSs1ek4KcU5DdFYyOWZiYm1XTWJmcGp3ZEQ1dER3dU5OcjJSY0J5OEhJRGJnUnNjNnpSaDVGMlhXSklqVEdQSFh4Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0=",
-    "ORG_NAME": "organization_winteli",
-    "APP_NAME": "application_apigateway",
-    "CLIENT_ID": "87b914c070d6b58efbb3",
-    "CLIENT_SECRET": "ad665faae66222d04c3470741ff5d1792a77cfd2"
-  },
   "DATABASE": {
     "TYPE": "sqlite",
     "HOST": "10.12.24.33",
@@ -34,15 +26,15 @@
   },
   "API_GATEWAY": {
     "HOST": "localhost",
-    "PORT": 10410,
+    "PORT": 10412,
     "SESSION_SECRET": "s3cr3t",
     "PROXY": false,
-    "API_URL": "http://10.12.24.38:10410",
+    "API_URL": "http://10.12.24.33:10410",
     "ENCRYPTION_PASSWORD": "IkIopwlWorpqUj",
     "PROXY_STATIC_MAP_PATH": "./routes.json",
-    "CORS_ORIGIN": "http://localhost:8081,http://localhost:8080",
+    "CORS_ORIGIN": "http://localhost:8080",
     "HTTP_METHODS_ALLOWED": "GET,PUT,POST,HEADER,DELETE",
-    "AUTH_TYPE": "casdoor",
+    "AUTH_TYPE": "wso2",
     "THROTTLE_TTL_MS": 900000,
     "THROTTLE_LIMIT": 5
   },
@@ -51,7 +43,7 @@
     "SECRET": "T9PjTVNCvvONGAof4RecIkIopwlWorpqUj",
     "TTL_SECONDS": 86400,
     "COOKIE_NAME": "apigateway_sid",
-    "HOST": "redis://127.0.0.1:7000",
+    "URL": "redis://127.0.0.1:7000",
     "SECURE": true,
     "STRATEGY": "redis"
   },

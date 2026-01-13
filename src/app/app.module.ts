@@ -41,9 +41,9 @@ import { CommonModule } from '../common/common.module';
     ConfigModule,
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'dev.sqlite',           // ← archivo creado automáticamente
-      entities: [User, Structure, Role, Permission], // ← todas tus entidades
-      synchronize: true,                // ← ¡CREA TABLAS AUTOMÁTICO! (solo dev)
+      database: 'dev.sqlite',
+      entities: [User, Structure, Role, Permission],
+      synchronize: true,
       logging: false,
     }),
     EntitiesModule,

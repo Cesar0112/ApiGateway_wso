@@ -38,7 +38,22 @@ async function main() {
     }),
   );
   app.enableCors({
-    origin: cfg.getConfig().API_GATEWAY?.CORS_ORIGIN, // Allow specific origins
+    origin: (origin, callback) => {
+      // Permitir cualquier localhost con cualquier puerto en desarrollo
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      const localhostRegex = /^http:\/\/localhost:\d+$/;
+
+      if (!origin || (isDevelopment && localhostRegex.test(origin))) {
+        callback(null, true);
+      } else {
+        const allowedOrigins = cfg.getConfig().API_GATEWAY?.CORS_ORIGIN?.split(',') || [];
+        if (allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      }
+    },
     exposedHeaders: ['Set-Cookie'],
     methods: cfg.getConfig().API_GATEWAY?.HTTP_METHODS_ALLOWED, // Allow specific HTTP methods
     allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'Origin'], // Allow specific headers

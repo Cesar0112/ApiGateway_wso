@@ -1,0 +1,415 @@
+{
+  "GET/services/": [],
+  "POST/services/authenticate": [],
+  "POST/services/testSocket": [],
+  "POST/services/testCamNotif": [],
+  "POST/apigateway/encrypt": [],
+  "POST/apigateway/decrypt": [],
+  "POST/apigateway/aes256en": [],
+  "POST/apigateway/aes256de": [],
+  "POST/apigateway/readEncryptedLogs": [
+    "log:search"
+  ],
+  "POST/apigateway/addCamera": [
+    "camera:add"
+  ],
+  "POST/apigateway/deleteCamera": [
+    "camera:delete"
+  ],
+  "POST/apigateway/editCameraOld": [
+    "camera:update"
+  ],
+  "POST/apigateway/editCamera": [
+    "camera:update"
+  ],
+  "POST/apigateway/pingCamera": [
+    "camera:update"
+  ],
+  "POST/apigateway/previewVideo": [],
+  "POST/apigateway/deletePreviewVideo": [],
+  "POST/apigateway/getAllCameras": [
+    "camera:update"
+  ],
+  "POST/apigateway/getAllCamerasSimple": [
+    "camera:update"
+  ],
+  "POST/apigateway/getSingleCameraById": [
+    "camera:update"
+  ],
+  "POST/apigateway/assignedAndUnassignedCameras": [
+    "camera:update"
+  ],
+  "POST/apigateway/assignCameras": [
+    "server:assign_camera_to_server"
+  ],
+  "POST/apigateway/unassignCameras": [
+    "server:assign_camera_to_server"
+  ],
+  "GET/apigateway/getCameraMarks": [],
+  "GET/apigateway/getCameraModels": [],
+  "GET/apigateway/getCameraProtocols": [],
+  "GET/apigateway/getCameraCodecs": [],
+  "POST/apigateway/get_a_camera": [
+    "camera:update"
+  ],
+  "POST/apigateway/controlCamera": [
+    "sector:control_ptz"
+  ],
+  "POST/apigateway/updateCameraStructure": [
+    "camera:update"
+  ],
+  "POST/apigateway/getAServer": [
+    "server:add"
+  ],
+  "POST/apigateway/getAllServers": [
+    "server:add"
+  ],
+  "POST/apigateway/updateServer": [
+    "server:update"
+  ],
+  "POST/apigateway/deleteServer": [
+    "server:delete"
+  ],
+  "POST/apigateway/checkServerConnection": [
+    "server:check_connection_of_server"
+  ],
+  "POST/apigateway/checkCamerasServersDatabase": [
+    "server:check_connection_of_server"
+  ],
+  "POST/apigateway/updateServerStructure": [
+    "server:update"
+  ],
+  "POST/apigateway/getChildServers": [
+    "server:add"
+  ],
+  "POST/apigateway/addChildServer": [
+    "server:add"
+  ],
+  "POST/apigateway/updateChildServer": [
+    "server:update"
+  ],
+  "POST/apigateway/updateChildServerState": [
+    "server:update"
+  ],
+  "POST/apigateway/deleteChildServer": [
+    "server:delete"
+  ],
+  "POST/apigateway/forceToDeleteChildServer": [
+    "server:delete"
+  ],
+  "POST/apigateway/addParentServer": [
+    "server:add"
+  ],
+  "POST/apigateway/updateParentServer": [
+    "server:update"
+  ],
+  "POST/apigateway/updateParentServerState": [
+    "server:update"
+  ],
+  "POST/apigateway/deleteParentServer": [
+    "server:delete"
+  ],
+  "POST/apigateway/getParentServer": [
+    "server:add"
+  ],
+  "POST/apigateway/enableHttps": [],
+  "POST/apigateway/enableWss": [],
+  "POST/apigateway/enableHttpsRequest": [],
+  "POST/apigateway/consumeRemoteApi": [],
+  "POST/apigateway/deleteLogKeys": [
+    "log:search"
+  ],
+  "POST/apigateway/insert_bulk_servers": [
+    "server:add"
+  ],
+  "POST/apigateway/insertServer": [
+    "server:add"
+  ],
+  "POST/apigateway/deleteServer2": [
+    "server:delete"
+  ],
+  "POST/apigateway/insertView": [
+    "view:create"
+  ],
+  "POST/apigateway/updateView": [
+    "view:update"
+  ],
+  "POST/apigateway/getViews": [
+    "view:select"
+  ],
+  "POST/apigateway/deleteView": [
+    "view:delete"
+  ],
+  "POST/apigateway/getMonitoringViews": [
+    "view:select"
+  ],
+  "POST/apigateway/getDeployedCamera": [
+    "deploy:info_camera"
+  ],
+  "POST/apigateway/getView": [
+    "view:select"
+  ],
+  "POST/apigateway/addView": [
+    "view:create"
+  ],
+  "POST/apigateway/editView": [
+    "view:update"
+  ],
+  "POST/apigateway/removeView": [
+    "view:delete"
+  ],
+  "POST/apigateway/addAction": [],
+  "POST/apigateway/updateAction": [],
+  "POST/apigateway/deleteAction": [],
+  "POST/apigateway/getAction": [],
+  "POST/apigateway/add_deployment": [
+    "deploy:add"
+  ],
+  "POST/apigateway/update_deployment": [
+    "deploy:update"
+  ],
+  "POST/apigateway/get_deployment": [
+    "deploy:view"
+  ],
+  "POST/apigateway/delete_camera_deployment_camera": [
+    "deploy:delete_camera"
+  ],
+  "POST/apigateway/add_camera_deployment_camera": [
+    "deploy:assign_camera"
+  ],
+  "POST/apigateway/get_camera_deployment": [
+    "deploy:view"
+  ],
+  "POST/apigateway/get_one_deployment": [
+    "deploy:view"
+  ],
+  "POST/apigateway/delete_deployment": [
+    "deploy:delete"
+  ],
+  "POST/apigateway/add_deploy": [
+    "deploy:add"
+  ],
+  "POST/apigateway/get_deploy": [
+    "deploy:view"
+  ],
+  "POST/apigateway/update_deploy": [
+    "deploy:update"
+  ],
+  "POST/apigateway/delete_deploy": [
+    "deploy:delete"
+  ],
+  "POST/apigateway/getAllCamerasLocation": [],
+  "POST/apigateway/addUpdateCameraLocation": [],
+  "POST/apigateway/deleteCameraLocation": [],
+  "POST/apigateway/addUpdateMapLocation": [],
+  "POST/apigateway/getMapLocation": [],
+  "POST/apigateway/pluginsCameraInfo": [],
+  "POST/apigateway/getOnvifInformation": [
+    "onvif:read"
+  ],
+  "POST/apigateway/moveCamera": [
+    "sector:control_ptz"
+  ],
+  "POST/apigateway/getSingleURL": [],
+  "POST/apigateway/presets": [],
+  "POST/apigateway/onvifSearch": [
+    "onvif:read"
+  ],
+  "POST/apigateway/getAnalyticsCamera": [
+    "analytic:add"
+  ],
+  "POST/apigateway/getConfigAnalyticsCamera": [
+    "analytic:add"
+  ],
+  "POST/apigateway/closeWindowAnalyticsCamera": [
+    "analytic:delete"
+  ],
+  "POST/apigateway/switchTreeNodesAnalyticsCamera": [
+    "analytic:add"
+  ],
+  "POST/apigateway/createEditAnalyticsCamera": [
+    "analytic:add"
+  ],
+  "POST/apigateway/removeAnalyticsCamera": [
+    "analytic:delete"
+  ],
+  "POST/apigateway/createVideoSource": [
+    "analytic:add"
+  ],
+  "POST/apigateway/setProperties": [
+    "analytic:add"
+  ],
+  "POST/apigateway/getInspectAndConfigAnalyticsCamera": [
+    "analytic:add"
+  ],
+  "POST/apigateway/getInspectAnalyticNode": [
+    "analytic:add"
+  ],
+  "POST/apigateway/updateAnalyticNode": [
+    "analytic:add"
+  ],
+  "POST/apigateway/getAllCamerasAcXessFaceAnalytic": [
+    "analytic:add"
+  ],
+  "POST/apigateway/startStopTrainingAnalytic": [
+    "analytic:add"
+  ],
+  "POST/apigateway/removeTrainingFaceNodes": [
+    "analytic:add"
+  ],
+  "POST/apigateway/createTraingingFaceAnalytic": [
+    "analytic:add"
+  ],
+  "POST/apigateway/createAnaliticServerWiewer": [
+    "analytic:add"
+  ],
+  "POST/apigateway/deleteNode": [
+    "analytic:delete"
+  ],
+  "POST/apigateway/setAcXessSearchSideFace": [
+    "analytic:add"
+  ],
+  "POST/apigateway/testMongodb": [],
+  "POST/apigateway/startRecording": [
+    "recording:statistics"
+  ],
+  "POST/apigateway/takePicture": [],
+  "POST/apigateway/addCameraRecord": [
+    "recording:statistics"
+  ],
+  "POST/apigateway/editCameraRecord": [
+    "recording:statistics"
+  ],
+  "POST/apigateway/deleteCameraRecord": [
+    "recording:statistics"
+  ],
+  "POST/apigateway/getCameraRecordList": [
+    "recording:statistics"
+  ],
+  "POST/apigateway/removeMedias": [],
+  "POST/apigateway/getCameraRecordState": [
+    "recording:statistics"
+  ],
+  "POST/apigateway/enableAudio": [],
+  "POST/apigateway/getStateStreaming": [],
+  "_ALL/api_vehiclemanager/*": [
+    "vehicle:read"
+  ],
+  "_ALL/api_taskManager/*": [
+    "task:read"
+  ],
+  "_ALL/api_accessmanager/*": [
+    "access:read"
+  ],
+  "POST/api_forensicsearch/search": [
+    "forensic:search"
+  ],
+  "POST/api_forensicsearch/onCancelSearch": [
+    "forensic:search"
+  ],
+  "POST/api_forensicsearch/onFaceSearch": [
+    "forensic:face"
+  ],
+  "POST/api_forensicsearch/onAlprSearch": [
+    "forensic:plate"
+  ],
+  "POST/api_forensicsearch/onObjectSearch": [
+    "forensic:motion"
+  ],
+  "POST/api_forensicsearch/onColorSearch": [
+    "forensic:search"
+  ],
+  "POST/api_forensicsearch/onOnvifEventSearch": [
+    "forensic:search"
+  ],
+  "POST/api_media/createPlayer": [
+    "media:read"
+  ],
+  "POST/api_media/createPlayerList": [
+    "media:read"
+  ],
+  "POST/api_media/deletePlayerL": [
+    "media:read"
+  ],
+  "POST/api_media/deletePlayer": [
+    "media:read"
+  ],
+  "POST/api_media/deleteOnePlayer": [
+    "media:read"
+  ],
+  "POST/api_media/playMedia": [
+    "media:read"
+  ],
+  "POST/api_media/pauseMedia": [
+    "media:read"
+  ],
+  "POST/api_media/upSlowList": [
+    "media:read"
+  ],
+  "POST/api_media/changeSpeedList": [
+    "media:read"
+  ],
+  "POST/api_media/gotoPosition": [
+    "media:read"
+  ],
+  "POST/api_media/setJanusUrl": [
+    "media:read"
+  ],
+  "POST/api_media/seek": [
+    "media:read"
+  ],
+  "POST/api_media/seekList": [
+    "media:read"
+  ],
+  "POST/api_media/getVideoInfoList": [
+    "media:read"
+  ],
+  "POST/api_media/playList": [
+    "media:read"
+  ],
+  "POST/api_media/getRecordingStatByDayList": [
+    "media:read"
+  ],
+  "POST/api_media/createSimplePlayer": [
+    "media:read"
+  ],
+  "POST/apigateway/insertMarcadores": [],
+  "POST/apigateway/getAllMarcadores": [],
+  "POST/apigateway/updateMarcadores": [],
+  "POST/apigateway/deleteMarcadores": [],
+  "POST/apigateway/addStructure": [
+    "structure:add"
+  ],
+  "POST/apigateway/updateStructure": [
+    "structure:update"
+  ],
+  "POST/apigateway/deleteStructure": [
+    "structure:delete"
+  ],
+  "POST/apigateway/getStructure": [
+    "structure:get"
+  ],
+  "POST/apigateway/addUser": [
+    "user:update"
+  ],
+  "POST/apigateway/updateUser": [
+    "user:update"
+  ],
+  "POST/apigateway/deleteUser": [
+    "user:update"
+  ],
+  "POST/apigateway/getUser": [
+    "user:update"
+  ],
+  "POST/apigateway/authenticate": [],
+  "POST/apigateway/api/signin": [],
+  "POST/apigateway/addAlarmCenter": [],
+  "POST/apigateway/updateAlarmCenter": [],
+  "POST/apigateway/deleteAlarmCenter": [],
+  "POST/apigateway/getAlarmCenter": [],
+  "POST/apigateway/getAlarmCenterByServer": [],
+  "POST/apigateway/unassignedAlarms": [],
+  "_ALL/onvif/*": [
+    "onvif:read"
+  ]
+}

@@ -188,7 +188,7 @@ export class SessionConfig {
 
   @IsString()
   @IsOptional()
-  URL: string = 'redis://localhost:6379';
+  URL: string = 'redis://localhost:7000';
 
   @IsString()
   @IsOptional()
@@ -204,7 +204,7 @@ export class SessionConfig {
 
   @IsNumber()
   @IsOptional()
-  PORT: number = 6379;
+  PORT: number = 7000;
 
   @IsBoolean()
   @IsOptional()
