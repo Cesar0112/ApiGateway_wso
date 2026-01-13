@@ -1,11 +1,11 @@
 // ../config/config.controller.ts
 import { Controller, Get, Post, Body } from '@nestjs/common';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import { ConfigService } from './config.service';
 
 @Controller('config')
 export class ConfigController {
-  constructor(private _configService: ConfigService) { }
+  constructor(private readonly _configService: ConfigService) { }
 
   @Get()
   getConfig() {
@@ -14,7 +14,7 @@ export class ConfigController {
 
   @Post()
   updateConfig(@Body() config: any) {
-    fs.writeFileSync('config.json', JSON.stringify(config, null, 2));
+    fs.writeFileSync('assets/config.json', JSON.stringify(config, null, 2));
     this._configService.loadConfig();
     return { message: 'Configuración actualizada' };
   }
@@ -25,7 +25,7 @@ export class ConfigController {
 
   @Post('routes')
   updateRoutes(@Body() routes: any) {
-    fs.writeFileSync('routes.json', JSON.stringify(routes, null, 2));
+    fs.writeFileSync('assets/routes.json', JSON.stringify(routes, null, 2));
     this._configService.loadRoutes();
     return { message: 'Rutas actualizadas' };
   }
