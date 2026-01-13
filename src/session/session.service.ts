@@ -23,7 +23,6 @@ export class SessionService {
     }
     switch (STRATEGY) {
       case 'redis': {
-        console.log("HOST: ", HOST)
         const store = createKeyvRedis(HOST);//FIXME Arreglar que HOST llega aquí null
         return store;
       }

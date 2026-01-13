@@ -57,9 +57,8 @@ export class UsersCasdoorService implements IUsersProvider, ICasdoorBaseInterfac
             );
             if (!response.data.data) return null;
             const structures = await this.structuresService.getStructuresFromUser(userId, token);
-            //Quiero modificar los permisos de cada rol para que donde aparezca en su value el caracter '_' en primera instancia
-            //lo sustituya por un espacio ':'
-            let roles = (await this.rolesService.getRoles(token));
+
+            let roles = (await this.rolesService.getRolesFromUser(this.owner + "/" + response.data.data.name, token));
 
             roles = roles.map(r => {
                 const newRole = { ...r };

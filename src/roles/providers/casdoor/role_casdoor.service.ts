@@ -48,7 +48,27 @@ export class RoleCasdoorService implements IRoleServiceProvider, ICasdoorBaseInt
             if (response.data.status !== 'ok') {
                 throw new BadRequestException(response.data.msg);
             }
-
+            return Promise.all(
+                response.data.data.map(
+                    async (role: IRoleCasdoor) => RoleCasdoorMapper.fromCasdoorToRole(role, await this.permissionService.getPermissionsByRoleId(`${role.owner}/${role.name}`, token))));
+        } catch (error) {
+            this.handleError(error, `Get all roles failed ${error.msg}`);
+            return [];
+        }
+    }
+    async getRolesFromUser(username, token: string): Promise<Role[]> {
+        try {
+            const url = this.buildApiUrl('get-roles');
+            const response = await firstValueFrom(
+                this.httpService.get(url, {
+                    params: { owner: this.owner },
+                    headers: this.getAuthHeaders(token),
+                }),
+            );
+            if (response.data.status !== 'ok') {
+                throw new BadRequestException(response.data.msg);
+            }
+            response.data.data = response.data.data.filter((role: IRoleCasdoor) => role.users?.includes(username));
             return Promise.all(
                 response.data.data.map(
                     async (role: IRoleCasdoor) => RoleCasdoorMapper.fromCasdoorToRole(role, await this.permissionService.getPermissionsByRoleId(`${role.owner}/${role.name}`, token))));
