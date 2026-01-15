@@ -19,6 +19,7 @@ import { Request } from "express";
 import { StructureMapper } from './structure.mapper';
 @Controller('structures')
 export class StructuresController {
+  //FIXME Arreglar inyección de dependencias para que se cambie en tiempo de ejecución según configuración
   constructor(private readonly _structuresService: StructuresWSO2Service, private readonly sessionService: SessionService) { }
   //FIXME Arreglar que no se mande la entidad estructura sino un dto de estructura, osea aquí hay que mapear similar a como se hace en el controller
   /* 1.  Jerarquía pequeña (≤ 20 nodos) – 1 HTTP call */

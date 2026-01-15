@@ -60,7 +60,7 @@ export class AuthenticateController {
     const { user, password } = body;
     //console.log(this.encryptionsService.encrypt("Cesar01*"))
 
-    //console.log('pass', password);
+    console.log('pass', password);
     const result = await this.authenticateService.login(user, password, req.ip);
     session.username = user;
     session.permissions = result.permissions.filter(p => !p.startsWith("url:"));
