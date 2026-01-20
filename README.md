@@ -1,172 +1,183 @@
-# 1. Pasos siguientes recomendados para robustecer el API Gateway
+# API Gateway
 
-## 1. Validación y limpieza de sesión
+API Gateway centralizado que maneja autenticación, sesiones, permisos y proxy a servicios downstream.
 
-- **Destruir la sesión correctamente:**  
-  Asegúrate de que la sesión se destruya tanto al hacer logout como cuando el token expire (esto ya lo gestiona el guard).
-- **Endpoint de estado de sesión:**  
-  Considera agregar un endpoint `/authenticate/status` que permita al frontend consultar si la sesión sigue activa y obtener información básica del usuario autenticado.
+## Arquitectura
 
-## 2. Mejorar la seguridad
+- **Auth pluggable**: soporta WSO2, Casdoor y autenticación local mediante factory pattern.
+- **Session-first**: tokens almacenados y validados server-side usando Redis o SQLite.
+- **Proxy estratégico**: enrutamiento dinámico a canales HTTP, NATS u otros.
+- **Permisos externalizados**: mapeo de rutas → permisos en `routes.json` y `routes-radix.json`.
 
-- **Cookies seguras:**  
-  Configura las cookies de sesión con `httpOnly: true` para evitar acceso desde JavaScript y `secure: true` para que solo se envíen por HTTPS en producción.
-- **Expiración de sesión:**  
-  Ajusta el parámetro `maxAge` de la cookie de sesión según el tiempo de inactividad permitido.
-- **Validación de firma JWT:**  
-  Si es posible, valida la firma del token JWT usando la clave pública de WSO2 para asegurarte de que no ha sido manipulado.
-- **Evitar timming-attack**  
-  Dándole la misma cantidad de tiempo tanto para los 200 del login como los 401 y 500 y 400
+## Quick Start
 
-## 3. Auditoría y logs
+```bash
+# Instalar dependencias
+npm install
 
-- **Registrar eventos importantes:**  
-  Agrega logs para login, logout, expiración de sesión, intentos fallidos y cualquier acceso no autorizado.
-- **Monitoreo:**  
-  Considera integrar herramientas de monitoreo para detectar patrones sospechosos o problemas de seguridad.
+# Build
+npm run build
 
-## 4. Pruebas
+# Desarrollo
+npm run start:dev
 
-- **Pruebas unitarias:**  
-  Escribe pruebas para los endpoints de autenticación, el guard y el interceptor de sesión.
-- **Pruebas de integración:**  
-  Simula el flujo completo: login, acceso a rutas protegidas, expiración de sesión y logout.
-- **Pruebas de seguridad:**  
-  Verifica que no se pueda acceder a rutas protegidas sin sesión válida y que el token no se exponga nunca al frontend.
+# Producción
+npm run start:prod
 
-## 5. Documentación
+# Tests
+npm test
+npm run test:e2e
+```
 
-- **Actualizar rutas:**  
-  Mantén el archivo `ROUTES.md` actualizado con todas las rutas y su propósito.
-- **Flujo de autenticación:**  
-  Documenta cómo funciona el proceso de login, manejo de sesión y protección de rutas para facilitar el onboarding de nuevos desarrolladores.
+## Configuración
 
-## 6. Manejo de errores
+- `config.json` — configuración runtime (puerto, AUTH_TYPE, SESSION strategy, proxy settings).
+- `routes.json` / `routes-radix.json` — mapeo de rutas → permisos requeridos.
+- `NODE_ENV` — dev/prod/test (controla logging y comportamiento).
 
-- **Mensajes claros:**  
-  Personaliza los mensajes de error para casos como expiración de sesión, token inválido o falta de permisos.
-- **Respuestas consistentes:**  
-  Asegúrate de que el frontend reciba respuestas claras y estructuradas para cada caso de error.
+## Estructura de carpetas
 
-## 7. Revisión de permisos
-
-- **Control de acceso:**  
-  Si tu aplicación usa permisos, revisa que se apliquen correctamente en los endpoints que lo requieran, usando guards adicionales si es necesario.
-
-## 8. Revisión de permisos
-
-- **Optimizaciones:**  
-  Optimizar la búsqueda de los permisos requridos por parte del usuario para hacer peticiones a los endpoints, agregando un Árbol de prefijos en lugar de un simple HASH MAP cambiar la estructura y carga del routes.json para que sea fácil de serializar/deserializar para mejorar la velocidad cuando los endpoints sean muchos, puede que en el futuro sea configurable este aspecto
+```
+src/
+├── main.ts                  # Bootstrap, CORS, Swagger, prefijo /apigateway
+├── app/app.module.ts        # Composición top-level
+├── auth/                    # Backends de autenticación pluggables
+├── session/                 # Manejo de sesiones (Redis/SQLite)
+├── permissions/             # Guards y evaluación de permisos
+├── proxy/                   # Estrategias de proxy (HTTP, NATS)
+├── users/                   # Servicios de usuarios
+├── structures/              # Servicios de estructuras
+├── roles/                   # Servicios de roles
+├── common/                  # Excepciones, filtros, utilidades
+└── config/                  # Lectura y validación de config.json
+```
 
 ---
 
-## 9. TODOs
+## Tareas futuras
 
-1. **Terminar la autenticación local**
+### 1. **Centralizar mensajes de error y excepciones**
 
-# 2. Apartado: Flujo de negocio recomendado
+- **Descripción**: Crear archivo centralizado `src/common/exceptions/error-messages.ts` con mensajes por dominio (STRUCTURES, USERS, AUTH, SESSION, etc.).
+- **Beneficio**: Cambios de mensajes en un único lugar; facilita i18n (internacionalización).
+- **Afecta**: Todos los controllers y servicios que lanzan excepciones.
+- **Prioridad**: Media.
+- **Archivos a crear/modificar**:
+  - `src/common/exceptions/error-messages.ts` (nuevo)
+  - `src/common/exceptions/app.exceptions.ts` (nuevo, excepciones personalizadas)
+  - `src/structures/structures.controller.ts`
+  - `src/users/users.controller.ts`
+  - `src/auth/auth.controller.ts`
 
-## Flujo general de la aplicación
+### 2. **Mapping DTO en StructuresController**
 
-1. **El frontend nunca maneja tokens ni datos sensibles.**
+- **FIXME ubicado en**: `src/structures/structures.controller.ts` (línea ~29)
+- **Descripción**: No enviar entidad `Structure` directamente; mapear a DTO usando `StructureMapper` (patrón similar a otros controllers).
+- **Estado actual**: algunos endpoints devuelven entidades sin mapear.
+- **Prioridad**: Alta (seguridad e inconsistencia).
+- **Archivos a modificar**:
+  - `src/structures/structures.controller.ts` (aplicar mapper en todos los endpoints)
+  - `src/structures/dto/` (revisar/completar DTOs si es necesario)
 
-   - El usuario solo interactúa con la interfaz y envía peticiones (por ejemplo, login, acciones, consultas) al backend a través de la API Gateway.
+### 3. **Validación null en StructuresController**
 
-2. **El frontend hace todas las peticiones a través de la API Gateway.**
+- **FIXME ubicado en**: `src/structures/structures.controller.ts`
+- **Descripción**: Endpoints `findOne()`, `findOneByName()`, `update()` pueden retornar `null`. Agregar validaciones antes de mapear.
+- **Patrón**: lanzar `StructureNotFoundException` si el resultado es null.
+- **Prioridad**: Alta (TypeScript strict mode + runtime safety).
+- **Archivos a modificar**:
+  - `src/structures/structures.controller.ts` (agregar if-checks con excepciones centralizadas)
 
-   - Ejemplo: `/apigateway/monitoring`, `/apigateway/users`, etc.
+### 4. **Inyección dinámica de servicios en StructuresController**
 
-3. **La API Gateway valida todo:**
+- **FIXME ubicado en**: `src/structures/structures.controller.ts` (línea ~23)
+- **Descripción**: El controlador actualmente inyecta `StructuresWSO2Service` directamente. Debe cambiar dinámicamente entre `StructuresWSO2Service` y `StructuresCasdoorService` según `API_GATEWAY.AUTH_TYPE`.
+- **Solución**: Implementar factory provider con token `STRUCTURES_SERVICE_TOKEN` (similar a `AUTH_SERVICE_TOKEN` en `AuthenticateModule`).
+- **Prioridad**: Alta (arquitectura limpia).
+- **Archivos a crear/modificar**:
+  - `src/structures/providers/structures.service.provider.ts` (nuevo, factory)
+  - `src/structures/structures.module.ts` (registrar provider factory)
+  - `src/structures/structures.controller.ts` (inyectar vía token, no clase directa)
 
-   - **Sesión:** Verifica que la sesión esté activa y el token no haya expirado.
-   - **Permisos:** Verifica que el usuario tenga permisos para la acción solicitada.
-   - **Autorización:** Si el usuario no tiene permisos o la sesión no es válida, responde con error (401 o 403).
+### 5. **Manejo de errores global con filter**
 
-4. **El backend nunca expone el token ni datos sensibles al frontend.**
+- **Descripción**: Crear `src/common/filters/http-exception.filter.ts` que estandarice respuestas de error.
+- **Beneficio**: Formato consistente en todas las respuestas de error (mensaje, statusCode, timestamp, path).
+- **Afecta**: Toda la aplicación.
+- **Prioridad**: Media.
+- **Archivos a crear/modificar**:
+  - `src/common/filters/http-exception.filter.ts` (nuevo)
+  - `src/main.ts` (registrar filter global con `app.useGlobalFilters()`)
 
-   - Solo responde con información relevante para la UI (por ejemplo, éxito, error, datos de negocio, permisos si es necesario para mostrar u ocultar opciones).
+### 6. **Validar null en endpoints restantes**
 
-5. **El frontend solo reacciona a la respuesta del backend.**
-   - Si la respuesta es exitosa, muestra la información o redirige.
-   - Si hay error de sesión o permisos, muestra un mensaje o redirige al login.
+- **Descripción**: Revisar y agregar validaciones null en otros controllers (UsersController, RolesController, etc.).
+- **Patrón**: Usar excepciones centralizadas + HTTP 404.
+- **Prioridad**: Media-Alta.
+- **Archivos a revisar**:
+  - `src/users/users.controller.ts`
+  - `src/roles/roles.controller.ts`
+  - `src/permissions/permissions.controller.ts`
 
-## Ventajas de este flujo
+### 7. **Documentación de rutas y permisos**
 
-- **Seguridad:** El token y la sesión nunca salen del backend.
-- **Centralización:** Todas las reglas de negocio, permisos y sesiones se controlan en un solo lugar.
-- **Simplicidad en el frontend:** El frontend solo se preocupa por mostrar información y reaccionar a respuestas.
+- **Descripción**: Crear/actualizar `ROUTES.md` con tabla de endpoints, métodos, permisos requeridos y descripción.
+- **Beneficio**: Referencia centralizada para desarrolladores y testing.
+- **Prioridad**: Baja (documentación).
+- **Archivos a crear**:
+  - `docs/ROUTES.md` (nuevo)
 
-## Consideraciones para el despliegue 
-  - Para que la Api-Gateway llegue por la red a WSO2 IS tiene que estar fuera del proxy
+### 8. **Tests unitarios para servicios de structures**
 
-# 🛠️ Guía de despliegue en producción: WSO2 Identity Server + PostgreSQL con Docker
+- **Descripción**: Completar cobertura de tests para `StructuresWSO2Service` y `StructuresCasdoorService`.
+- **Prioridad**: Media.
+- **Archivos a crear**:
+  - `src/structures/providers/wso2/structures_wso2.service.spec.ts`
+  - `src/structures/providers/casdoor/structures_casdoor.service.spec.ts`
 
-## 📦 Requisitos previos
+### 9. **Implementar endpoints bulk pendientes**
 
-- Docker y Docker Compose instalados
-- PostgreSQL driver JDBC (`postgresql-42.x.x.jar`)
-- Scripts SQL de inicialización (`postgresql.sql`, `identity/postgresql.sql`, `consent/postgresql.sql`)
-- Certificados SSL válidos (opcional pero recomendado)
-- Acceso a dominio público si se usará fuera de localhost
+- **Descripción**: `POST /apigateway/structures/bulk` y `GET /apigateway/structures/bulk/:jobId` actualmente lanzan `NotFoundException`. Implementar con Job queue (Bull + Redis).
+- **Estado actual**: placeholder con FIXME.
+- **Prioridad**: Baja (feature futura).
+- **Archivos a modificar**:
+  - `src/structures/structures.controller.ts`
+  - `src/structures/services/structures.service.ts`
+
+### 10. **Reflection-based auth provider discovery (opcional)**
+
+- **Descripción**: Reemplazar factory switch en `AuthenticateModule` con metadata reflection y decorador `@AuthProvider('tipo')`.
+- **Beneficio**: Agregar nuevos backends sin tocar el factory (zero-touch extensibility).
+- **Prioridad**: Baja (refactor de arquitectura).
+- **Archivos a crear/modificar**:
+  - `src/auth/decorators/auth-provider.decorator.ts` (nuevo)
+  - `src/auth/providers/auth.service.ts` (reemplazar factory)
+  - `src/auth/providers/wso2/auth_wso2.service.ts` (decorar con `@AuthProvider('wso2')`)
+  - `src/auth/providers/casdoor/auth_casdoor.service.ts` (decorar con `@AuthProvider('casdoor')`)
 
 ---
 
-## 🔐 Seguridad y configuración
+## Dependencias circulares resueltas
 
-1. Define variables sensibles en `.env`:
+- ✅ AuthenticateModule ↔ UsersModule (forwardRef + orden de importación)
+- ✅ StructuresModule ↔ UsersModule (forwardRef, StructuresModule no importa UsersModule en providers)
+- ✅ RolesModule → AuthenticateModule (removida, no necesaria)
 
-   ```env
-   DB_NAME=testdb
-   DB_USER=wso2admin
-   DB_PASS=una_contraseña_segura
+## Patrones y convenciones
 
-2. Usa estas variables en docker-compose.yml:
-  environment:
-    POSTGRES_DB: ${DB_NAME}
-    POSTGRES_USER: ${DB_USER}
-    POSTGRES_PASSWORD: ${DB_PASS}
+- **Global prefix**: `/apigateway` (ver `src/main.ts`)
+- **Session server-side**: tokens NO se envían al frontend crudos; validación server-side
+- **Excepciones centralizadas**: usar `src/common/exceptions/error-messages.ts` y `app.exceptions.ts`
+- **Mappers DTOs**: siempre mapear entidades a DTOs antes de responder (ej: `StructureMapper`)
+- **Auth pluggable**: factory pattern en `AuthenticateModule` (fácil agregar WSO2, Casdoor, Local, OAuth2, etc.)
 
-3. Configura deployment.toml para que todas las bases apunten a testdb:
-  name = "testdb"
-  username = "wso2admin"
-  password = "una_contraseña_segura"
+## Debugging
 
-4. Cambia credenciales por defecto (admin/admin) en la sección [super_admin].
-5. Reemplaza el keystore autofirmado (wso2carbon.jks) por certificados SSL reales si usas dominios públicos.
+- Morgan logs HTTP requests en dev mode (check `NODE_ENV`).
+- Inspeccionar `src/proxy/proxy.service.ts` para flujos de proxy.
+- Verificar `dist/config.json` coincida con runtime config después de `npm run build`.
+- Tests: `npm test`, `npm run test:e2e`.
 
-🧱 Persistencia y volúmenes
-1. Usa volumen pgdata para persistir datos de PostgreSQL:
-  volumes:
-  - pgdata:/var/lib/postgresql/data
+---
 
-2. Monta los scripts SQL en initdb/ para inicialización automática:
-  volumes:
-  - ./initdb:/docker-entrypoint-initdb.d
-
-🔁 Puertos y conectividad
-1. Expon ambos puertos en wso2is minimo el 9443 para frontend y back
-  ports:
-  - "9443:9443"  # backend OAuth2
-  - "9444:9444"  # frontend SPA /console
-
-2. Asegúrate de que el Service Provider "Console" tenga registrada esta URL:
-  https://localhost:9444/console/login
-
-📊 Monitoreo y logs
-1. Monta logs en volúmenes persistentes si deseas conservarlos:
-  volumes:
-  - ./logs:/home/wso2carbon/wso2is-7.0.0/repository/logs
-
-2. Integra observabilidad con Grafana + Prometheus o ELK Stack.
-
-3. Activa el módulo de auditoría en WSO2 IS si necesitas trazabilidad.
-
-⚙️ Automatización y mantenimiento
-
-  1. Usa scripts para registrar Service Providers vía API REST de WSO2 IS.
-
-  2. Configura backups automáticos de PostgreSQL (por ejemplo, con pg_dump + cron).
-
-  3. Usa docker container prune regularmente para limpiar contenedores detenidos.
-
-  4. Documenta todos los cambios en un changelog técnico.
+**Última actualización**: 2025-01-27
