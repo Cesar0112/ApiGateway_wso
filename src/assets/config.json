@@ -40,7 +40,7 @@
     "API_URL": "http://10.12.24.38:10410",
     "ENCRYPTION_PASSWORD": "IkIopwlWorpqUj",
     "PROXY_STATIC_MAP_PATH": "./routes.json",
-    "CORS_ORIGIN": "http://localhost:8081,http://localhost:8080",
+    "CORS_ORIGIN": "http://localhost:8081,http://localhost:8080,chrome-extension://oienkoejnhkbcibhdnpjoemdnmiokgah,127.0.0.1:10410",
     "HTTP_METHODS_ALLOWED": "GET,PUT,POST,HEADER,DELETE",
     "AUTH_TYPE": "casdoor",
     "THROTTLE_TTL_MS": 900000,

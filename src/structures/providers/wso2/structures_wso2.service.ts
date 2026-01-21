@@ -7,7 +7,7 @@ import {
   Inject,
   forwardRef,
 } from '@nestjs/common';
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { CreateStructureDto } from '../../dto/create-structure.dto';
 import { UpdateStructureDto } from '../../dto/update-structure.dto';
 import { Structure } from '../../../entities/structure.entity';
@@ -15,7 +15,7 @@ import { ConfigService } from '../../../config/config.service';
 import { StructureNameHelper } from '../../structure.helper';
 import { StructureMapper } from '../../structure.mapper';
 import { UsersWSO2Service } from 'src/users/providers/wso2/users_wso2.service';
-import { BaseStructureServiceProvider, IStructureServiceProvider } from '../../interface/structure.interface';
+import { BaseStructureServiceProvider } from '../../interface/structure.interface';
 
 
 //FIXME Arreglar que no se mapee directamente desde aquí sino desde el controller

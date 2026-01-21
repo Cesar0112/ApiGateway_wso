@@ -131,27 +131,23 @@ export class SessionService {
         );
       }
       return token;
-    } catch (e: unknown) {
-      // If parsing fails, throws exception to indicate no token available
-      throw new BadRequestException(
-        typeof e === 'string'
-          ? e
-          : e instanceof Error
-            ? e.message
-            : 'Error durante la obtención del token dado un sessionId',
+    } catch (error) {
+      throw new HttpException(
+        'Error retrieving token from session: ' + error.message,
+        HttpStatus.UNAUTHORIZED,
       );
     }
   }
   async getTokenFromSession(req: Request): Promise<string> {
 
-    const sessionId = req.sessionID || req.session?.id;
-    if (!sessionId) {
+    const sessionId = req.sessionID;
+    if (!req.sessionID) {
       throw new HttpException('Session ID not found', HttpStatus.UNAUTHORIZED);
     }
-    const token = this.getTokenOfSessionId(sessionId);
+    const token = await this.getTokenOfSessionId(sessionId);
     if (!token) {
       throw new HttpException(
-        'Token not found for session',
+        'Token not found for session ' + sessionId,
         HttpStatus.UNAUTHORIZED,
       );
     }

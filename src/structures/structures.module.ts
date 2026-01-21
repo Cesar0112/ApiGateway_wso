@@ -14,6 +14,7 @@ import { ConfigService } from '../config/config.service';
 @Module({
   imports: [
     ConfigModule,
+
     HttpModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -32,6 +33,6 @@ import { ConfigService } from '../config/config.service';
   ],
   controllers: [StructuresController],
   providers: [StructuresServiceProvider, StructuresCasdoorService, StructuresWSO2Service],
-  exports: [StructuresCasdoorService, StructuresWSO2Service, STRUCTURE_SERVICE_PROVIDER],
+  exports: [STRUCTURE_SERVICE_PROVIDER, StructuresCasdoorService, StructuresWSO2Service,],
 })
 export class StructuresModule { }

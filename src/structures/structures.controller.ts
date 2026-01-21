@@ -9,6 +9,7 @@ import {
   NotFoundException,
   Req,
   Query,
+  Inject,
 } from '@nestjs/common';
 import { CreateStructureDto } from './dto/create-structure.dto';
 import { UpdateStructureDto } from './dto/update-structure.dto';
@@ -17,12 +18,11 @@ import { StructuresWSO2Service } from './providers/wso2/structures_wso2.service'
 import { SessionService } from 'src/session/session.service';
 import { Request } from "express";
 import { StructureMapper } from './structure.mapper';
+import { BaseStructureServiceProvider, STRUCTURE_SERVICE_PROVIDER } from './interface/structure.interface';
 @Controller('structures')
 export class StructuresController {
   //FIXME Arreglar inyección de dependencias para que se cambie en tiempo de ejecución según configuración
-  constructor(private readonly _structuresService: StructuresWSO2Service, private readonly sessionService: SessionService) { }
-  //FIXME Arreglar que no se mande la entidad estructura sino un dto de estructura, osea aquí hay que mapear similar a como se hace en el controller
-  /* 1.  Jerarquía pequeña (≤ 20 nodos) – 1 HTTP call */
+  constructor(@Inject(STRUCTURE_SERVICE_PROVIDER) private readonly _structuresService: BaseStructureServiceProvider, private readonly sessionService: SessionService) { }
   @Post()
   async create(@Body() createStructureDto: CreateStructureDto, @Req() req: Request) {
     const structure = await this._structuresService.create(createStructureDto, await this.sessionService.getTokenFromSession(req))
@@ -48,19 +48,27 @@ export class StructuresController {
   @Get()
   async findAll(@Req() req: Request) {
     const token = await this.sessionService.getTokenFromSession(req);
-    return (await this._structuresService.findAll(token)).map((s) => StructureMapper.fromStructureToStructureDto(s));
+    const structures = await this._structuresService.findAll(token);
+    return structures.map((structure) => StructureMapper.fromStructureToStructureDto(structure));
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string, @Req() req: Request, @Query('include') include?: string) {
     const token = await this.sessionService.getTokenFromSession(req);
-    return StructureMapper.fromStructureToStructureDto(await this._structuresService.findOne(id, token, include));
-
+    const struct = await this._structuresService.findOne(id, token, include);
+    if (!struct) {
+      throw new NotFoundException(`Structure with id ${id} not found`);
+    }
+    return StructureMapper.fromStructureToStructureDto(struct);
   }
   @Get('/by_name/:name')
   async findOneByName(@Param('name') name: string, @Req() req: Request) {
     const token = await this.sessionService.getTokenFromSession(req);
-    return StructureMapper.fromStructureToStructureDto(await this._structuresService.findOneByName(name, token));
+    const struct = await this._structuresService.findOneByName(name, token);
+    if (!struct) {
+      throw new NotFoundException(`Structure with name ${name} not found`);
+    }
+    return StructureMapper.fromStructureToStructureDto(struct);
   }
 
   @Patch(':id')

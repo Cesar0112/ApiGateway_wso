@@ -73,8 +73,7 @@ export class AuthCasdoorService extends BaseAuthenticationService {
             };
             const response = await axios.request(config);
 
-            const { access_token/*, refresh_token, scope, token_type, expires_in,
-                id_token*/ } = response.data;
+            const { access_token } = response.data;
             const decodedToken: IDecodedToken = this.decodeJwt(access_token) as IDecodedToken;
             const user = await this.usersService.getUserByUserId(decodedToken.id, access_token);
             if (!user) {
