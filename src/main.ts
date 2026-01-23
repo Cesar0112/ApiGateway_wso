@@ -41,8 +41,7 @@ async function main() {
     origin: (origin, callback) => {
       // Permitir cualquier localhost con cualquier puerto en desarrollo
       const isDevelopment = process.env.NODE_ENV === 'development';
-      const localhostRegex = /^http:\/\/localhost:\d+$/;
-
+      const localhostRegex = /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/;
       if (!origin || (isDevelopment && localhostRegex.test(origin))) {
         callback(null, true);
       } else {

@@ -29,9 +29,8 @@ export class SessionMiddleware implements NestMiddleware {
       cookie: {
         httpOnly: true,
         secure: false,
-
         maxAge: this.cfg.ttlSeconds * 1000,
-        sameSite: 'none',
+        sameSite: 'lax',
       },
     });
   }

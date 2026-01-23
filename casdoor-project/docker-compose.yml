@@ -10,8 +10,6 @@ services:
       MYSQL_DATABASE: casdoor
       MYSQL_USER: casdoor
       MYSQL_PASSWORD: 123456
-    ports:
-      - "3306:3306"
     volumes:
       - casdoor_data:/var/lib/mysql
 
@@ -22,6 +20,7 @@ services:
       - mysql
     environment:
       - GIN_MODE= "release"
+      - DATABASE_URL= "root:root@tcp(mysql:3306)/casdoor"
     ports:
       - "8000:8000"
     volumes:

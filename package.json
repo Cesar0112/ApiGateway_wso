@@ -17,7 +17,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:session": "jest --config ./test/jest-e2e.json test/session-*.e2e-spec.ts",
+    "test:frontend": "jest --config ./test/jest-e2e.json test/frontend-like-session.e2e-spec.ts"
   },
   "dependencies": {
     "@keyv/redis": "^5.1.1",
