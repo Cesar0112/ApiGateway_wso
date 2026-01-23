@@ -52,7 +52,7 @@
     "SECRET": "T9PjTVNCvvONGAof4RecIkIopwlWorpqUj",
     "TTL_SECONDS": 86400,
     "COOKIE_NAME": "apigateway_sid",
-    "HOST": "redis://127.0.0.1:7000",
+    "HOST": "redis://127.0.0.1:6379",
     "PORT": null,
     "TLS": false,
     "SECURE": true,

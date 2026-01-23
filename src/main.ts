@@ -40,15 +40,20 @@ async function main() {
   app.enableCors({
     origin: (origin, callback) => {
       // Permitir cualquier localhost con cualquier puerto en desarrollo
-      const isDevelopment = process.env.NODE_ENV === 'development';
+      const isDevelopment = cfg.getConfig().NODE_ENV === 'dev';
       const localhostRegex = /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/;
-      if (!origin || (isDevelopment && localhostRegex.test(origin))) {
+
+      const devIpRegex = /^https?:\/\/10\.12\.24\.\d+:\d+$/; // Tu rango de IP
+
+      if (!origin ||
+        (isDevelopment && (localhostRegex.test(origin) || devIpRegex.test(origin)))) {
         callback(null, true);
       } else {
         const allowedOrigins = cfg.getConfig().API_GATEWAY?.CORS_ORIGIN?.split(',') || [];
         if (allowedOrigins.includes(origin)) {
           callback(null, true);
         } else {
+          console.log('CORS origin rejected:', origin)
           callback(new Error('Not allowed by CORS ' + origin));
         }
       }
