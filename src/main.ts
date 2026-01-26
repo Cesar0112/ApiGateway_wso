@@ -58,9 +58,15 @@ async function main() {
         }
       }
     },
-    exposedHeaders: ['Set-Cookie'],
+    exposedHeaders: [
+      'Set-Cookie',
+      'X-Encrypted',
+      //'X-Total-Count',
+      //'X-Page-Count',
+      //'Content-Disposition'  // Para descargas
+    ],
     methods: cfg.getConfig().API_GATEWAY?.HTTP_METHODS_ALLOWED, // Allow specific HTTP methods
-    allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'Origin'], // Allow specific headers
+    allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'Origin', 'X-Channel'], // Allow specific headers
     credentials: true, // Allow credentials
   });
   const PORT = cfg.getConfig().API_GATEWAY?.PORT ?? 3000;
